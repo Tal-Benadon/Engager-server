@@ -1,6 +1,10 @@
 // ייבוא הקונטרולר
 const campaignController = require("../DL/controllers/campaign.controller");
 
+async function getAllMsg(_id){
+    return await msgController.read(_id)
+}
+
 async function createNewCampaign(userId, campName) {
   campName = campName.trim();
   const nameIsExist = await campaignController.readOne({ user: userId, title: campName });
@@ -21,6 +25,7 @@ async function delOneMessage(campId, msgId) {
   if (!campaign) throw { code: 480, msg: 'id campaign not exist!' };
   return await campaignController.update({ _id: campId }, { $pull: { msg: { _id: msgId } } });
 }
+
 
 
 async function addNewMsg(id, body) {
@@ -63,4 +68,4 @@ async function updateMsg(id, body) {
 }
 
 
-module.exports = { addNewMsg, updateMsg, getAllCampaignsByUser, delOneMessage, createNewCampaign }
+module.exports = { getAllMsg, addNewMsg, updateMsg, getAllCampaignsByUser, delOneMessage, createNewCampaign }
