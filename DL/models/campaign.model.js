@@ -15,18 +15,19 @@ const msgSchema = new mongoose.Schema({
   leads: [
     {
       lead: {
-        type: mongoose.SchemaTypes.ObjectId, 
-        ref: "lead", 
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "lead",
         required: true,
       },
-      receptinDate: {
+      receptionDate: {
         type: Date,
         default: Date.now,
       },
-      isActive: {
-        type: Boolean,
-        default: true,
-      },
+      status: {
+        type: String,
+        enum: ["sent", "recieved"],
+        default: "sent"
+      }
     },
   ],
 });
@@ -34,6 +35,7 @@ const msgSchema = new mongoose.Schema({
 const campaignSchema = new mongoose.Schema({
   user: {
     type: mongoose.SchemaTypes.ObjectId,
+    ref: 'user',
     default: "65ba97e536d6af41e9beb0d1",
   },
   title: {
@@ -47,7 +49,7 @@ const campaignSchema = new mongoose.Schema({
     {
       lead: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref :"lead",
+        ref: 'lead',
         required: true,
       },
       joinDate: {

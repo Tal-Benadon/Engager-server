@@ -19,10 +19,8 @@ const leadSchema = new mongoose.Schema({
   },
   campaigns: [
     {
-      campaign: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "campaign",
-      },
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "campaign"
     },
   ],
 });
