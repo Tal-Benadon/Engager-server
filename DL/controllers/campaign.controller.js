@@ -9,12 +9,12 @@ async function read(filter){
     return await campaignModel.find(filter)
 }
 
-async function readOne(id){
-    return await campaignModel.findById(id)
+async function readOne(filter={}){
+    return await campaignModel.findOne(filter)
 }
 
-async function update(id,update){
-    return await campaignModel.findByIdAndUpdate(id,update)
+async function update(filter={},update){
+    return await campaignModel.updateOne(filter,update)
 }
 
 function deleteById(id) {

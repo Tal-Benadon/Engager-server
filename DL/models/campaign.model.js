@@ -16,7 +16,7 @@ const msgSchema = new mongoose.Schema({
     {
       lead: {
         type: mongoose.Schema.Types.ObjectId, 
-        ref: "leade", 
+        ref: "lead", 
         required: true,
       },
       receptinDate: {
