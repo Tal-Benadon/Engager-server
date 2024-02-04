@@ -6,8 +6,15 @@ const router = express.Router();
 const campaignService = require('../BL/campaign.service');
 
 
-
-
+router.get('/:campaignId', async (req, res) => {
+    try {
+        const campaignId = req.params.campaignId; 
+        const messages = await campaignService.getAllMsg(campaignId);
+        res.send(messages);
+    } catch (err) {
+        res.status(err.code).send(err.msg);
+    }
+});
 
 
 
