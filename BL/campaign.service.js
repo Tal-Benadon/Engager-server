@@ -1,11 +1,10 @@
 // ייבוא הקונטרולר
 const campaignController = require('../DL/controllers/campaign.controller');
 
-async function addNewMsg(body) {
-
+async function addNewMsg(_id, body) {
+campaignController.readOne(_id)
 
 }
-
 
 
 
