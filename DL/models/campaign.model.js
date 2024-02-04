@@ -46,7 +46,8 @@ const campaignSchema = new mongoose.Schema({
   leads: [
     {
       lead: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.SchemaTypes.ObjectId,
+        ref :"lead",
         required: true,
       },
       joinDate: {
