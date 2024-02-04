@@ -16,6 +16,7 @@ router.post('/', async (req,res) => {
         res.status(err.code).send(err.msg);
     }
 })
+
 router.get('/', async (req, res) => {
     try {
         const userId = req.body.user._id;
@@ -27,7 +28,7 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.delete('/:campaignId/:msgId', async (req, res) => {
+router.delete('/:campId/msg/:msgId', async (req, res) => {
     try{
         const campId = req.params.campId;
         const msgId = req.params.msgId;
