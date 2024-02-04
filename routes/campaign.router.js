@@ -5,9 +5,20 @@ const router = express.Router();
 // ייבוא השירותים
 const campaignService = require('../BL/campaign.service');
 
-router.get('/:userId', async (req, res) => {
+router.post('/', async (req,res) => {
+    try{
+        const userId = req.body.user._id;
+        const campName = req.body.campName;
+        const answer = await campaignService.createNewCampaign(userId, campName);
+        res.send(answer);
+    }
+    catch(err){
+        res.status(err.code).send(err.msg);
+    }
+})
+router.get('/', async (req, res) => {
     try {
-        const userId = req.params.userId;
+        const userId = req.body.user._id;
         const campaigns = await campaignService.getAllCampaignsByUser(userId)
         res.send(campaigns);
     }
@@ -16,10 +27,11 @@ router.get('/:userId', async (req, res) => {
     }
 })
 
-router.delete('/:msgId', async (req, res) => {
+router.delete('/:campaignId/:msgId', async (req, res) => {
     try{
+        const campId = req.params.campId;
         const msgId = req.params.msgId;
-        const del = await campaignService.delOneMessage(msgId);
+        const del = await campaignService.delOneMessage(campId, msgId);
         res.send(del);
     }
     catch (err) {
