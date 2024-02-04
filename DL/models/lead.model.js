@@ -17,11 +17,11 @@ const leadSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  msgs: [
+  campaigns: [
     {
-      msg: {
+      campaign: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "msg",
+        ref: "campaign",
       },
       creationDate: {
         type: Date,
