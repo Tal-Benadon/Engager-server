@@ -15,7 +15,7 @@ const msgSchema = new mongoose.Schema({
   leads: [
     {
       lead: {
-        type: mongoose.Schema.Types.ObjectId, 
+        type: mongoose.SchemaTypes.ObjectId, 
         ref: "lead", 
         required: true,
       },
@@ -33,7 +33,7 @@ const msgSchema = new mongoose.Schema({
 
 const campaignSchema = new mongoose.Schema({
   user: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.SchemaTypes.ObjectId,
     default: "65ba97e536d6af41e9beb0d1",
   },
   title: {
@@ -62,4 +62,4 @@ const campaignSchema = new mongoose.Schema({
 });
 
 const campaignModel = mongoose.model("campaign", campaignSchema);
-module.exports = campaignModel  ;
+module.exports = campaignModel;
