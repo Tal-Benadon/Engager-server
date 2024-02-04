@@ -23,10 +23,6 @@ const leadSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "campaign",
       },
-      creationDate: {
-        type: Date,
-        default: Date.now,
-      },
     },
   ],
 });
