@@ -15,8 +15,8 @@ const msgSchema = new mongoose.Schema({
   leads: [
     {
       lead: {
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: "leade", 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "lead",
         required: true,
       },
       receptinDate: {
@@ -62,4 +62,4 @@ const campaignSchema = new mongoose.Schema({
 });
 
 const campaignModel = mongoose.model("campaign", campaignSchema);
-module.exports = campaignModel  ;
+module.exports = campaignModel;
