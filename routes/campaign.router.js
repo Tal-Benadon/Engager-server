@@ -8,8 +8,8 @@ const campaignService = require('../BL/campaign.service');
 
 router.get('/:campaignId', async (req, res) => {
     try {
-        const campaignId = req.params.campaignId; 
-        const messages = await campaignService.getAllMsg(campaignId);
+        const _id = req.params.campaignId; 
+        const messages = await campaignService.getAllMsg(_id);
         res.send(messages);
     } catch (err) {
         res.status(err.code).send(err.msg);
