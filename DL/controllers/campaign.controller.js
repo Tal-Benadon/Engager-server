@@ -15,8 +15,8 @@ async function readOne(id, populate) {
     return await campaignModel.findOne({ _id: id }).populate(populate)
 }
 
-async function update(id, update) {
-    return await campaignModel.findByIdAndUpdate(id, update)
+async function update(filter = {}, update) {
+    return await campaignModel.updateOne(filter, update)
 }
 
 // update("65bf8ed2ff535f23eff98def", { msg: [{ leads: [{ lead: "65bf91d6beecba97e97e8baf" }] }] })
