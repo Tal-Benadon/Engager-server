@@ -1,8 +1,8 @@
 // ייבוא הקונטרולר
 const campaignController = require('../DL/controllers/campaign.controller');
 
-async function getAllMsg(){
-    return await msgController.read(campainName)
+async function getAllMsg(campaignId){
+    return await msgController.read(campaignId)
 }
 
 
