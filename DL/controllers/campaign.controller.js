@@ -5,12 +5,12 @@ async function create(data){
     return await campaignModel.create(data)
 }
 
-async function read(filter){
+async function read(filter = {}){
     return await campaignModel.find(filter)
 }
 
-async function readOne(id){
-    return await campaignModel.findById(id)
+async function readOne(filter = {}){
+    return await campaignModel.findOne(filter)
 }
 
 async function update(id,update){
