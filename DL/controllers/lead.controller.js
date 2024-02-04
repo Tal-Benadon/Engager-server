@@ -9,7 +9,7 @@ const get = async (filter) => {
 }
 
 const getOne = async (filter) => {
-    return await leadModel.findOne(filter).populate("campaign").populate("msg")
+    return await leadModel.findOne(filter)
 }
 const update = async (id, newData) => {
     return leadModel.findByIdAndUpdate(id, newData)

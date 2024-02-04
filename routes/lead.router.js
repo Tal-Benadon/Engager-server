@@ -8,8 +8,5 @@ const leadService = require('../BL/lead.service');
 
 
 
-
-
-
 // ייצוא הראוטר
 module.exports = router;
