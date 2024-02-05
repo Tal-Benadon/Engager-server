@@ -1,10 +1,9 @@
 // ייבוא הקונטרולר
 const campaignController = require("../DL/controllers/campaign.controller");
-const { populate } = require("../DL/models/campaign.model");
 
 async function createNewCampaign(userId, campName) {
   campName = campName.trim();
-  console.log("name",campName);
+  console.log("name", campName);
   const nameIsExist = await campaignController.readOne({
     user: userId,
     title: campName,
@@ -47,8 +46,6 @@ console.log("on service the req body:  ",messages);
   return await campaignController.update(filter, { $push: { msg: messages } });
 }
 
-// addNewMsg(id, body)
-
 async function updateMsg(id, body) {
   let campaign = await campaignController.readOne({ _id: id });
 
@@ -75,17 +72,31 @@ async function getAllMsg(id) {
   const messages = await campaignController.read({ _id: id }, "msg");
   return messages;
 }
-//  שליחת הודעה לכל הלידים בקמפיין מסויים
-// async function sendMsgForCampaign(capId, msgId){
-//     let campaign = await campaignController.readOne({ _id: capId }).populate('leads');
 
-// //  מאטריהלהוסיף פה את תביא לי הודעה בקמפיין מסויים
+// להוציא מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
+async function getArrLeadOfCamp(capId, msgId) {
+    if (!capId) throw { code: 404, msg: "No campaign found" };
+    if (!msgId) throw { code: 404, msg: "No msg found" };
+  let sendMsg= getOneMsg(capId, msgId);
+  if(!sendMsg) throw {code: 404, msg: "This msg to send"}
+  let campaign = await campaignController.readOne({ _id: capId });
+  const arrNew = campaign["leads"];
+  if(!arrNew) throw  { code: 404, msg: "No lead found" };
+  const list = arrNew.map((l) => {
+    if (l.isActive) {
+      return {
+        phone: l["lead"].phone,
+        name: l["lead"].name,
+        email: l["lead"].email,
+        _id: l["lead"]._id,
+      };
+    }
+  });
+  finalArray = [];
+  finalArray.push(list);
+  return finalArray , sendMsg;
+}
 
-// //להמשיך מחר
-// let leadActiv =await campaign.leads.filter((lead)=>{lead.isActive === true})
-// console.log("leadActiv", leadActiv);
-// let lead= await leadActiv.forEach((l)=> return {l.name, l.phone }))
-// }
 
 module.exports = {
   addNewMsg,
@@ -93,5 +104,7 @@ module.exports = {
   getAllCampaignsByUser,
   delOneMessage,
   createNewCampaign,
-  getAllMsg, sendMsgForCampaign
+  getAllMsg,
+  getArrLeadOfCamp,
+  
 };
