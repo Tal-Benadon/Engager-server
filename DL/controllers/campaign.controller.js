@@ -16,10 +16,8 @@ async function readOne(id, populate) {
 }
 
 async function update(filter = {}, update) {
-    return await campaignModel.updateOne(filter, update)
+    return await campaignModel.findByIdAndUpdate(filter, update)
 }
-
-// update("65bf8ed2ff535f23eff98def", { msg: [{ leads: [{ lead: "65bf91d6beecba97e97e8baf" }] }] })
 
 function deleteById(id) {
     return campaignModel.findByIdAndUpdate(id, { isActive: false })
