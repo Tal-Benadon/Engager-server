@@ -17,9 +17,24 @@ app.use('/campaign', campaignRouter);
 app.use('/lead', leadRouter);
 app.use('/user', userRouter)
 
-// {"data":{"name":"aryeh", "email":"aryeh@gmil.com","phone":"0524888842","notes":"","campaign":""}}
-// {"data":{"name":"hotam", "email":"hotam@gmail.com","phone":"0584477218","notes":"","campaign":""}}
-// {"data":{"name":"maayan", "email":"maayan@gmail.com","phone":"0585855237","notes":"","campaign":""}}
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerDocument = require('./swagger.json');
+
+const options = {
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: { title: 'How to use Raouts' },
+        servers: [{ url: 'http://localhost:3000', }],
+        tags: [{ name: 'Campaign', }, { name: 'Message', }, { name: 'Lead', },],
+    },
+    apis: ['./routes/*.router.js'],
+};
+
+
+const swaggerSpec = swaggerJSDoc(options);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.listen(PORT, () => console.log(`****server is listening on ${PORT}****`))
