@@ -72,6 +72,17 @@ async function getAllMsg(id) {
   const messages = await campaignController.read({ _id: id }, "msg");
   return messages;
 }
+async function getOneMsg(campId,msgId){
+  // console.log("msgid is:", msgId);  
+  let campaigns = await getAllMsg(campId)
+  let campaign = campaigns[0]
+    console.log(" all msgs:  ",campaign.msg);
+    if (campaigns.length<1) throw "no messeges in this campaign";//lhneh
+let mssg =   campaign.msg
+console.log("mssg", mssg);
+    if (!mssg) throw "messege not exist"
+    return mssg.find(m=>m._id == msgId)
+}
 
 // להוציא מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
 async function getArrLeadOfCamp(capId, msgId) {
@@ -106,5 +117,5 @@ module.exports = {
   createNewCampaign,
   getAllMsg,
   getArrLeadOfCamp,
-  
+  getOneMsg
 };
