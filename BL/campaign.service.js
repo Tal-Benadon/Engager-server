@@ -1,10 +1,9 @@
 // ייבוא הקונטרולר
 const campaignController = require("../DL/controllers/campaign.controller");
-const { populate } = require("../DL/models/campaign.model");
 
 async function createNewCampaign(userId, campName) {
   campName = campName.trim();
-  console.log("name",campName);
+  console.log("name", campName);
   const nameIsExist = await campaignController.readOne({
     user: userId,
     title: campName,
@@ -47,8 +46,6 @@ async function addNewMsg(id, body) {
   return await campaignController.update(filter, { $push: { msg: messages } });
 }
 
-// addNewMsg(id, body)
-
 async function updateMsg(id, body) {
   let campaign = await campaignController.readOne({ _id: id });
 
@@ -75,23 +72,44 @@ async function getAllMsg(id) {
   const messages = await campaignController.read({ _id: id }, "msg");
   return messages;
 }
-//  שליחת הודעה לכל הלידים בקמפיין מסויים
-// async function sendMsgForCampaign(capId, msgId){
-//     let campaign = await campaignController.readOne({ _id: capId }).populate('leads');
+// להוציא מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
+async function getArrLeadOfCamp(capId = "", msgId = "") {
+  capId = "65c0939a5aa397278552a5b5";
+  console.log("**********************************");
+  let campaign = await campaignController.readOne({ _id: capId });
 
-// //  מאטריהלהוסיף פה את תביא לי הודעה בקמפיין מסויים
+  const arrNew = campaign["leads"];
+  if (arrNew.isActive) {
+    const newList = arrNew.map((l) => {
+      return {
+        phone: l["lead"].phone,
+        name: l["lead"].name,
+        email: l["lead"].email,
+        _id: l["lead"]._id,
+      };
+    });
+  }
+  finalArray = [];
+  finalArray.push(newList);
+  return finalArray;
+  //  >>שם וטלפון של הלידים
 
-// //להמשיך מחר
-// let leadActiv =await campaign.leads.filter((lead)=>{lead.isActive === true})
-// console.log("leadActiv", leadActiv);
-// let lead= await leadActiv.forEach((l)=> return {l.name, l.phone }))
-// }
+  //   ולפלטר isAktivלהביא msg
+  // ולדחוף להודעה id של ליד
+  // שקיבלו  להעבור על הלידים לעשות הודעה עם אלירז ואורנא לפי הדאטא שלהם
+  //
 
+  // let leadActiv =await campaign.leads.filter((lead)=>{lead.isActive === true})
+  // console.log("leadActiv", leadActiv);
+  // let lead= await leadActiv.forEach((l)=> return {l.name, l.phone }))
+}
+// getArrLeadOfCamp( capId="65c0939a5aa397278552a5b5")
 module.exports = {
   addNewMsg,
   updateMsg,
   getAllCampaignsByUser,
   delOneMessage,
   createNewCampaign,
-  getAllMsg, sendMsgForCampaign
+  getAllMsg,
+  getArrLeadOfCamp,
 };

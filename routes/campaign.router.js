@@ -5,6 +5,12 @@ const router = express.Router();
 // ייבוא השירותים
 const campaignService = require('../BL/campaign.service');
 
+router.get('/aviad', async (req,res)=>{
+  let result = await campaignService.getArrLeadOfCamp()
+  console.log(result);
+  res.send(result)
+})
+
 router.post('/', async (req, res) => {
   try {
     const userId = req.body.user._id;
@@ -17,7 +23,7 @@ router.post('/', async (req, res) => {
   }
 })
 
-router.get('/:campaignId', async (req, res) => {
+router.get('/:idCamp', async (req, res) => {
     try {
         const _id = req.params.campaignId; 
         const messages = await campaignService.getAllMsg(_id);
