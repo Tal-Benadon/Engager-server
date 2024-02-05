@@ -3,13 +3,12 @@ const campaignController = require("../DL/controllers/campaign.controller");
 const { populate } = require("../DL/models/campaign.model");
 
 async function createNewCampaign(userId, campName) {
-  campName = campName.trim();
-  console.log("name",campName);
-  const nameIsExist = await campaignController.readOne({
+  
+  const nameIsExist = await campaignController.read({
     user: userId,
     title: campName,
   });
-  if (nameIsExist) throw { code: 404, msg: "This name already exists" };
+  if (nameIsExist.length) throw { code: 404, msg: "This name already exists" };
   const created = await campaignController.create({
     user: userId,
     title: campName,
@@ -25,6 +24,7 @@ async function getAllCampaignsByUser(userId) {
 async function delCampaign(campId){
   const campaign = campaignController.readOne({ _id: campId });
   if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
+   if (campaign.isActive==false) throw { code: 481, msg: " campaign alredy deleted!" };
   return await campaignController.update({ _id: campId }, {isActive: false})
 }
 async function delOneMessage(campId, msgId) {

@@ -10,14 +10,15 @@ const campaignService = require('../BL/campaign.service');
 // הוספת קמפיין
 router.post('/', async (req, res) => {
   try {
-    const userId = req.body._id;
+    const userId = req.body.user._id;
     const campName = req.body.campName;
-
+console.log("the req is:  " ,userId,campName);
     const answer = await campaignService.createNewCampaign(userId, campName);
+    console.log("the answer is:  ", answer)
     res.send(answer);
   }
   catch (err) {
-    res.send(err.msg);
+    res.status(404).send(err.msg);
   }
 })
 
@@ -46,7 +47,7 @@ router.get('/:campId', async (req, res) => {
 // מחיקת קמפיין
 router.delete('/:campId',async(req,res)=>{
 try{
- let deletedCamp = campaignService.delCampaign(req.params.campId)
+ let deletedCamp =  await campaignService.delCampaign(req.params.campId)
  res.send(deletedCamp);
 }catch(err){
   res.status(404).send(err.msg);
