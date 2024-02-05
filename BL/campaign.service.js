@@ -75,9 +75,13 @@ async function getAllMsg(id) {
 
 // להוציא מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
 async function getArrLeadOfCamp(capId, msgId) {
-  getOneMsg(capId, msgId);
+    if (!capId) throw { code: 404, msg: "No campaign found" };
+    if (!msgId) throw { code: 404, msg: "No msg found" };
+  let sendMsg= getOneMsg(capId, msgId);
+  if(!sendMsg) throw {code: 404, msg: "This msg to send"}
   let campaign = await campaignController.readOne({ _id: capId });
   const arrNew = campaign["leads"];
+  if(!arrNew) throw  { code: 404, msg: "No lead found" };
   const list = arrNew.map((l) => {
     if (l.isActive) {
       return {
@@ -90,7 +94,7 @@ async function getArrLeadOfCamp(capId, msgId) {
   });
   finalArray = [];
   finalArray.push(list);
-  return finalArray;
+  return finalArray , sendMsg;
 }
 
 
