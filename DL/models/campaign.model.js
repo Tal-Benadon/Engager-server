@@ -30,6 +30,10 @@ const msgSchema = new mongoose.Schema({
       }
     },
   ],
+  status:{
+    type : String,
+    default: "created"
+  }
 });
 
 const campaignSchema = new mongoose.Schema({
