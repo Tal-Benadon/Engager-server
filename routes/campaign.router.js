@@ -5,10 +5,13 @@ const router = express.Router();
 // ייבוא השירותים
 const campaignService = require('../BL/campaign.service');
 
+
+
 router.post('/', async (req, res) => {
   try {
     const userId = req.body.user._id;
     const campName = req.body.campName;
+    console.log(userId, campName);
     const answer = await campaignService.createNewCampaign(userId, campName);
     res.send(answer);
   }
@@ -27,6 +30,7 @@ router.get('/', async (req, res) => {
     res.status(err.code).send(err.msg);
   }
 })
+
 
 router.delete('/:campId/msg/:msgId', async (req, res) => {
   try {

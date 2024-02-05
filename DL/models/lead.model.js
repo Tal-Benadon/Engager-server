@@ -7,7 +7,8 @@ const leadSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
+    default:''
+    // ???OK
   },
   phone: {
     type: String,  
@@ -15,7 +16,7 @@ const leadSchema = new mongoose.Schema({
   },
   notes: {
     type: String,
-    required: true,
+    default:''
   },
   campaigns: [
     {

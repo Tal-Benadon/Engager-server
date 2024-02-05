@@ -5,7 +5,6 @@ async function create(data) {
     return await campaignModel.create(data)
 }
 
-
 async function read(filter) {
     return await campaignModel.find(filter)
 }

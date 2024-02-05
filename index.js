@@ -15,5 +15,9 @@ app.use('/campaign', campaignRouter);
 const leadRouter = require('./routes/lead.router');
 app.use('/lead', leadRouter);
 
+// {"data":{"name":"aryeh", "email":"aryeh@gmil.com","phone":"0524888842","notes":"","campaign":""}}
+// {"data":{"name":"hotam", "email":"hotam@gmail.com","phone":"0584477218","notes":"","campaign":""}}
+// {"data":{"name":"maayan", "email":"maayan@gmail.com","phone":"0585855237","notes":"","campaign":""}}
+
 
 app.listen(PORT, () => console.log(`****server is listening on ${PORT}****`))
