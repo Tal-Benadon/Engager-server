@@ -1,8 +1,10 @@
 // ייבוא הקונטרולר
 const campaignController = require("../DL/controllers/campaign.controller");
+const { populate } = require("../DL/models/campaign.model");
 
 async function createNewCampaign(userId, campName) {
   campName = campName.trim();
+  console.log("name",campName);
   const nameIsExist = await campaignController.readOne({
     user: userId,
     title: campName,
@@ -73,7 +75,17 @@ async function getAllMsg(id) {
   const messages = await campaignController.read({ _id: id }, "msg");
   return messages;
 }
+//  שליחת הודעה לכל הלידים בקמפיין מסויים
+// async function sendMsgForCampaign(capId, msgId){
+//     let campaign = await campaignController.readOne({ _id: capId }).populate('leads');
 
+// //  מאטריהלהוסיף פה את תביא לי הודעה בקמפיין מסויים
+
+// //להמשיך מחר
+// let leadActiv =await campaign.leads.filter((lead)=>{lead.isActive === true})
+// console.log("leadActiv", leadActiv);
+// let lead= await leadActiv.forEach((l)=> return {l.name, l.phone }))
+// }
 
 module.exports = {
   addNewMsg,
@@ -81,5 +93,5 @@ module.exports = {
   getAllCampaignsByUser,
   delOneMessage,
   createNewCampaign,
-  getAllMsg,
+  getAllMsg, sendMsgForCampaign
 };

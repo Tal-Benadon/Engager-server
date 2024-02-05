@@ -71,6 +71,18 @@ req.body={...req.body,msgId}
     res.status(err.code).send(err.msg);
   }
 });
+router.delete('/:idCamp/msg/:msgId', async (req, res) => {
+    try {
+        const idCamp = req.params.idCamp;
+        const msgId = req.params.msgId;
+        const msg = await campaignService.sendMsgForCampaign(idCamp ,msgId )
+        res.send(msg);
+
+    } catch (err) {
+        res.status(err.code).send(err.msg);
+      }
+
+})
 
 // ייצוא הראוטר
 module.exports = router;
