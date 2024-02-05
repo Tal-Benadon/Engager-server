@@ -19,7 +19,10 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    // required: true,
+    // אביעד אמר לא לעשות סיסמה חובה בגלל שאנשים נכנסים עם גוגל וכד'
+    select: false,
+
   },
   phone: {
     type: String,
@@ -29,6 +32,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+
   campaigns: [
     {
       campaign: {
@@ -42,22 +51,3 @@ const userSchema = new mongoose.Schema({
 const userModel = mongoose.model("user", userSchema);
 module.exports = userModel;
 
-
-// הוספת יוזר - ניסיוני, לא להשתמש
-// const starter = async () => {
-//   const db = require('../db');
-//   db.connect()
-//   let newUser = await userModel.create({
-//     fName: "מעיין",
-//     lName: "הגבר",
-//     email: "maayan@gmail.com",
-//     avatar: "https://medias.timeout.co.il/www/uploads/2022/06/shutterstock_397680841-600x600.png",
-//     password: "12345",
-//     phone: "+972558739485",
-//     whatsapp: "some url",
-//     campaigns: []
-//   })
-//   console.log(newUser)
-// };
-
-// starter()
