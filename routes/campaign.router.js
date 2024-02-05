@@ -78,7 +78,7 @@ router.get('/', async (req, res) => {
 
 /** - Get all massage in campagin -VV---------------------------------------------------------------------
  * @swagger
- * /{campId}:
+ * /campaigns/{campId}:
  *   get:
  *     summary: Get all messages in a campaign
  *     tags: 
@@ -139,7 +139,7 @@ router.get('/:campId/msg', async (req, res) => {
 // - add new msg into campaign --VV--------------------------------------------------------------------
 /** 
 * @swagger
-* /{campId}/msg:
+* /campaigns/{campId}/msg:
 *   post:
 *     summary: Add a new message into a campaign
 *     tags: [Message]
@@ -186,7 +186,7 @@ router.post('/:campId/msg/', async (req, res) => {
 //-Delete a message from a campaign-VV---------------
 /**
  * @swagger
- * /{campId}/msg/{msgId}:
+ * /campaigns/{campId}/msg/{msgId}:
  *   delete:
  *     summary: Delete a message from a campaign
  *     tags:
