@@ -78,10 +78,8 @@ async function getOneMsg(campId,msgId){
   // console.log("msgid is:", msgId);  
   let campaigns = await getAllMsg(campId)
   let campaign = campaigns[0]
-    console.log(" all msgs:  ",campaign.msg);
     if (campaigns.length<1) throw "no messeges in this campaign";//lhneh
 let mssg =   campaign.msg
-console.log("mssg", mssg);
     if (!mssg) throw "messege not exist"
     return mssg.find(m=>m._id == msgId)
 }
@@ -90,7 +88,7 @@ console.log("mssg", mssg);
 async function getArrLeadOfCamp(capId, msgId) {
     if (!capId) throw { code: 404, msg: "No campaign found" };
     if (!msgId) throw { code: 404, msg: "No msg found" };
-  let sendMsg= getOneMsg(capId, msgId);
+  let sendMsg= await getOneMsg(capId, msgId);
   if(!sendMsg) throw {code: 404, msg: "This msg to send"}
   let campaign = await campaignController.readOne({ _id: capId });
   const arrNew = campaign["leads"];
@@ -105,9 +103,8 @@ async function getArrLeadOfCamp(capId, msgId) {
       };
     }
   });
-  finalArray = [];
-  finalArray.push(list);
-  return finalArray , sendMsg;
+  finalArray = {leads:list, msg: sendMsg };
+  return  finalArray 
 }
 
 async function updateMsgStatus(capId, msgId){
