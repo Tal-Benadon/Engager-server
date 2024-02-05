@@ -42,7 +42,7 @@ async function addNewMsg(id, body) {
     subject: body.subject,
     content: body.content,
   };
-
+console.log("on service the req body:  ",messages);
   return await campaignController.update(filter, { $push: { msg: messages } });
 }
 
