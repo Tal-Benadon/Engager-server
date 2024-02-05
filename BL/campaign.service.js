@@ -46,6 +46,8 @@ console.log("on service the req body:  ",messages);
   return await campaignController.update(filter, { $push: { msg: messages } });
 }
 
+
+
 async function updateMsg(id, body) {
   let campaign = await campaignController.readOne({ _id: id });
 
@@ -73,7 +75,7 @@ async function getAllMsg(id) {
   return messages;
 }
 
-// להוציא מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
+//לבדוק אחרי שאריה מעלה להוציא מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
 async function getArrLeadOfCamp(capId, msgId) {
     if (!capId) throw { code: 404, msg: "No campaign found" };
     if (!msgId) throw { code: 404, msg: "No msg found" };
@@ -97,6 +99,9 @@ async function getArrLeadOfCamp(capId, msgId) {
   return finalArray , sendMsg;
 }
 
+async function updateMsgStatus(capId, msgId){
+
+}
 
 module.exports = {
   addNewMsg,
