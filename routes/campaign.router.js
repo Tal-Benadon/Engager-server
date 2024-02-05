@@ -12,7 +12,6 @@ router.post('/', async (req, res) => {
   try {
     const userId = req.body.user._id;
     const campName = req.body.campName;
-console.log("the req is:  " ,userId,campName);
     const answer = await campaignService.createNewCampaign(userId, campName);
     console.log("the answer is:  ", answer)
     res.send(answer);
@@ -34,16 +33,19 @@ router.get('/', async (req, res) => {
   }
 })
 
-// קמפיין בודד
+// קבלת קמפיין מסוים
 router.get('/:campId', async (req, res) => {
-  try {
-    const msgCampaigns = await campaignService.getAllMsg(req.params.campId)
-    res.send(msgCampaigns);
-  }
-  catch (err) {
+  try{
+    const campId = req.params.campId;
+    const campaign = await campaignService.getOneCamp(campId);
+    res.send(campaign);
+  } catch (err) {
     res.status(err.code).send(err.msg);
   }
 })
+
+
+
 // מחיקת קמפיין
 router.delete('/:campId',async(req,res)=>{
 try{
@@ -56,9 +58,19 @@ try{
 
 //  ######## הודעות  ##########
 
+// כל ההודעות של קמפיין בודד
+router.get('/:campId/msg', async (req, res) => {
+  try {
+    const msgCampaigns = await campaignService.getAllMsg(req.params.campId)
+    res.send(msgCampaigns);
+  }
+  catch (err) {
+    res.status(err.code).send(err.msg);
+  }
+})
 
 // add new msg into campaign
-router.post('/:campId/msg/', async (req, res) => {
+router.post('/:campId/msg', async (req, res) => {
   try {
     const id = req.params.campId;
     const msg = await campaignService.addNewMsg(id, req.body);
@@ -108,18 +120,7 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
   }
 });
 
-router.delete('/:campId/msg/:msgId', async (req, res) => {
-  try {
-    const idCamp = req.params.campId;
-    const msgId = req.params.msgId;
-    const msg = await campaignService.sendMsgForCampaign(idCamp, msgId)
-    res.send(msg);
 
-  } catch (err) {
-    res.status(err.code).send(err.msg);
-  }
-
-})
 
 router.get('/:idCamp/msg/:msgId/leads', async (req, res) => {
   try{

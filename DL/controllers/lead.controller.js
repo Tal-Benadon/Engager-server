@@ -10,9 +10,12 @@ const update = async (id, newData) => {
     return leadModel.findByIdAndUpdate(id, newData)
 }
 
-// const read = async (filter) => {
-//     return await leadModel.find(filter)
-// }
+const read = async (filter) => {
+    return await leadModel.find(filter)
+}
+const readOne = async (filter) => {
+    return await leadModel.findOne(filter)
+}
 
 // const readOne = async (filter) => {
 //     const lead = await leadModel.findOne(filter)
@@ -38,4 +41,4 @@ const update = async (id, newData) => {
 
 
 
-module.exports = { create, update }
+module.exports = { create, update, read,readOne}
