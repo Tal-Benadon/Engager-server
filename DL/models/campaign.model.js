@@ -48,8 +48,9 @@ const campaignSchema = new mongoose.Schema({
   },
   isActive: {
     type: Boolean,
-    default: true
+    default: true,
   },
+
   msg: [msgSchema],
 
   leads: [

@@ -14,8 +14,15 @@ const leadService = require('../BL/lead.service');
 //     }
 // })
 
-
-
+router.post('/', async (req ,res) => {
+    try {
+        const data = req.body.data;
+        const newLead = await leadService.addLeadToCamp(data);
+        res.send(newLead)
+    } catch (err) {
+        res.status(400).send(err)
+    }
+})
 
 
 
