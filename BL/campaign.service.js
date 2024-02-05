@@ -2,14 +2,19 @@
 const campaignController = require("../DL/controllers/campaign.controller");
 
 async function createNewCampaign(userId, campName) {
-  campName = campName.trim();
-  const nameIsExist = await campaignController.readOne({ user: userId, title: campName });
+  const nameIsExist = await campaignController.readOneCamp({ user: userId, title: campName });
   if (nameIsExist) throw { code: 404, msg: 'This name already exists' };
   const created = await campaignController.create({ user: userId, title: campName });
   return created
 }
 
-
+// async function createNewCampaign(campName) {
+//     campName = campName.trim();
+//     const nameIsExist = await campaignController.readOneCamp({title: campName});
+//     if (nameIsExist) throw { code: 404, msg: 'This name already exists' };
+//     const created = await campaignController.create({ user: userId, title: campName });
+//     return created
+//   }
 async function getAllCampaignsByUser(userId) {
   const campaigns = await campaignController.read({ user: userId });
   if (!campaigns.length) throw { code: 404, msg: 'no campaigns for this user' }
@@ -34,7 +39,7 @@ async function addNewMsg(id, body) {
     subject: body.subject,
     content: body.content,
   };
-
+console.log("on service the req body:  ",messages);
   return await campaignController.update(filter, { $push: { msg: messages } });
 }
 
@@ -61,6 +66,20 @@ async function updateMsg(id, body) {
     throw { code: 403, msg: "non a text for update" };
   return await campaignController.update(filter, update);
 }
-
-
-module.exports = { addNewMsg, updateMsg, getAllCampaignsByUser, delOneMessage, createNewCampaign }
+async function getAllMsg(id) {
+    const messages = await campaignController.read({ _id: id }, "msg");
+    return messages;
+  }
+//   =========================================================================
+async function getOneMsg(campId,msgId){
+  // console.log("msgid is:", msgId);  
+  let campaigns = await getAllMsg(campId)
+  let campaign = campaigns[0]
+    console.log(" all msgs:  ",campaign.msg);
+    if (campaigns.length<1) throw "no messeges in this campaign";//lhneh
+let mssg =   campaign.msg
+console.log("mssg", mssg);
+    if (!mssg) throw "messege not exist"
+    return mssg.find(m=>m._id == msgId)
+}
+module.exports = { addNewMsg, updateMsg, getAllCampaignsByUser, delOneMessage,getAllMsg, createNewCampaign, getOneMsg }
