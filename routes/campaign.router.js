@@ -1,25 +1,26 @@
-// ייבוא האקספרס
 const express = require("express");
-// הגדרת הראוטר בתוך האקספרס
 const router = express.Router();
-// ייבוא השירותים
 const campaignService = require('../BL/campaign.service');
 
+// TODO: לשלוף את המשתמש מהטוקן
 
 
+// ###### קמפיינים ######
+
+// הוספת קמפיין
 router.post('/', async (req, res) => {
   try {
-    const userId = req.body.user._id;
+    const userId = req.body._id;
     const campName = req.body.campName;
-    console.log(userId, campName);
     const answer = await campaignService.createNewCampaign(userId, campName);
     res.send(answer);
   }
   catch (err) {
-    res.status(err.code).send(err.msg);
+    res.send(err.msg);
   }
 })
 
+// כל הקמפיינים של לקוח
 router.get('/', async (req, res) => {
   try {
     const userId = req.body.user._id;
@@ -31,13 +32,11 @@ router.get('/', async (req, res) => {
   }
 })
 
-
-router.delete('/:campId/msg/:msgId', async (req, res) => {
+// קמפיין בודד
+router.get('/:campId', async (req, res) => {
   try {
-    const campId = req.params.campId;
-    const msgId = req.params.msgId;
-    const del = await campaignService.delOneMessage(campId, msgId);
-    res.send(del);
+    const msgCampaigns = await campaignService.getAllMsg(req.params.campId)
+    res.send(msgCampaigns);
   }
   catch (err) {
     res.status(err.code).send(err.msg);
@@ -45,10 +44,13 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
 })
 
 
+//  ######## הודעות  ##########
 
-router.post("/msg/:msgId", async (req, res) => {
+
+// add new msg into campaign
+router.post('/:campId/msg/', async (req, res) => {
   try {
-    const id = req.params.msgId;
+    const id = req.params.campId;
     const msg = await campaignService.addNewMsg(id, req.body);
     res.send(msg);
   } catch (err) {
@@ -56,16 +58,46 @@ router.post("/msg/:msgId", async (req, res) => {
   }
 });
 
-router.put("/msg/:msgId", async (req, res) => {
+// מחיקת הודעה
+router.delete('/:campId/msg/:msgId', async (req, res) => {
   try {
-    const id = req.params.msgId;
+    const idCamp = req.params.campId;
+    const msgId = req.params.msgId;
+    const del = await campaignService.delOneMessage(idCamp, msgId);
+    res.send(del);
+  }
+  catch (err) {
+    res.status(err.code).send(err.msg);
+  }
+})
 
+// get singel msg out of singel campaign
+router.get('/:campId/msg/:msgId', async (req, res) => {
+  try {
+    const campId = req.params.campId;
+    const msgId = req.params.msgId;
+    const msg = await campaignService.getOneMsg(campId, msgId);
+    console.log("the msg that return is:  ", msg);
+    res.send(msg);
+  }
+  catch (err) {
+    res.status(502).send(err.msg);
+  }
+})
+
+// update single msg
+router.put("/:campId/msg/:msgId", async (req, res) => {
+  try {
+    const id = req.params.campId;
+    const msgId = req.params.msgId;
+    req.body = { ...req.body, msgId }
     const msg = await campaignService.updateMsg(id, req.body);
     res.send(msg);
   } catch (err) {
     res.status(err.code).send(err.msg);
   }
 });
+
 
 // ייצוא הראוטר
 module.exports = router;
