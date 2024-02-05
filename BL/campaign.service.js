@@ -1,6 +1,5 @@
 // ייבוא הקונטרולר
 const campaignController = require("../DL/controllers/campaign.controller");
-const { populate } = require("../DL/models/campaign.model");
 
 async function createNewCampaign(userId, campName) {
   campName = campName.trim();
@@ -31,6 +30,7 @@ async function delOneMessage(campId, msgId) {
     { $pull: { msg: { _id: msgId } } }
   );
 }
+
 
 async function addNewMsg(id, body) {
   if (!body.subject) throw { code: 404, msg: "not message subject" };
@@ -71,27 +71,5 @@ async function updateMsg(id, body) {
   return await campaignController.update(filter, update);
 }
 
-async function getAllMsg(id) {
-  const messages = await campaignController.read({ _id: id }, "msg");
-  return messages;
-}
-//  שליחת הודעה לכל הלידים בקמפיין מסויים
-// async function sendMsgForCampaign(capId, msgId){
-//     let campaign = await campaignController.readOne({ _id: capId }).populate('leads');
 
-// //  מאטריהלהוסיף פה את תביא לי הודעה בקמפיין מסויים
-
-// //להמשיך מחר
-// let leadActiv =await campaign.leads.filter((lead)=>{lead.isActive === true})
-// console.log("leadActiv", leadActiv);
-// let lead= await leadActiv.forEach((l)=> return {l.name, l.phone }))
-// }
-
-module.exports = {
-  addNewMsg,
-  updateMsg,
-  getAllCampaignsByUser,
-  delOneMessage,
-  createNewCampaign,
-  getAllMsg, sendMsgForCampaign
-};
+module.exports = { addNewMsg, updateMsg, getAllCampaignsByUser, delOneMessage, createNewCampaign }

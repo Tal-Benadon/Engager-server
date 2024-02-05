@@ -17,6 +17,15 @@ router.post('/', async (req, res) => {
   }
 })
 
+router.get('/:campaignId', async (req, res) => {
+    try {
+        const _id = req.params.campaignId; 
+        const messages = await campaignService.getAllMsg(_id);
+        res.send(messages);
+    } catch (err) {
+        res.status(err.code).send(err.msg);
+    }
+});
 router.get('/', async (req, res) => {
   try {
     const userId = req.body.user._id;
