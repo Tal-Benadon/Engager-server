@@ -18,36 +18,38 @@ const leadRouter = require('./routes/lead.router');
 app.use('/lead', leadRouter);
 
 const swaggerUi = require('swagger-ui-express');
-const swaggerJSDoc = require('swagger-jsdoc'); // Add this line
+const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerDocument = require('./swagger.json');
 
 const options = {
-    definition: {
-        openapi: '3.0.0', 
+    swaggerDefinition: {
+        openapi: '3.0.0',
         info: {
-            title: 'How to use Routes?', 
-            version: '1.0.0'
+            title: 'How to use Raouts'
         },
         servers: [
             {
-                url: 'http://localhost:2500/' 
-            }
-        ]
+                url: 'http://localhost:3000', // Update with your server URL
+            },
+        ],
+        tags: [
+            {
+                name: 'Campaign',
+            },
+            {
+                name: 'Message',
+            },
+            {
+                name: 'Lead',
+            },
+        ],
     },
-    apis: ['./routes/*.router.js'] 
+    apis: ['./routes/*.router.js'], 
 };
 
-const swaggerSpec = swaggerJSDoc(options); 
+
+const swaggerSpec = swaggerJSDoc(options);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-/**
- * @swagger
- * tags:
- *   - name: Campaign
- *   - name: User
- *   - name: Lead
- */
-
 
 app.listen(PORT, () => console.log(`****server is listening on ${PORT}****`))

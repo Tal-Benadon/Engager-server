@@ -3,13 +3,14 @@ const router = express.Router();
 const campaignService = require('../BL/campaign.service');
 
 
-/**------------------------------------------------
+
+// TODO: לשלוף את המשתמש מהטוקן
+
+/**###### Campeign ######*/
+/**-Create a new campaign-VV---------------------------------------------- 
+/**
  * @swagger
-* tags:
- *   name: Campaign
- *   description: Operations related to campaigns
- * 
- * /campaigns:
+ * /campaigns/:
  *   post:
  *     summary: Create a new campaign
  *     tags: [Campaign]
@@ -27,14 +28,15 @@ const campaignService = require('../BL/campaign.service');
  *                     type: string
  *               campName:
  *                 type: string
-*/
+ *     responses:
+ *       '200':
+ *         description: Successfully created a new campaign
+ *       '400':
+ *         description: Bad request, check your payload
+ *       '500':
+ *         description: Internal server error
+ */
 
-// TODO: לשלוף את המשתמש מהטוקן
-
-
-// ###### קמפיינים ######
-
-// הוספת קמפיין
 router.post('/', async (req, res) => {
   try {
     const userId = req.body._id;
@@ -48,11 +50,11 @@ router.post('/', async (req, res) => {
   }
 })
 
-/** -----------------------------------------------------------------------
+/** - Get all campaigns of user-VV---------------------------------------------------------------------
  * @swagger
- * /campaigns/{campaignId}:      
+ * /campaigns/{campaignId}: 
  *   get:
- *     summary: Get messages for a specific campaign
+ *     summary: Get all campaigns of user
  *     tags: [Campaign]
  *     parameters:             
  *       - in: path             
@@ -63,7 +65,6 @@ router.post('/', async (req, res) => {
  *         description: The ID of the campaign to retrieve
 */
 
-// כל הקמפיינים של לקוח
 router.get('/', async (req, res) => {
   try {
     const userId = req.body.user._id;
@@ -75,7 +76,29 @@ router.get('/', async (req, res) => {
   }
 })
 
-// קמפיין בודד
+/** - Get all massage in campagin -VV---------------------------------------------------------------------
+ * @swagger
+ * /{campId}:
+ *   get:
+ *     summary: Get all messages in a campaign
+ *     tags: 
+ *       - Campaign
+ *     parameters:
+ *       - in: path
+ *         name: campId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the campaign 
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *       '400':
+ *         description: Bad request
+ *       '404':
+ *         description: Campaign not found
+ */
+
 router.get('/:campId', async (req, res) => {
   try {
     const msgCampaigns = await campaignService.getAllMsg(req.params.campId)
@@ -86,11 +109,45 @@ router.get('/:campId', async (req, res) => {
   }
 })
 
+/**###### Message ######*/
 
-//  ######## הודעות  ##########
+// - add new msg into campaign --VV--------------------------------------------------------------------
+/** 
+* @swagger
+* /{campId}/msg:
+*   post:
+*     summary: Add a new message into a campaign
+*     tags: [Message]
+*     parameters:
+*       - in: path
+*         name: campId
+*         required: true
+*         schema:
+*           type: string
+*         description: The ID of the campaign to add a message to
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             properties:
+*               message:
+*                 type: string
+*                 description: The content of the message to add
+*             required:
+*               - message
+*     responses:
+*       '200':
+*         description: Message added successfully
+*       '400':
+*         description: Bad request, check your parameters
+*       '404':
+*         description: Campaign not found
+*       '500':
+*         description: Internal server error
+*/
 
-
-// add new msg into campaign
 router.post('/:campId/msg/', async (req, res) => {
   try {
     const id = req.params.campId;
@@ -101,7 +158,38 @@ router.post('/:campId/msg/', async (req, res) => {
   }
 });
 
-// מחיקת הודעה
+//-Delete a message from a campaign-VV---------------
+/**
+ * @swagger
+ * /{campId}/msg/{msgId}:
+ *   delete:
+ *     summary: Delete a message from a campaign
+ *     tags:
+ *       - Message
+ *     parameters:
+ *       - in: path
+ *         name: campId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the campaign from which to delete the message
+ *       - in: path
+ *         name: msgId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the message to delete
+ *     responses:
+ *       '200':
+ *         description: Message deleted successfully
+ *       '400':
+ *         description: Bad request, check your parameters
+ *       '404':
+ *         description: Campaign or message not found
+ *       '500':
+ *         description: Internal server error
+ */
+
 router.delete('/:campId/msg/:msgId', async (req, res) => {
   try {
     const idCamp = req.params.campId;
@@ -114,7 +202,33 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
   }
 })
 
-// get singel msg out of singel campaign
+// get singel messsag out of singel campaign ----------VV----------------
+/**
+ * @swagger
+ * /campaigns/{campId}/msg/{msgId}:
+ *   get:
+ *     summary: get singel messsag out of singel campaign
+ *     tags:
+ *       - Message
+ *     parameters:
+ *       - in: path
+ *         name: campId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the campaign
+ *       - in: path
+ *         name: msgId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the message to retrieve
+ *     responses:
+ *       '200':
+ *         description: Message retrieved successfully
+ *       '502':
+ *         description: Bad gateway, internal server error
+ */
 router.get('/:campId/msg/:msgId', async (req, res) => {
   try {
     const campId = req.params.campId;
@@ -128,7 +242,88 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
   }
 })
 
-// update single msg
+//Get a specific message from a campaign ----VV-------------------------
+/**
+ * @swagger
+ * /campaigns/{campId}/msg/{msgId}:
+ *   get:
+ *     summary: Get a specific message from a campaign
+ *     tags: [Message]
+ *     parameters:
+ *       - in: path
+ *         name: campId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the campaign from which to retrieve the message
+ *       - in: path
+ *         name: msgId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the message to retrieve
+ *     responses:
+ *       '200':
+ *         description: Message retrieved successfully
+ *       '404':
+ *         description: Campaign or message not found
+ *       '502':
+ *         description: Internal server error
+ */
+
+router.get('/:campId/msg/:msgId', async (req, res) => {
+  try {
+    const campId = req.params.campId;
+    const msgId = req.params.msgId;
+    const msg = await campaignService.getOneMsg(campId, msgId);
+    console.log("the msg that return is:  ", msg);
+    res.send(msg);
+  }
+  catch (err) {
+    res.status(502).send(err.msg);
+  }
+})
+
+// update single Message---VV---------
+/**
+ * @swagger
+ * /campaigns/{campId}/msg/{msgId}:
+ *   put:
+ *     summary: update single Message
+ *     tags:
+ *       - Message
+ *     parameters:
+ *       - in: path
+ *         name: campId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the campaign
+ *       - in: path
+ *         name: msgId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the message to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Message updated successfully
+ *       '400':
+ *         description: Bad request, check your parameters
+ *       '404':
+ *         description: Campaign or message not found
+ *       '500':
+ *         description: Internal server error
+ */
 router.put("/:campId/msg/:msgId", async (req, res) => {
   try {
     const id = req.params.campId;
@@ -140,6 +335,35 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
     res.status(err.code).send(err.msg);
   }
 });
+
+//Delete a message from a campaign-VV-----------
+/**
+ * @swagger
+ * /campaigns/{campId}/msg/{msgId}:
+ *   delete:
+ *     summary: Delete a message from a campaign
+ *     tags: [Message]
+ *     parameters:
+ *       - in: path
+ *         name: campId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: MONGO _id of campaign
+ *       - in: path
+ *         name: msgId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: MONGO _id of the message to delete
+ *     responses:
+ *       '200':
+ *         description: Message deleted successfully
+ *       '404':
+ *         description: Campaign or message not found
+ *       '500':
+ *         description: Internal server error
+ */
 
 router.delete('/:campId/msg/:msgId', async (req, res) => {
   try {
