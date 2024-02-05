@@ -5,7 +5,6 @@ async function addLeadToCamp(data){
     if(!data.campaign || !data.phone || !data.name) throw {code: 500, msg: 'User details are missing'};
     // TODO- check if phone is valid
     const phoneIsExist = await leadController.readOne({phone: data.phone});
-    console.log(phoneIsExist);
     if(phoneIsExist?.campaigns?.includes(data.campaign)) throw {code: 500, msg: 'The lead is already registered for this campaign'}
     // TODO- אם הוא קיים אולי כן להחזיר לו גם אוביקט עם בנאדם
     let mappedLead = {};

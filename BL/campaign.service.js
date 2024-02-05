@@ -1,11 +1,12 @@
 // ייבוא הקונטרולר
 const campaignController = require("../DL/controllers/campaign.controller");
-const { populate } = require("../DL/models/campaign.model");
 
 async function createNewCampaign(userId, campName) {
+  console.log(userId, campName);
   campName = campName.trim();
-  const nameIsExist = await campaignController.read({ user: userId, title: campName });
-  if (nameIsExist.length) throw { code: 404, msg: 'This name already exists' };
+  const nameIsExist = await campaignController.readOneByFilter({ user: userId, title: campName });
+  console.log(nameIsExist);
+  if (nameIsExist) throw { code: 404, msg: 'This name already exists' };
   const created = await campaignController.create({ user: userId, title: campName });
   return created
 }
@@ -81,11 +82,17 @@ async function getAllMsg(id) {
 // let lead= await leadActiv.forEach((l)=> return {l.name, l.phone }))
 // }
 
+async function getOneCamp(campId) {
+  const campaign = await campaignController.readOne({_id:campId})
+  console.log('camp from service', campaign);
+  return campaign
+}
 module.exports = {
   addNewMsg,
   updateMsg,
   getAllCampaignsByUser,
   delOneMessage,
   createNewCampaign,
-  getAllMsg, sendMsgForCampaign
+  getAllMsg,
+  getOneCamp
 };

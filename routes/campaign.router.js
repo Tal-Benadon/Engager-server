@@ -10,13 +10,13 @@ const campaignService = require('../BL/campaign.service');
 // הוספת קמפיין
 router.post('/', async (req, res) => {
   try {
-    const userId = req.body._id;
+    const userId = req.body.user._id;
     const campName = req.body.campName;
     const answer = await campaignService.createNewCampaign(userId, campName);
     res.send(answer);
   }
   catch (err) {
-    res.send(err.msg);
+    res.status(500).send(err.msg);
   }
 })
 
@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
   }
 })
 
-// קמפיין בודד
+// כל ההודעות של קמפיין בודד
 router.get('/:campId', async (req, res) => {
   try {
     const msgCampaigns = await campaignService.getAllMsg(req.params.campId)
@@ -41,13 +41,14 @@ router.get('/:campId', async (req, res) => {
   catch (err) {
     res.status(err.code).send(err.msg);
   }
-})
+});
 
 
 //  ######## הודעות  ##########
 
 
 // add new msg into campaign
+// 2500
 router.post('/:campId/msg/', async (req, res) => {
   try {
     const id = req.params.campId;
@@ -97,6 +98,17 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
     res.status(err.code).send(err.msg);
   }
 });
+
+// קבלת קמפיין מסוים
+router.get('/hotam/:campId', async (req, res) => {
+  try{
+    const campId = req.params.campId;
+    const campaign = await campaignService.getOneCamp(campId);
+    res.send(campaign);
+  } catch (err) {
+    res.status(err.code).send(err.msg);
+  }
+})
 
 
 // ייצוא הראוטר

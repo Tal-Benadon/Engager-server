@@ -5,9 +5,14 @@ async function create(data) {
     return await campaignModel.create(data)
 }
 
-
 async function read(filter,select="") {
     return await campaignModel.find(filter).select(select)
+}
+
+
+async function readOneByFilter(filter, populate) {
+    populate = 'leads.lead'
+    return await campaignModel.findOne(filter).populate(populate)
 }
 
 async function readOne(id, populate) {
@@ -26,4 +31,4 @@ function deleteById(id) {
 }
 
 
-module.exports = { create, read, readOne, update, deleteById,readOneCamp }
+module.exports = { create, read, readOne, update, deleteById, readOneByFilter}
