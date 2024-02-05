@@ -43,7 +43,15 @@ router.get('/:campId', async (req, res) => {
     res.status(err.code).send(err.msg);
   }
 })
-
+// מחיקת קמפיין
+router.delete('/:campId',async(req,res)=>{
+try{
+ let deletedCamp = campaignService.delCampaign(req.params.campId)
+ res.send(deletedCamp);
+}catch(err){
+  res.status(404).send(err.msg);
+}
+})
 
 //  ######## הודעות  ##########
 

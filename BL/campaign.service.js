@@ -22,7 +22,11 @@ async function getAllCampaignsByUser(userId) {
   if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };
   return campaigns;
 }
-
+async function delCampaign(campId){
+  const campaign = campaignController.readOne({ _id: campId });
+  if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
+  return await campaignController.update({ _id: campId }, {isActive: false})
+}
 async function delOneMessage(campId, msgId) {
   const campaign = campaignController.readOne({ _id: campId });
   if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
@@ -93,5 +97,7 @@ module.exports = {
   getAllCampaignsByUser,
   delOneMessage,
   createNewCampaign,
-  getAllMsg, sendMsgForCampaign
+  delCampaign,
+  getAllMsg,
+  // sendMsgForCampaign
 };

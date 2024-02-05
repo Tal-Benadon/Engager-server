@@ -26,4 +26,4 @@ function deleteById(id) {
 }
 
 
-module.exports = { create, read, readOne, update, deleteById,readOneCamp }
+module.exports = { create, read, readOne, update, deleteById }
