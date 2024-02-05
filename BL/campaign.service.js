@@ -72,38 +72,28 @@ async function getAllMsg(id) {
   const messages = await campaignController.read({ _id: id }, "msg");
   return messages;
 }
-// להוציא מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
-async function getArrLeadOfCamp(capId = "", msgId = "") {
-  capId = "65c0939a5aa397278552a5b5";
-  console.log("**********************************");
-  let campaign = await campaignController.readOne({ _id: capId });
 
+// להוציא מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
+async function getArrLeadOfCamp(capId, msgId) {
+  getOneMsg(capId, msgId);
+  let campaign = await campaignController.readOne({ _id: capId });
   const arrNew = campaign["leads"];
-  if (arrNew.isActive) {
-    const newList = arrNew.map((l) => {
+  const list = arrNew.map((l) => {
+    if (l.isActive) {
       return {
         phone: l["lead"].phone,
         name: l["lead"].name,
         email: l["lead"].email,
         _id: l["lead"]._id,
       };
-    });
-  }
+    }
+  });
   finalArray = [];
-  finalArray.push(newList);
+  finalArray.push(list);
   return finalArray;
-  //  >>שם וטלפון של הלידים
-
-  //   ולפלטר isAktivלהביא msg
-  // ולדחוף להודעה id של ליד
-  // שקיבלו  להעבור על הלידים לעשות הודעה עם אלירז ואורנא לפי הדאטא שלהם
-  //
-
-  // let leadActiv =await campaign.leads.filter((lead)=>{lead.isActive === true})
-  // console.log("leadActiv", leadActiv);
-  // let lead= await leadActiv.forEach((l)=> return {l.name, l.phone }))
 }
-// getArrLeadOfCamp( capId="65c0939a5aa397278552a5b5")
+
+
 module.exports = {
   addNewMsg,
   updateMsg,
