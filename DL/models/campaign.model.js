@@ -62,6 +62,10 @@ const campaignSchema = new mongoose.Schema({
       },
     },
   ],
+  isActive: {
+    type: Boolean,
+    default: true,
+  }
 });
 
 const campaignModel = mongoose.model("campaign", campaignSchema);
