@@ -5,6 +5,32 @@ const router = express.Router();
 // ייבוא השירותים
 const campaignService = require('../BL/campaign.service');
 
+/**------------------------------------------------
+ * @swagger
+* tags:
+ *   name: Campaign
+ *   description: Operations related to campaigns
+ * 
+ * /campaigns:
+ *   post:
+ *     summary: Create a new campaign
+ *     tags: [Campaign]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               user:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *               campName:
+ *                 type: string
+*/
+
 router.post('/', async (req, res) => {
   try {
     const userId = req.body.user._id;
@@ -17,6 +43,21 @@ router.post('/', async (req, res) => {
   }
 })
 
+/** -----------------------------------------------------------------------
+ * @swagger
+ * /campaigns/{campaignId}:      
+ *   get:
+ *     summary: Get messages for a specific campaign
+ *     tags: [Campaign]
+ *     parameters:             
+ *       - in: path             
+ *         name: campaignId     
+ *         schema:
+ *           type: string       
+ *         required: true       
+ *         description: The ID of the campaign to retrieve
+*/
+
 router.get('/:campaignId', async (req, res) => {
     try {
         const _id = req.params.campaignId; 
@@ -26,6 +67,8 @@ router.get('/:campaignId', async (req, res) => {
         res.status(err.code).send(err.msg);
     }
 });
+
+
 router.get('/', async (req, res) => {
   try {
     const userId = req.body.user._id;

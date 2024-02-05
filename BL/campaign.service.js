@@ -93,5 +93,5 @@ module.exports = {
   getAllCampaignsByUser,
   delOneMessage,
   createNewCampaign,
-  getAllMsg, sendMsgForCampaign
+  getAllMsg
 };
