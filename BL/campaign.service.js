@@ -8,7 +8,7 @@ async function createNewCampaign(userId, campName) {
     user: userId,
     title: campName,
   });
-  if (nameIsExist) throw { code: 404, msg: "This name already exists" };
+  if (nameIsExist.length) throw { code: 404, msg: "This name already exists" };
   const created = await campaignController.create({
     user: userId,
     title: campName,
@@ -21,7 +21,12 @@ async function getAllCampaignsByUser(userId) {
   if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };
   return campaigns;
 }
-
+async function delCampaign(campId){
+  const campaign = campaignController.readOne({ _id: campId });
+  if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
+   if (campaign.isActive==false) throw { code: 481, msg: " campaign alredy deleted!" };
+  return await campaignController.update({ _id: campId }, {isActive: false})
+}
 async function delOneMessage(campId, msgId) {
   const campaign = campaignController.readOne({ _id: campId });
   if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
@@ -119,5 +124,8 @@ module.exports = {
   createNewCampaign,
   getAllMsg,
   getArrLeadOfCamp,
-  getOneMsg
+  getOneMsg,
+  delCampaign,
+  getAllMsg,
+  // sendMsgForCampaign
 };
