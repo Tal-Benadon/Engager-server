@@ -402,8 +402,8 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
   }
 
 })
-
-router.get('whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
+// function for whatsapp all leads
+router.get('/whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
   try{
     const idCamp = req.params.idCamp;
     const msgId = req.params.msgId;
@@ -413,7 +413,20 @@ router.get('whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
         res.status(err.code).send(err.msg);
       }
 })
+// function for whatsapp single lead
+router.get('/whatsapp/camp/:idCamp/msg/:msgId/lead/:leadId', async (req, res) => {
+try{
+  const idCamp = req.params.idCamp;
+    const msgId = req.params.msgId;
+    const leadId = req.params.leadId;
 
+    const msg = await campaignService.getMsgAndLead(idCamp ,msgId, leadId )
+    res.send(msg);
+}
+ catch (err) {
+  res.status(444).send(err.msg);
+
+}})
 
 // delet lead
 router.delete('/:idCamp/lead/:leadId',async (req, res) => {
