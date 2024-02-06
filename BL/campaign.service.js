@@ -8,22 +8,23 @@ async function createNewCampaign(userId, campName) {
   campName = campName.trim();
   const nameIsExist = await campaignController.readOne({ user: userId, title: campName });
   console.log(nameIsExist);
-  if (nameIsExist) throw { code: 404, msg: 'This name already exists' };
+  if (nameIsExist) throw { code: 501, msg: 'Campain whith this name is already exists. try again' };
   const created = await campaignController.create({ user: userId, title: campName });
   return created
 }
 
 
 async function getAllCampaignsByUser(userId) {
+  const user = campaignController.readOne({ _id: userId });
+  if (!user.length) throw { code: 404, msg: "user is not exist" };
   const campaigns = await campaignController.read({ user: userId });
-  if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };
+  if (!campaigns.length) throw { code: 402, msg: "no campaigns for this user" };
   return campaigns;
 }
 async function delCampaign(campId){
   const campaign = campaignController.readOne({ _id: campId });
-  if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
-   if (campaign.isActive==false) throw { code: 481, msg: " campaign alredy deleted!" };
-  return await campaignController.update({ _id: campId }, {isActive: false})
+  if (!campaign) throw { code: 404 , msg: "Campaign is not exist!" };
+    return await campaignController.update({ _id: campId }, {isActive: false})
 }
 async function delOneMessage(campId, msgId) {
   const campaign = campaignController.readOne({ _id: campId });
@@ -78,7 +79,7 @@ async function getOneMsg(campId,msgId){
   let campaign = campaigns[0]
     if (campaigns.length<1) throw "no messeges in this campaign";//lhneh
 let mssg =   campaign.msg
-    if (!mssg) throw "messege not exist"
+    if (!mssg) throw ({msg: "messege not exist", code: 404})
     return mssg.find(m=>m._id == msgId)
 }
 
@@ -125,8 +126,8 @@ return campaignController.update(filter , $set('status',status))
 }
 
 async function getOneCamp(campId) {
-  const campaign = await campaignController.readOne({ _id: campId })
-  console.log('camp from service', campaign);
+  const campaign = await campaignController.readOne({_id:campId})
+   if (!campaign) throw ({msg: "Campaign is not exist", code: 404})
   return campaign
 }
 
