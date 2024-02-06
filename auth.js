@@ -5,20 +5,10 @@ async function login(phone, password) {
         throw "The password incorrect"
     }
     //  הפקת טוקן בכניסה
-    const token = jwt.sign(phone, process.env.SECRET, { expiresIn: "24h" })
+    const token = jwt.sign(phone, process.env.SECRET, { expiresIn: "7d" })
     return token
 }
 
-// פונקציה לבדיקת טוקן בבקשות לקבלת מידע 
 
-function checkToken(req, res, next) {
-    const token = req.header("authorization").replace("Bearer ", "")
-    try {
-        jet.verify(token, process.env.SECRET)
-        next()
-    } catch (err) {
-        res.status(401).send("Unauthorized")
-    }
-}
 
-module.exports = { checkToken, login }
+module.exports = { login }

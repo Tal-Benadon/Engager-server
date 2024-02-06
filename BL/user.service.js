@@ -43,13 +43,27 @@ async function updateOneUser(phone, data) {
 
 //add new user :
 async function createNewUser(body) {
+  var regex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
   const phoneIsExist = await userController.readOne({ phone: body.phone });
-  if (!phoneIsExist) {
-    const newUser = await userController.create({ ...body });
+  if (phoneIsExist) {
+    throw { code: 408, msg: 'This phone already exists' };
+  }
+  let error = false
+  let email = body.email
+  if (email.include("@" & ".")) {
+    if (phone.length == 10) {
+      if (password.length > 7) {
+        if (regex.test(password)) {
+        }
+      }
+    }
+    error = true
+
+
+    if (!error)
+      const newUser = await userController.create({ ...body });
     return newUser
   }
-  throw { code: 408, msg: 'This phone already exists' };
-}
+  throw { code: 408, msg: 'something went wrong' };
 
-
-module.exports = { createNewUser, getUsers, getOneUser, del, updateOneUser }
+  module.exports = { createNewUser, getUsers, getOneUser, del, updateOneUser }
