@@ -32,7 +32,9 @@ const msgSchema = new mongoose.Schema({
   ],
   status:{
     type : String,
-    default: "created"
+    enum:["created", "read","sent", "received"],
+    default: "created",
+    
   }
 });
 

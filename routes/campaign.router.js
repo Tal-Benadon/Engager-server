@@ -46,7 +46,7 @@ router.post('/', async (req, res) => {
     res.send(answer);
   }
   catch (err) {
-    res.status(404).send(err.msg);
+    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
   }
 })
 
@@ -72,7 +72,7 @@ router.get('/', async (req, res) => {
     res.send(campaigns);
   }
   catch (err) {
-    res.status(err.code).send(err.msg);
+    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
   }
 })
 
@@ -105,7 +105,7 @@ router.get('/:campId', async (req, res) => {
     const campaign = await campaignService.getOneCamp(campId);
     res.send(campaign);
   } catch (err) {
-    res.status(err.code).send(err.msg);
+    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
   }
 })
 
@@ -117,7 +117,7 @@ try{
  let deletedCamp =  await campaignService.delCampaign(req.params.campId)
  res.send(deletedCamp);
 }catch(err){
-  res.status(404).send(err.msg);
+  res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
 }
 })
 
@@ -130,7 +130,7 @@ router.get('/:campId/msg', async (req, res) => {
     res.send(msgCampaigns);
   }
   catch (err) {
-    res.status(err.code).send(err.msg);
+    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
   }
 })
 
@@ -394,6 +394,19 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
   try {
     const idCamp = req.params.campId;
     const msgId = req.params.msgId;
+    const msg = await campaignService.sendMsgForCampaign(idCamp, msgId)
+    res.send(msg);
+
+  } catch (err) {
+    res.status(err.code).send(err.msg);
+  }
+
+})
+
+router.get('whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
+  try{
+    const idCamp = req.params.idCamp;
+    const msgId = req.params.msgId;
     const msg = await campaignService.getArrLeadOfCamp(idCamp ,msgId )
     res.send(msg);
   }catch (err) {
@@ -401,4 +414,18 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
       }
 })
 
+
+// delet lead
+router.delete('/:idCamp/lead/:leadId',async (req, res) => {
+  try{
+
+    const idCamp = req.params.idCamp;
+    const leadId= req.params.leadId
+    const del = await campaignService.delLeadFromCamp(idCamp ,leadId )
+    res.send(del);
+  }catch (err) {
+    res.status(405).send(err.msg);
+  }
+})
+// ייצוא הראוטר
 module.exports = router;
