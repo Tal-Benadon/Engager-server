@@ -16,11 +16,19 @@ const leadService = require('../BL/lead.service');
 
 router.post('/', async (req ,res) => {
     try {
-        const data = req.body.data;
+        const data = req.body.data
         const newLead = await leadService.addLeadToCamp(data);
         res.send(newLead)
     } catch (err) {
-        res.status(400).send(err)
+        res.status(400).send(err.msg)
+    }
+})
+
+router.put('/:id', async (req ,res) => {
+    try {
+        res.send(await leadService.updateLead(req.params.id, req.body))
+    } catch (err) {
+        res.status(400).send(err.msg)
     }
 })
 
