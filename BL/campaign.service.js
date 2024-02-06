@@ -17,11 +17,11 @@ async function getAllCampaignsByUser(userId) {
   if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };
   return campaigns;
 }
-async function delCampaign(campId){
+async function delCampaign(campId) {
   const campaign = campaignController.readOne({ _id: campId });
   if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
-   if (campaign.isActive==false) throw { code: 481, msg: " campaign alredy deleted!" };
-  return await campaignController.update({ _id: campId }, {isActive: false})
+  if (campaign.isActive == false) throw { code: 481, msg: " campaign alredy deleted!" };
+  return await campaignController.update({ _id: campId }, { isActive: false })
 }
 async function delOneMessage(campId, msgId) {
   const campaign = campaignController.readOne({ _id: campId });
@@ -43,7 +43,7 @@ async function addNewMsg(id, body) {
     subject: body.subject,
     content: body.content,
   };
-console.log("on service the req body:  ",messages);
+  console.log("on service the req body:  ", messages);
   return await campaignController.update(filter, { $push: { msg: messages } });
 }
 
@@ -75,25 +75,25 @@ async function getAllMsg(id) {
   const messages = await campaignController.read({ _id: id }, "msg");
   return messages;
 }
-async function getOneMsg(campId,msgId){
+async function getOneMsg(campId, msgId) {
   // console.log("msgid is:", msgId);  
   let campaigns = await getAllMsg(campId)
   let campaign = campaigns[0]
-    if (campaigns.length<1) throw "no messeges in this campaign";//lhneh
-let mssg =   campaign.msg
-    if (!mssg) throw "messege not exist"
-    return mssg.find(m=>m._id == msgId)
+  if (campaigns.length < 1) throw "no messeges in this campaign";//lhneh
+  let mssg = campaign.msg
+  if (!mssg) throw "messege not exist"
+  return mssg.find(m => m._id == msgId)
 }
 
 //לבדוק אחרי שאריה מעלה להוציא מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
 async function getArrLeadOfCamp(capId, msgId) {
-    if (!capId) throw { code: 404, msg: "No campaign found" };
-    if (!msgId) throw { code: 404, msg: "No msg found" };
-  let sendMsg= await getOneMsg(capId, msgId);
-  if(!sendMsg) throw {code: 404, msg: "This msg to send"}
+  if (!capId) throw { code: 404, msg: "No campaign found" };
+  if (!msgId) throw { code: 404, msg: "No msg found" };
+  let sendMsg = await getOneMsg(capId, msgId);
+  if (!sendMsg) throw { code: 404, msg: "This msg to send" }
   let campaign = await campaignController.readOne({ _id: capId });
   const arrNew = campaign["leads"];
-  if(!arrNew) throw  { code: 404, msg: "No lead found" };
+  if (!arrNew) throw { code: 404, msg: "No lead found" };
   const list = arrNew.map((l) => {
     if (l.isActive) {
       return {
@@ -104,19 +104,48 @@ async function getArrLeadOfCamp(capId, msgId) {
       };
     }
   });
-  finalArray = {leads:list, msg: sendMsg };
-  return  finalArray 
+  finalArray = { leads: list, msg: sendMsg };
+  return finalArray
 }
 
-async function updateMsgStatus(capId, msgId){
+async function updateMsgStatus(capId, msgId) {
 
 }
 
 async function getOneCamp(campId) {
-  const campaign = await campaignController.readOne({_id:campId})
+  const campaign = await campaignController.readOne({ _id: campId })
   console.log('camp from service', campaign);
   return campaign
 }
+
+async function pushAllCampaignLeadsToMsgLeads(campaignId, targetMsgId) {
+  try {
+    const campaignToUpdate = await campaignController.readOne({ _id: campaignId });
+
+
+    const leadIds = campaignToUpdate.leads.map(lead => ({ lead: lead._id }));
+    console.log(leadIds);
+
+    const targetMsg = campaignToUpdate.msg.find(msg => msg._id.equals(targetMsgId));
+    console.log(targetMsg);
+
+    if (targetMsg) {
+
+      targetMsg.leads = [...targetMsg.leads, ...leadIds];
+
+
+      await campaignToUpdate.save();
+
+      console.log("Leads pushed to target message successfully");
+    } else {
+      console.error("Target message not found in the campaign");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+
 module.exports = {
   addNewMsg,
   updateMsg,
