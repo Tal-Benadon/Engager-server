@@ -20,7 +20,7 @@ async function createNewCampaign(userId, campName) {
 
 async function getAllCampaignsByUser(userId) {
   const user = campaignController.readOne({ _id: userId });
-  if (!user.length) throw { code: 404, msg: "user is not exist" };
+  if (!user) throw { code: 404, msg: "user is not exist" };
   const campaigns = await campaignController.read({ user: userId });
   if (!campaigns.length) throw { code: 402, msg: "no campaigns for this user" };
   return campaigns;
@@ -65,27 +65,26 @@ async function addNewMsg(id, body) {
 async function updateMsg(id, body) {
   
   let campaign = await campaignController.readOne({ _id: id });
-  console.log('cs1');
   if (!campaign) throw { code: 480, msg: "campaign is not exist!" };
-  console.log('cs2');
-  let filter = { _id: id, "msg._id": body.msgId };
-  console.log( "filter 2.5: ", filter);
-  let update = {
-    $set: {},
-  };
-  console.log('cs3');
-  if (body.subject) {
-    console.log('cs4');
-    update.$set["msg.$.subject"] = body.subject;
+  const msgIndex = campaign.msg.findIndex(msg=> {
+    return msg._id.toString() === body.msgId});
+  if (msgIndex === -1) {
+    throw {code: 404, msg: "msg not found"}
   }
-  console.log('cs5');
-  if (body.content) {
-    console.log('cs5');
-    update.$set["msg.$.content"] = body.content;
+  let filter = { _id: id, "msg._id" : body.msgId };
+  let update = { 
+    $set:{},
+  };
+
+    if (body.subject) {
+  
+    update.$set[`msg.${msgIndex}.subject`] = body.subject;
+  }
+    if (body.content) {
+    update.$set[`msg.${msgIndex}.content`] = body.content;
   }
   if (!body.content && !body.subject)
   throw { code: 403, msg: "non a text for update" };
-console.log("update 6 : ", update);
 return await campaignController.update(filter, update);
 }
 
@@ -103,12 +102,12 @@ async function getOneMsg(campId,msgId){
     if (!mssg) throw ({msg: "no messeges in this campaign", code: 404})
    let msgToFind =  mssg.find((m) => m._id== msgId)
    if (!msgToFind) throw ({msg: "messeges is not exist", code: 404})
-    return 
+    return msgToFind
    
   }
 
 
-//לבדוק אחרי שאריה מעלה להוציא מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
+//לבדוק אחרי שאריה מעלה להוצי מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
 async function getArrLeadOfCamp(capId, msgId) {
   if (!capId) throw { code: 404, msg: "No campaign found" };
   if (!msgId) throw { code: 404, msg: "No msg found" };
