@@ -4,26 +4,27 @@ const {io}= require('socket.io-client')
 const socket1 = io('http://localhost:3000')
 
 async function createNewCampaign(userId, campName) {
+  console.log(userId, campName);
   campName = campName.trim();
-  console.log("name", campName);
-  const nameIsExist = await campaignController.readOne({
-    user: userId,
-    title: campName,
-  });
-  if (nameIsExist) throw { code: 404, msg: "This name already exists" };
-  const created = await campaignController.create({
-    user: userId,
-    title: campName,
-  });
-  return created;
+  const nameIsExist = await campaignController.readOne({ user: userId, title: campName });
+  console.log(nameIsExist);
+  if (nameIsExist) throw { code: 404, msg: 'This name already exists' };
+  const created = await campaignController.create({ user: userId, title: campName });
+  return created
 }
+
 
 async function getAllCampaignsByUser(userId) {
   const campaigns = await campaignController.read({ user: userId });
   if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };
   return campaigns;
 }
-
+async function delCampaign(campId){
+  const campaign = campaignController.readOne({ _id: campId });
+  if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
+   if (campaign.isActive==false) throw { code: 481, msg: " campaign alredy deleted!" };
+  return await campaignController.update({ _id: campId }, {isActive: false})
+}
 async function delOneMessage(campId, msgId) {
   const campaign = campaignController.readOne({ _id: campId });
   if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
@@ -132,7 +133,11 @@ async function delLeadFromCamp(capId, leadId){
 );
 
 return updateIsActiv
-
+ }
+async function getOneCamp(campId) {
+  const campaign = await campaignController.readOne({_id:campId})
+  console.log('camp from service', campaign);
+  return campaign
 }
 module.exports = {
   addNewMsg,
@@ -144,5 +149,10 @@ module.exports = {
   getArrLeadOfCamp,
   getOneMsg, 
   updateMsgStatus,
-  delLeadFromCamp
+  delLeadFromCamp,
+  
+  delCampaign,
+  getAllMsg,
+  // sendMsgForCampaign
+  getOneCamp
 };
