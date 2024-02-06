@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const campaignService = require('../BL/campaign.service');
+const auth = require("../auth");
 
+// router.use(auth.checkToken)
 //*************************************************************
 // List of Full Rauts & details - 
 // https://engager-g262.onrender.com/api-docs
@@ -136,12 +138,27 @@ router.get('/:campId', async (req, res) => {
  *         description: Internal server error
  */
 
+
+// מחיקת קמפיין
 router.delete('/:campId', async (req, res) => {
   try {
     let deletedCamp = await campaignService.delCampaign(req.params.campId)
     res.send(deletedCamp);
   } catch (err) {
     res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
+  }
+})
+
+//  ######## הודעות  ##########
+
+// כל ההודעות של קמפיין בודד
+router.get('/:campId/msg', async (req, res) => {
+  try {
+    const msgCampaigns = await campaignService.getAllMsg(req.params.campId)
+    res.send(msgCampaigns);
+  }
+  catch (err) {
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
 
@@ -225,9 +242,9 @@ router.post('/:campId/msg/', async (req, res) => {
     const msg = await campaignService.addNewMsg(id, req.body);
     res.send(msg);
   } catch (err) {
-    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
-  });
+});
 
 //-Delete a message from a campaign----VV---------------
 /**
@@ -270,7 +287,7 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
   }
   catch (err) {
     {
-      res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+      res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
     }
   }
 })
@@ -311,8 +328,8 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
     res.send(msg);
   }
   catch (err) {
-    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
-    
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+
   }
 })
 
@@ -354,7 +371,7 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
     res.send(msg);
   }
   catch (err) {
-    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
 
@@ -405,8 +422,8 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
     req.body = { ...req.body, msgId }
     const msg = await campaignService.updateMsg(id, req.body);
     res.send(msg);
-  } catch (err){
-    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+  } catch (err) {
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 });
 
@@ -446,8 +463,8 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
     const msg = await campaignService.sendMsgForCampaign(idCamp, msgId)
     res.send(msg);
 
-  } catch (err){
-    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+  } catch (err) {
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 
 })
@@ -488,8 +505,8 @@ router.get('/whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
     const msgId = req.params.msgId;
     const msg = await campaignService.getArrLeadOfCamp(idCamp, msgId)
     res.send(msg);
-  }catch (err) {
-    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+  } catch (err) {
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
 
@@ -583,14 +600,14 @@ router.delete('/:idCamp/lead/:leadId', async (req, res) => {
     const leadId = req.params.leadId
     const del = await campaignService.delLeadFromCamp(idCamp, leadId)
     res.send(del);
-  }catch (err) {
-    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+  } catch (err) {
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
 
 
 router.put('/whatsapp/camp/:campId/msg/:msgId/lead/:leadId/newStatus/:newStatus', async (req, res) => {
-  try{  
+  try {
     const campId = req.params.campId;
     const msgId = req.params.msgId;
     const leadId = req.params.leadId;
