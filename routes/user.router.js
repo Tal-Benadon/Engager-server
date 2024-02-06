@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
     res.send(users)
 
   } catch (err) {
-    res.status(err.code).send(err.msg);
+    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
   }
 })
 
@@ -28,7 +28,7 @@ router.get("/:phone", async (req, res) => {
     res.send(user)
 
   } catch (err) {
-    res.status(err.code).send(err.msg);
+    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
   }
 })
 
@@ -45,7 +45,7 @@ router.put("/:phone", async (req, res) => {
     res.send(user)
 
   } catch (err) {
-    res.status(err.code).send(err.msg);
+    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
   }
 })
 
@@ -59,11 +59,9 @@ router.delete("/:phone", async (req, res) => {
     res.send(user)
 
   } catch (err) {
-    res.status(err.code).send(err.msg);
+    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
   }
 })
-
-
 
 // add new user:
 router.post('/', async (req, res) => {
@@ -76,7 +74,7 @@ router.post('/', async (req, res) => {
     res.send(answer);
   }
   catch (err) {
-    res.status(err.code).send(err.msg);
+    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
   }
 })
 // ייצוא הראוטר
