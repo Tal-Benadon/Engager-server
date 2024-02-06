@@ -2,7 +2,10 @@ const express = require("express");
 const router = express.Router();
 const campaignService = require('../BL/campaign.service');
 
-
+//*************************************************************
+// List of Full Rauts & details - 
+// https://engager-g262.onrender.com/api-docs
+//*************************************************************
 
 // TODO: לשלוף את המשתמש מהטוקן
 
@@ -46,7 +49,7 @@ router.post('/', async (req, res) => {
     res.send(answer);
   }
   catch (err) {
-    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
 
@@ -72,7 +75,7 @@ router.get('/', async (req, res) => {
     res.send(campaigns);
   }
   catch (err) {
-    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
 
@@ -100,41 +103,83 @@ router.get('/', async (req, res) => {
  */
 
 router.get('/:campId', async (req, res) => {
-  try{
+  try {
     const campId = req.params.campId;
     const campaign = await campaignService.getOneCamp(campId);
     res.send(campaign);
   } catch (err) {
-    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
 
+/** Delete campaign-VV----------------------------------------------------
+ * @swagger
+ * /campaigns/{campId}:
+ *   delete:
+ *     summary: Delete a campaign by ID
+ *     tags: 
+ *       - Campaign
+ *     parameters:
+ *       - in: path
+ *         name: campId
+ *         required: true
+ *         description: ID of the campaign to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Successfully deleted the campaign
+ *       '404':
+ *         description: Campaign not found
+ *       '500':
+ *         description: Internal server error
+ */
 
-
-// מחיקת קמפיין
-router.delete('/:campId',async(req,res)=>{
-try{
- let deletedCamp =  await campaignService.delCampaign(req.params.campId)
- res.send(deletedCamp);
-}catch(err){
-  res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
-}
+router.delete('/:campId', async (req, res) => {
+  try {
+    let deletedCamp = await campaignService.delCampaign(req.params.campId)
+    res.send(deletedCamp);
+  } catch (err) {
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
+  }
 })
 
-//  ######## הודעות  ##########
+/**###### Message ######*/
 
-// כל ההודעות של קמפיין בודד
+// get all message of singale campain ---VV-------------------------
+/**
+ * @swagger
+ * /{campId}/msg:
+ *   get:
+ *     summary: Get all messages of a single campaign
+ *     description: Retrieves all messages associated with the specified campaign ID.
+ *     tags:
+ *       - Message
+ *     parameters:
+ *       - in: path
+ *         name: campId
+ *         required: true
+ *         description: ID of the campaign
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Successfully retrieved all messages of the campaign
+ *       '404':
+ *         description: Campaign not found
+ *       '500':
+ *         description: Internal server error
+ */
+
 router.get('/:campId/msg', async (req, res) => {
   try {
     const msgCampaign = await campaignService.getAllMsg(req.params.campId)
     res.send(msgCampaign);
   }
   catch (err) {
-    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
-
-/**###### Message ######*/
 
 // - add new msg into campaign --VV--------------------------------------------------------------------
 /** 
@@ -183,7 +228,7 @@ router.post('/:campId/msg/', async (req, res) => {
   }
   });
 
-//-Delete a message from a campaign-VV---------------
+//-Delete a message from a campaign----VV---------------
 /**
  * @swagger
  * /campaigns/{campId}/msg/{msgId}:
@@ -408,43 +453,142 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
   }
 
 })
-// function for whatsapp all leads
+
+// get all leads from WhatsApp ---VV-----------------
+/**
+ * @swagger
+ * /whatsapp/camp/{idCamp}/msg/{msgId}/leads:
+ *   get:
+ *     summary: Get all leads from WhatsApp
+ *     tags:
+ *       - WhatsApp
+ *     parameters:
+ *       - in: path
+ *         name: idCamp
+ *         required: true
+ *         description: ID of the campaign
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: msgId
+ *         required: true
+ *         description: ID of the message
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Successfully retrieved WhatsApp leads
+ *       '404':
+ *         description: Leads not found for the given campaign and message ID
+ *       '500':
+ *         description: Internal server error
+ */
+
 router.get('/whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
-  try{
+  try {
     const idCamp = req.params.idCamp;
     const msgId = req.params.msgId;
-    const msg = await campaignService.getArrLeadOfCamp(idCamp ,msgId )
+    const msg = await campaignService.getArrLeadOfCamp(idCamp, msgId)
     res.send(msg);
   }catch (err) {
     res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
   }
 })
-// function for whatsapp single lead
+
+// function for whatsapp single lead -VV------------------------
+/**
+ * @swagger
+ * /whatsapp/camp/{idCamp}/msg/{msgId}/lead/{leadId}:
+ *   get:
+ *     summary: Get a single lead from WhatsApp
+ *     description: Retrieves a single lead from WhatsApp based on the specified campaign ID, message ID, and lead ID.
+ *     tags:
+ *       - WhatsApp
+ *     parameters:
+ *       - in: path
+ *         name: idCamp
+ *         required: true
+ *         description: ID of the campaign
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: msgId
+ *         required: true
+ *         description: ID of the message
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: leadId
+ *         required: true
+ *         description: ID of the lead
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Successfully retrieved the WhatsApp lead
+ *       '404':
+ *         description: Lead not found for the given campaign, message, and lead ID
+ *       '444':
+ *         description: Custom error code for the specific scenario
+ */
+
 router.get('/whatsapp/camp/:idCamp/msg/:msgId/lead/:leadId', async (req, res) => {
-try{
-  const idCamp = req.params.idCamp;
+  try {
+    const idCamp = req.params.idCamp;
     const msgId = req.params.msgId;
     const leadId = req.params.leadId;
 
-    const msg = await campaignService.getMsgAndLead(idCamp ,msgId, leadId )
+    const msg = await campaignService.getMsgAndLead(idCamp, msgId, leadId)
     res.send(msg);
-}
- catch (err) {
-  res.status(444).send(err.msg);
+  }
+  catch (err) {
+    res.status(444).send(err.msg);
 
-}})
+  }
+})
 
-// delet lead
-router.delete('/:idCamp/lead/:leadId',async (req, res) => {
-  try{
+// delet lead from Campaign --VV---------------------------------
+/**
+ * @swagger
+ * /{idCamp}/lead/{leadId}:
+ *   delete:
+ *     summary: Delete a lead from a campaign
+ *     description: Deletes a lead from the specified campaign.
+ *     tags:
+ *       - Campaign
+ *     parameters:
+ *       - in: path
+ *         name: idCamp
+ *         required: true
+ *         description: ID of the campaign
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: leadId
+ *         required: true
+ *         description: ID of the lead to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Successfully deleted the lead
+ *       '404':
+ *         description: Lead not found for the given campaign and lead ID
+ *       '405':
+ *         description: Method Not Allowed
+ */
+
+router.delete('/:idCamp/lead/:leadId', async (req, res) => {
+  try {
 
     const idCamp = req.params.idCamp;
-    const leadId= req.params.leadId
-    const del = await campaignService.delLeadFromCamp(idCamp ,leadId )
+    const leadId = req.params.leadId
+    const del = await campaignService.delLeadFromCamp(idCamp, leadId)
     res.send(del);
   }catch (err) {
     res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
   }
 })
+
 // ייצוא הראוטר
 module.exports = router;
