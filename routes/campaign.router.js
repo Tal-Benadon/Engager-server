@@ -71,6 +71,7 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const userId = req.body.user._id;
+    console.log(userId);
     const campaigns = await campaignService.getAllCampaignsByUser(userId)
     res.send(campaigns);
   }
@@ -587,5 +588,19 @@ router.delete('/:idCamp/lead/:leadId', async (req, res) => {
   }
 })
 
+
+router.put('/whatsapp/camp/:campId/msg/:msgId/lead/:leadId/newStatus/:newStatus', async (req, res) => {
+  try{  
+    const campId = req.params.campId;
+    const msgId = req.params.msgId;
+    const leadId = req.params.leadId;
+    const newStatus = req.params.newStatus;
+    const ans = await campaignService.updateStatusMsgOfOneLead(campId, msgId, leadId, newStatus);
+    res.send(ans);
+  } catch (err) {
+    console.log(err);
+    res.status(405).send(err.msg);
+  }
+})
 // ייצוא הראוטר
 module.exports = router;
