@@ -126,8 +126,8 @@ try{
 // כל ההודעות של קמפיין בודד
 router.get('/:campId/msg', async (req, res) => {
   try {
-    const msgCampaigns = await campaignService.getAllMsg(req.params.campId)
-    res.send(msgCampaigns);
+    const msgCampaign = await campaignService.getAllMsg(req.params.campId)
+    res.send(msgCampaign);
   }
   catch (err) {
     res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
@@ -179,9 +179,9 @@ router.post('/:campId/msg/', async (req, res) => {
     const msg = await campaignService.addNewMsg(id, req.body);
     res.send(msg);
   } catch (err) {
-    res.status(err.code).send(err.msg);
+    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
   }
-});
+  });
 
 //-Delete a message from a campaign-VV---------------
 /**
@@ -220,10 +220,12 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
     const idCamp = req.params.campId;
     const msgId = req.params.msgId;
     const del = await campaignService.delOneMessage(idCamp, msgId);
-    res.send(del);
+    res.send(`message ${msgId} is deleted`);
   }
   catch (err) {
-    res.status(err.code).send(err.msg);
+    {
+      res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+    }
   }
 })
 
@@ -263,7 +265,8 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
     res.send(msg);
   }
   catch (err) {
-    res.status(502).send(err.msg);
+    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+    
   }
 })
 
@@ -305,7 +308,7 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
     res.send(msg);
   }
   catch (err) {
-    res.status(502).send(err.msg);
+    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
   }
 })
 
@@ -356,8 +359,8 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
     req.body = { ...req.body, msgId }
     const msg = await campaignService.updateMsg(id, req.body);
     res.send(msg);
-  } catch (err) {
-    res.status(err.code).send(err.msg);
+  } catch (err){
+    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
   }
 });
 
@@ -397,8 +400,8 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
     const msg = await campaignService.sendMsgForCampaign(idCamp, msgId)
     res.send(msg);
 
-  } catch (err) {
-    res.status(err.code).send(err.msg);
+  } catch (err){
+    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
   }
 
 })
@@ -410,8 +413,8 @@ router.get('whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
     const msg = await campaignService.getArrLeadOfCamp(idCamp ,msgId )
     res.send(msg);
   }catch (err) {
-        res.status(err.code).send(err.msg);
-      }
+    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+  }
 })
 
 
@@ -424,7 +427,7 @@ router.delete('/:idCamp/lead/:leadId',async (req, res) => {
     const del = await campaignService.delLeadFromCamp(idCamp ,leadId )
     res.send(del);
   }catch (err) {
-    res.status(405).send(err.msg);
+    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
   }
 })
 // ייצוא הראוטר
