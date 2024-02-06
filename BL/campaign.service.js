@@ -21,6 +21,7 @@ async function createNewCampaign(userId, campName) {
 
 async function getAllCampaignsByUser(userId) {
   const campaigns = await campaignController.read({ user: userId });
+  console.log("***",campaigns);
   if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };
   return campaigns;
 }
@@ -133,17 +134,15 @@ async function getMsgAndLead(capId, msgId, leadId) {
     (lead) => lead.lead._id.toString() === leadId.toString()
   );
 
-  const singelLead = {
+  const singleLead = {
     phone: lead["lead"].phone,
     name: lead["lead"].name,
     _id: lead["lead"]._id,
     msg: sendMsg.content,
-  };
-  console.log(data);
-  console.log("***********************");
-  socket2.emit("singelLead", singelLead);
 
-  finalArray = { leads: singelLead, msg: sendMsg };
+  };
+  socket2.emit("singleLead", singleLead);
+  finalArray = { leads: singleLead, msg: sendMsg };
   return finalArray;
 }
 
@@ -174,6 +173,23 @@ async function getOneCamp(campId) {
   console.log("camp from service", campaign);
   return campaign;
 }
+
+async function updateStatusMsgOfOneLead(data) {
+  const {campId, msgId, leadId, newStatus} = data ;
+
+  if (newStatus !== 'sent'  && newStatus !== 'recieved') throw {code: 405, msg: 'status not valid'};
+    const campaign = await campaignController.readOneWithoutPopulate({ _id: campId });
+    if (!campaign) throw {code: 405, msg: 'no campaign'}
+    const message = campaign["msg"].find((m) => m._id == msgId);
+    const lead = message["leads"].find((l) => l._id == leadId);
+    lead.status = newStatus;
+    const updatedCampaign = await campaign.save();
+    return updatedCampaign;
+}
+
+
+
+
 module.exports = {
   addNewMsg,
   updateMsg,
@@ -185,10 +201,9 @@ module.exports = {
   getOneMsg,
   updateMsgStatus,
   delLeadFromCamp,
-
   delCampaign,
   getAllMsg,
-  // sendMsgForCampaign
   getOneCamp,
   getMsgAndLead,
+  updateStatusMsgOfOneLead,
 };

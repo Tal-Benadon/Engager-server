@@ -68,11 +68,12 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const userId = req.body.user._id;
+    console.log(userId);
     const campaigns = await campaignService.getAllCampaignsByUser(userId)
     res.send(campaigns);
   }
   catch (err) {
-    res.status(err.code).send(err.msg);
+    res.status(400).send(err.msg);
   }
 })
 
@@ -437,6 +438,21 @@ router.delete('/:idCamp/lead/:leadId',async (req, res) => {
     const del = await campaignService.delLeadFromCamp(idCamp ,leadId )
     res.send(del);
   }catch (err) {
+    res.status(405).send(err.msg);
+  }
+})
+
+
+router.put('/whatsapp/camp/:campId/msg/:msgId/lead/:leadId/newStatus/:newStatus', async (req, res) => {
+  try{  
+    const campId = req.params.campId;
+    const msgId = req.params.msgId;
+    const leadId = req.params.leadId;
+    const newStatus = req.params.newStatus;
+    const ans = await campaignService.updateStatusMsgOfOneLead(campId, msgId, leadId, newStatus);
+    res.send(ans);
+  } catch (err) {
+    console.log(err);
     res.status(405).send(err.msg);
   }
 })
