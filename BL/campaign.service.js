@@ -1,4 +1,3 @@
-// ייבוא הקונטרולר
 const campaignController = require("../DL/controllers/campaign.controller");
 const { io } = require("socket.io-client");
 const socket1 = io("http://localhost:3000");
@@ -32,8 +31,15 @@ async function delCampaign(campId) {
   return await campaignController.update({ _id: campId }, { isActive: false })
 }
 async function delOneMessage(campId, msgId) {
-  const campaign = campaignController.readOne({ _id: campId });
-  if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
+  
+  const message = await getOneMsg(campId, msgId)
+  console.log("message: ",message );
+  if (!message) throw { code: 481, msg: "msg not exist!" };
+  console.log('cs1');
+  // const campaign = await campaignController.readOne({ _id: campId });
+  // console.log('cs2');
+  // if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
+  // console.log('cs3');
   return await campaignController.update(
     { _id: campId },
     { $pull: { msg: { _id: msgId } } }
@@ -41,17 +47,17 @@ async function delOneMessage(campId, msgId) {
 }
 
 async function addNewMsg(id, body) {
-  if (!body.subject) throw { code: 404, msg: "not message subject" };
-  if (!body.content) throw { code: 404, msg: "not message content" };
+  if (!body.subject) throw { code: 420, msg: "message without subject" };
+    if (!body.content) throw { code: 421, msg: "message without content" };
   let campaign = await campaignController.readOne({ _id: id });
-  if (!campaign) throw "not campaign";
+  if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
   let filter = { _id: id };
 
   let messages = {
     subject: body.subject,
     content: body.content,
   };
-  console.log("on service the req body:  ", messages);
+
   return await campaignController.update(filter, { $push: { msg: messages } });
 }
 
@@ -75,18 +81,23 @@ async function updateMsg(id, body) {
 }
 
 async function getAllMsg(id) {
+  const campaign = await campaignController.readOne({ _id:id });
+  if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
   const messages = await campaignController.read({ _id: id }, "msg");
   return messages;
 }
-async function getOneMsg(campId, msgId) {
-  // console.log("msgid is:", msgId);  
+
+async function getOneMsg(campId,msgId){
   let campaigns = await getAllMsg(campId)
   let campaign = campaigns[0]
-  if (campaigns.length < 1) throw "no messeges in this campaign";//lhneh
-  let mssg = campaign.msg
-  if (!mssg) throw ({ msg: "messege not exist", code: 404 })
-  return mssg.find(m => m._id == msgId)
-}
+  if (campaigns.length<1) ({msg: "no messeges in this campaign", code: 404})
+  let mssg =   campaign.msg
+    if (!mssg) throw ({msg: "no messeges in this campaign", code: 404})
+  return mssg.find((m) => m._id== msgId)
+   
+  }
+
+
 
 //לבדוק אחרי שאריה מעלה להוציא מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
 async function getArrLeadOfCamp(capId, msgId) {
