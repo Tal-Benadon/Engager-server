@@ -15,7 +15,10 @@ function checkToken(req, res, next) {
     const token = req.header("authorization").replace("Bearer ", "")
     try {
         jet.verify(token, process.env.SECRET)
+        next()
     } catch (err) {
         res.status(401).send("Unauthorized")
     }
 }
+
+module.exports = { checkToken, login }

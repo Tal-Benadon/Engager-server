@@ -6,6 +6,8 @@ const router = express.Router();
 const leadService = require('../BL/lead.service');
 const auth = require("../auth")
 
+// router.use(auth.checkToken)
+
 // router.get("/:leadId", async (req, res) => {
 //     try {
 //         const lead = await leadService.getAllSentMsgs(req.params.leadId)
@@ -15,7 +17,7 @@ const auth = require("../auth")
 //     }
 // })
 
-router.post('/', auth.checkToken, async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const data = req.body.data;
         const newLead = await leadService.addLeadToCamp(data);

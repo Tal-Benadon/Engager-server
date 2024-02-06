@@ -3,6 +3,7 @@ const router = express.Router();
 const campaignService = require('../BL/campaign.service');
 const auth = require("../auth");
 
+// router.use(auth.checkToken)
 
 // TODO: לשלוף את המשתמש מהטוקן
 
@@ -37,7 +38,7 @@ const auth = require("../auth");
  *         description: Internal server error
  */
 
-router.post('/', auth.checkToken, async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const userId = req.body.user._id;
     const campName = req.body.campName;
@@ -46,7 +47,7 @@ router.post('/', auth.checkToken, async (req, res) => {
     res.send(answer);
   }
   catch (err) {
-    res.status(404).send(err.msg);
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
 
@@ -65,14 +66,14 @@ router.post('/', auth.checkToken, async (req, res) => {
  *         description: The ID of the campaign to retrieve
 */
 
-router.get('/', auth.checkToken, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const userId = req.body.user._id;
     const campaigns = await campaignService.getAllCampaignsByUser(userId)
     res.send(campaigns);
   }
   catch (err) {
-    res.status(err.code).send(err.msg);
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
 
@@ -99,25 +100,25 @@ router.get('/', auth.checkToken, async (req, res) => {
  *         description: Campaign not found
  */
 
-router.get('/:campId', auth.checkToken, async (req, res) => {
+router.get('/:campId', async (req, res) => {
   try {
     const campId = req.params.campId;
     const campaign = await campaignService.getOneCamp(campId);
     res.send(campaign);
   } catch (err) {
-    res.status(err.code).send(err.msg);
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
 
 
 
 // מחיקת קמפיין
-router.delete('/:campId', auth.checkToken, async (req, res) => {
+router.delete('/:campId', async (req, res) => {
   try {
     let deletedCamp = await campaignService.delCampaign(req.params.campId)
     res.send(deletedCamp);
   } catch (err) {
-    res.status(404).send(err.msg);
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
 
@@ -130,7 +131,7 @@ router.get('/:campId/msg', async (req, res) => {
     res.send(msgCampaigns);
   }
   catch (err) {
-    res.status(err.code).send(err.msg);
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
 
@@ -394,6 +395,19 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
   try {
     const idCamp = req.params.campId;
     const msgId = req.params.msgId;
+    const msg = await campaignService.sendMsgForCampaign(idCamp, msgId)
+    res.send(msg);
+
+  } catch (err) {
+    res.status(err.code).send(err.msg);
+  }
+
+})
+
+router.get('whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
+  try {
+    const idCamp = req.params.idCamp;
+    const msgId = req.params.msgId;
     const msg = await campaignService.getArrLeadOfCamp(idCamp, msgId)
     res.send(msg);
   } catch (err) {
@@ -401,4 +415,18 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
   }
 })
 
+
+// delet lead
+router.delete('/:idCamp/lead/:leadId', async (req, res) => {
+  try {
+
+    const idCamp = req.params.idCamp;
+    const leadId = req.params.leadId
+    const del = await campaignService.delLeadFromCamp(idCamp, leadId)
+    res.send(del);
+  } catch (err) {
+    res.status(405).send(err.msg);
+  }
+})
+// ייצוא הראוטר
 module.exports = router;
