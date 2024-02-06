@@ -420,10 +420,11 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
     const id = req.params.campId;
     const msgId = req.params.msgId;
     req.body = { ...req.body, msgId }
-    const msg = await campaignService.updateMsg(id, req.body);
+        const msg = await campaignService.updateMsg(id, req.body);
     res.send(msg);
-  } catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+  }
+  catch (err){
+  res.status(err.code || 490).send({msg: err.msg || 'something went wrong'})
   }
 });
 

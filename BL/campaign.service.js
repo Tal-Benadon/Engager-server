@@ -19,6 +19,9 @@ async function createNewCampaign(userId, campName) {
 }
 
 async function getAllCampaignsByUser(userId) {
+
+  const user = campaignController.readOne({ _id: userId });
+  if (!user) throw { code: 404, msg: "user is not exist" };
   const campaigns = await campaignController.read({ user: userId });
   if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };
   return campaigns;
@@ -34,10 +37,10 @@ async function delOneMessage(campId, msgId) {
   console.log("message: ",message );
   if (!message) throw { code: 481, msg: "msg not exist!" };
   console.log('cs1');
-  // const campaign = await campaignController.readOne({ _id: campId });
-  // console.log('cs2');
-  // if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
-  // console.log('cs3');
+  const campaign = await campaignController.readOne({ _id: campId });
+  console.log('cs2');
+  if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
+  console.log('cs3');
   return await campaignController.update(
     { _id: campId },
     { $pull: { msg: { _id: msgId } } }
@@ -55,27 +58,35 @@ async function addNewMsg(id, body) {
     subject: body.subject,
     content: body.content,
   };
-
   return await campaignController.update(filter, { $push: { msg: messages } });
 }
 
-async function updateMsg(id, body) {
-  let campaign = await campaignController.readOne({ _id: id });
 
-  if (!campaign) throw "not campaign";
-  let filter = { _id: id, "msg._id": body._id };
-  let update = {
-    $set: {},
-  };
-  if (body.subject) {
-    update.$set["msg.$.subject"] = body.subject;
+
+async function updateMsg(id, body) {
+  
+  let campaign = await campaignController.readOne({ _id: id });
+  if (!campaign) throw { code: 480, msg: "campaign is not exist!" };
+  const msgIndex = campaign.msg.findIndex(msg=> {
+    return msg._id.toString() === body.msgId});
+  if (msgIndex === -1) {
+    throw {code: 404, msg: "msg not found"}
   }
-  if (body.content) {
-    update.$set["msg.$.content"] = body.content;
+  let filter = { _id: id, "msg._id" : body.msgId };
+  let update = { 
+    $set:{},
+  };
+
+    if (body.subject) {
+  
+    update.$set[`msg.${msgIndex}.subject`] = body.subject;
+  }
+    if (body.content) {
+    update.$set[`msg.${msgIndex}.content`] = body.content;
   }
   if (!body.content && !body.subject)
-    throw { code: 403, msg: "non a text for update" };
-  return await campaignController.update(filter, update);
+  throw { code: 403, msg: "non a text for update" };
+return await campaignController.update(filter, update);
 }
 
 async function getAllMsg(id) {
@@ -84,20 +95,20 @@ async function getAllMsg(id) {
   const messages = await campaignController.read({ _id: id }, "msg");
   return messages;
 }
-
 async function getOneMsg(campId,msgId){
   let campaigns = await getAllMsg(campId)
   let campaign = campaigns[0]
   if (campaigns.length<1) ({msg: "no messeges in this campaign", code: 404})
   let mssg =   campaign.msg
     if (!mssg) throw ({msg: "no messeges in this campaign", code: 404})
-  return mssg.find((m) => m._id== msgId)
+   let msgToFind =  mssg.find((m) => m._id== msgId)
+   if (!msgToFind) throw ({msg: "messeges is not exist", code: 404})
+    return msgToFind
    
   }
 
 
-
-//לבדוק אחרי שאריה מעלה להוציא מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
+//לבדוק אחרי שאריה מעלה להוצי מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
 async function getArrLeadOfCamp(capId, msgId) {
   if (!capId) throw { code: 404, msg: "No campaign found" };
   if (!msgId) throw { code: 404, msg: "No msg found" };
