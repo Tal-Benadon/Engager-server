@@ -354,13 +354,22 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
  */
 router.put("/:campId/msg/:msgId", async (req, res) => {
   try {
+    console.log('cr1');
     const id = req.params.campId;
+    console.log('cr2');
     const msgId = req.params.msgId;
+    console.log('cr3');
     req.body = { ...req.body, msgId }
+    
+    console.log('cr4');
     const msg = await campaignService.updateMsg(id, req.body);
+    console.log('cr5');
     res.send(msg);
-  } catch (err){
-    res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
+    console.log('cr6');
+  }
+  catch (err){
+  // res.status(err.code || 490).send({msg: err.msg || 'something went wrong'})
+  console.log("ytddy");
   }
 });
 

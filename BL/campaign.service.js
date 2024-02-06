@@ -36,10 +36,10 @@ async function delOneMessage(campId, msgId) {
   console.log("message: ",message );
   if (!message) throw { code: 481, msg: "msg not exist!" };
   console.log('cs1');
-  // const campaign = await campaignController.readOne({ _id: campId });
-  // console.log('cs2');
-  // if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
-  // console.log('cs3');
+  const campaign = await campaignController.readOne({ _id: campId });
+  console.log('cs2');
+  if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
+  console.log('cs3');
   return await campaignController.update(
     { _id: campId },
     { $pull: { msg: { _id: msgId } } }
@@ -60,23 +60,33 @@ async function addNewMsg(id, body) {
   return await campaignController.update(filter, { $push: { msg: messages } });
 }
 
-async function updateMsg(id, body) {
-  let campaign = await campaignController.readOne({ _id: id });
 
-  if (!campaign) throw "not campaign";
-  let filter = { _id: id, "msg._id": body._id };
+
+async function updateMsg(id, body) {
+  
+  let campaign = await campaignController.readOne({ _id: id });
+  console.log('cs1');
+  if (!campaign) throw { code: 480, msg: "campaign is not exist!" };
+  console.log('cs2');
+  let filter = { _id: id, "msg._id": body.msgId };
+  console.log( "filter 2.5: ", filter);
   let update = {
     $set: {},
   };
+  console.log('cs3');
   if (body.subject) {
+    console.log('cs4');
     update.$set["msg.$.subject"] = body.subject;
   }
+  console.log('cs5');
   if (body.content) {
+    console.log('cs5');
     update.$set["msg.$.content"] = body.content;
   }
   if (!body.content && !body.subject)
-    throw { code: 403, msg: "non a text for update" };
-  return await campaignController.update(filter, update);
+  throw { code: 403, msg: "non a text for update" };
+console.log("update 6 : ", update);
+return await campaignController.update(filter, update);
 }
 
 async function getAllMsg(id) {
@@ -91,7 +101,9 @@ async function getOneMsg(campId,msgId){
   if (campaigns.length<1) ({msg: "no messeges in this campaign", code: 404})
   let mssg =   campaign.msg
     if (!mssg) throw ({msg: "no messeges in this campaign", code: 404})
-  return mssg.find((m) => m._id== msgId)
+   let msgToFind =  mssg.find((m) => m._id== msgId)
+   if (!msgToFind) throw ({msg: "messeges is not exist", code: 404})
+    return 
    
   }
 
