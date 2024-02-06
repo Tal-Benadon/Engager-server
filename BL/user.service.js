@@ -1,6 +1,6 @@
-const { update } = require("../DL/controllers/campaign.controller");
+
 const userController = require("../DL/controllers/user.controller");
-const { findByIdAndUpdate } = require("../DL/models/lead.model");
+
 
 // get all users
 async function getUsers() {
