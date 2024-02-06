@@ -23,5 +23,9 @@ function deleteById(id) {
     return campaignModel.findByIdAndUpdate(id, { isActive: false })
 }
 
+async function updateOne(filter = {}, update){
+    return await campaignModel.updateOne(filter, update)
 
-module.exports = { create, read, readOne, update, deleteById }
+}
+
+module.exports = { create, read, readOne, update, deleteById, updateOne }

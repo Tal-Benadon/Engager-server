@@ -112,7 +112,7 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
 
 })
 
-router.get('/:idCamp/msg/:msgId/leads', async (req, res) => {
+router.get('whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
   try{
     const idCamp = req.params.idCamp;
     const msgId = req.params.msgId;
@@ -121,6 +121,20 @@ router.get('/:idCamp/msg/:msgId/leads', async (req, res) => {
   }catch (err) {
         res.status(err.code).send(err.msg);
       }
+})
+
+
+// delet lead
+router.delete('/:idCamp/lead/:leadId',async (req, res) => {
+  try{
+
+    const idCamp = req.params.idCamp;
+    const leadId= req.params.leadId
+    const del = await campaignService.delLeadFromCamp(idCamp ,leadId )
+    res.send(del);
+  }catch (err) {
+    res.status(405).send(err.msg);
+  }
 })
 // ייצוא הראוטר
 module.exports = router;

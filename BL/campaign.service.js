@@ -1,5 +1,7 @@
 // ייבוא הקונטרולר
 const campaignController = require("../DL/controllers/campaign.controller");
+const {io}= require('socket.io-client')
+const socket1 = io('http://localhost:3000')
 
 async function createNewCampaign(userId, campName) {
   campName = campName.trim();
@@ -46,25 +48,20 @@ console.log("on service the req body:  ",messages);
   return await campaignController.update(filter, { $push: { msg: messages } });
 }
 
-
-
 async function updateMsg(id, body) {
   let campaign = await campaignController.readOne({ _id: id });
 
   if (!campaign) throw "not campaign";
   let filter = { _id: id, "msg._id": body._id };
-
   let update = {
     $set: {},
   };
   if (body.subject) {
     update.$set["msg.$.subject"] = body.subject;
   }
-
   if (body.content) {
     update.$set["msg.$.content"] = body.content;
   }
-
   if (!body.content && !body.subject)
     throw { code: 403, msg: "non a text for update" };
   return await campaignController.update(filter, update);
@@ -95,6 +92,14 @@ async function getArrLeadOfCamp(capId, msgId) {
   if(!arrNew) throw  { code: 404, msg: "No lead found" };
   const list = arrNew.map((l) => {
     if (l.isActive) {
+     
+     const data ={
+      phone: l["lead"].phone,
+      name: l["lead"].name,
+      _id: l["lead"]._id,
+      msg: sendMsg.content
+     }
+     socket1.emit('data',data)
       return {
         phone: l["lead"].phone,
         name: l["lead"].name,
@@ -106,11 +111,29 @@ async function getArrLeadOfCamp(capId, msgId) {
   finalArray = {leads:list, msg: sendMsg };
   return  finalArray 
 }
+// לקשר לפונקציה של טל שמכניסה לידים לmsg
+async function updateMsgStatus(capId, msgId , status){
+let msgOne= await getOneMsg(capId, msgId )
+if (!msgOne) throw "not msg";
+let filter = { _id: id, "msg._id": msgId };
 
-async function updateMsgStatus(capId, msgId){
+if (status !== "created" || status !== "read" || status !== "sent")throw "dont know the status"
+
+return campaignController.update(filter , $set('status',status))
 
 }
 
+async function delLeadFromCamp(capId, leadId){
+  if (!capId) throw { code: 404, msg: "No campaign found" };
+  if (!leadId) throw { code: 404, msg: "No lead found" };
+  const updateIsActiv = await campaignController.updateOne(
+    { "leads.lead": leadId },
+    { $set: { "leads.$.isActive": false } }
+);
+
+return updateIsActiv
+
+}
 module.exports = {
   addNewMsg,
   updateMsg,
@@ -119,5 +142,7 @@ module.exports = {
   createNewCampaign,
   getAllMsg,
   getArrLeadOfCamp,
-  getOneMsg
+  getOneMsg, 
+  updateMsgStatus,
+  delLeadFromCamp
 };
