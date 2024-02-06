@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const userService = require('../BL/user.service');
+const auth = require("../auth")
 
 
 // get all users
-router.get("/", async (req, res) => {
+router.get("/", auth.checkToken, async (req, res) => {
   try {
     const users = await userService.getUsers();
     console.log("r", users)
@@ -16,7 +17,7 @@ router.get("/", async (req, res) => {
 })
 
 // get one user:
-router.get("/:phone", async (req, res) => {
+router.get("/:phone", auth.checkToken, async (req, res) => {
   try {
     console.log(req.params.phone)
     const phone = req.params.phone
@@ -31,7 +32,7 @@ router.get("/:phone", async (req, res) => {
 
 
 // update one user:
-router.put("/:phone", async (req, res) => {
+router.put("/:phone", auth.checkToken, async (req, res) => {
   try {
     const phone = req.params.phone
     const data = req.body
@@ -47,7 +48,7 @@ router.put("/:phone", async (req, res) => {
 })
 
 // delete one user:
-router.delete("/:phone", async (req, res) => {
+router.delete("/:phone", auth.checkToken, async (req, res) => {
   try {
     console.log(req.params.phone)
     const phone = req.params.phone
@@ -63,7 +64,7 @@ router.delete("/:phone", async (req, res) => {
 
 
 // add new user:
-router.post('/', async (req, res) => {
+router.post('/', auth.checkToken, async (req, res) => {
   try {
 
     const body = req.body

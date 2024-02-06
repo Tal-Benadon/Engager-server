@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 // ייבוא השירותים
 const leadService = require('../BL/lead.service');
+const auth = require("../auth")
 
 // router.get("/:leadId", async (req, res) => {
 //     try {
@@ -14,7 +15,7 @@ const leadService = require('../BL/lead.service');
 //     }
 // })
 
-router.post('/', async (req ,res) => {
+router.post('/', auth.checkToken, async (req, res) => {
     try {
         const data = req.body.data;
         const newLead = await leadService.addLeadToCamp(data);
