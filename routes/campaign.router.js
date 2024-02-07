@@ -56,11 +56,13 @@ router.post('/', async (req, res) => {
     // {"campName":"camp1",{"user":{"_id":"65743643"}}}
     const userId = req.body.user._id;
     const campName = req.body.campName;
-    const answer = await campaignService.createNewCampaign(userId, campName);
+    const starterMsg = req.body.starterMsg;
+    const answer = await campaignService.createNewCampaign(userId, campName, starterMsg);
     console.log("the answer is:  ", answer)
     res.send(answer);
   }
   catch (err) {
+    console.log(err);
     // res.status(404).send(err.msg);
     res.status((err.code) || 404).send({ msg: err.msg || 'something went wrong' });
 
@@ -166,7 +168,6 @@ router.delete('/:campId', async (req, res) => {
 // כל ההודעות של קמפיין בודד
 router.get('/:campId/msg', async (req, res) => {
   try {
-
     const msgCampaigns = await campaignService.getAllMsg(req.params.campId)
     res.send(msgCampaigns);
   }

@@ -37,4 +37,9 @@ async function updateUser(filter, data) {
     return userToUpdate;
 }
 
-module.exports = { create, read, readOne, updateUser }
+async function updateOneByFilter(filter, data) {
+    let userToUpdate = await userModel.updateOne(filter, data, { new: true })
+    return userToUpdate;
+}
+
+module.exports = { create, read, readOne, updateUser, updateOneByFilter }
