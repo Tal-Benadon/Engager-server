@@ -2,8 +2,6 @@ const leadController = require('../DL/controllers/lead.controller');
 const campaignController= require('../DL/controllers/campaign.controller')
 
 async function addLeadToCamp(data){
-    console.log("cs1", data);
-
     if(!data.campaign || !data.phone || !data.name) throw {code: 500, msg: 'User details are missing'};
     // TODO- check if phone is valid
     console.log("cs2");

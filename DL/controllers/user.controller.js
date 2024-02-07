@@ -32,8 +32,8 @@ async function readOne(filter) {
 }
 
 // update by filter
-async function updateUser(phone, data) {
-    let userToUpdate = await userModel.updateOne(phone, data, {new: true})
+async function updateUser(filter, data) {
+    let userToUpdate = await userModel.updateOne(filter, data, {new: true})
     return userToUpdate;
 }
 async function updateOneByFilter(filter, data) {
