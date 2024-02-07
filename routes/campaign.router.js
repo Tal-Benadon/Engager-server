@@ -52,6 +52,7 @@ router.post('/', async (req, res) => {
     res.send(answer);
   }
   catch (err) {
+    console.log(err);
     // res.status(404).send(err.msg);
     res.status((err.code) || 404).send({msg: err.msg || 'something went wrong'});
 
@@ -139,6 +140,7 @@ try{
 // כל ההודעות של קמפיין בודד
 router.get('/:campId/msg', async (req, res) => {
   try {
+    // TODO: לבדוק האם יש שימוש בקליינט ואם לא למחוק
     const msgCampaigns = await campaignService.getAllMsg(req.params.campId)
     res.send(msgCampaigns);
   }
