@@ -1,4 +1,5 @@
 const campaignController = require("../DL/controllers/campaign.controller");
+const userController = require("../DL/controllers/user.controller")
 const { io } = require("socket.io-client");
 const socket1 = io("http://localhost:3000");
 
@@ -106,8 +107,23 @@ async function getOneMsg(campId,msgId){
   }
 
 
+
+async function checkMsgNum () {
+  // hotemet
+// לבדוק כל פעם בכל המקפיין שלו כמה הודעות נשלחו
+// או להוסיף מס הודעות בסכמה
+// ואז השאלה מה זה בדיוק אומר 30 הודעות שנשלחו
+}
+
+
 //לבדוק אחרי שאריה מעלה להוצי מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
-async function getArrLeadOfCamp(capId, msgId) {
+async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
+
+  const user = userController.readOne({phone: userPhone});
+  const msgSentNow = user.messagesSent;
+  if (msgSentNow > 30) throw {code: 403, msg: 'end of trial period'}
+
+  // בדיקה בסכמת יוזר ששלח פחות מ30 הוהדעות אחרת לשנות לו את הסבסקריפשן
   if (!capId) throw { code: 404, msg: "No campaign found" };
   if (!msgId) throw { code: 404, msg: "No msg found" };
   let sendMsg = await getOneMsg(capId, msgId);
@@ -132,6 +148,14 @@ async function getArrLeadOfCamp(capId, msgId) {
       };
     }
   });
+      //TODO- userId vs userPhone??
+      // hotemet
+      //TODO- לעלות פה את הקאונטר או לחכות לתשובה מהווצפ שבאמת נשלח
+  const updatedMsgCounter =await userController.updateUser(phone, {messagesSent: msgSentNow + 1});
+  if (!updatedMsgCounter) console.log(`no updatedMsgCounter from ${msgSentNow}`);
+  console.log(`update MsgCounter!!! now: ${msgSentNow + 1}`);
+  console.log(updatedMsgCounter);
+
   finalArray = { leads: list, msg: sendMsg };
   return finalArray;
 }
@@ -248,7 +272,7 @@ module.exports = {
   delOneMessage,
   createNewCampaign,
   getAllMsg,
-  getArrLeadOfCamp,
+  sendSpecificMsgToCampaignLeads,
   getOneMsg,
   updateMsgStatus,
   delLeadFromCamp,
