@@ -514,6 +514,10 @@ router.get('/whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
 
 router.get('/whatsapp/camp/:idCamp/msg/:msgId/lead/:leadId', async (req, res) => {
   try {
+        // TODO funcion to the middleware
+
+    // if(user.subscription !== "trial" && user.subscription !== "active")throw { code: 480, msg: "The user without proper authorization" };
+
     const idCamp = req.params.idCamp;
     const msgId = req.params.msgId;
     const leadId = req.params.leadId;
@@ -572,6 +576,8 @@ router.delete('/:idCamp/lead/:leadId', async (req, res) => {
 
 router.put('/whatsapp/camp/:campId/msg/:msgId/lead/:leadId/newStatus/:newStatus', async (req, res) => {
   try {
+    // TODO funcion to the middleware
+    // if(user.subscription !== "trial" && user.subscription !== "active")throw { code: 480, msg: "The user without proper authorization" };
     const campId = req.params.campId;
     const msgId = req.params.msgId;
     const leadId = req.params.leadId;
