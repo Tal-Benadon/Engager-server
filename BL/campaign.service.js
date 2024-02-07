@@ -126,38 +126,17 @@ async function checkMsgNum() {
 }
 
 
-//לבדוק אחרי שאריה מעלה להוצי מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
 async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
   if (!isValidObjectId(capId)) throw { code: 401, msg: "inValid  camp_id" };
   if (!isValidObjectId(msgId)) throw { code: 401, msg: "inValid msg_id" };
   if (!capId) throw { code: 404, msg: "No campaign found" };
   if (!msgId) throw { code: 404, msg: "No msg found" };
-
-  // hotemet
-  const user = userController.readOne({ phone: userPhone });
-  const msgSentNow = user.messagesSent || 0;
-  if (msgSentNow == 30) {
-    const updatedSubscription = await userController.updateUser({ phone: userPhone }, { subscription: 'expired' });
-    updatedSubscription ? console.log(updatedSubscription) : console.log('no updatedSubscription');
-    throw { code: 403, msg: 'end of trial period' }
-  }
-
-  // hotemet
-  //userId vs userPhone??
-  //TODO- לעלות פה את הקאונטר או לחכות לתשובה מהווצפ שבאמת נשלח
-  const updatedMsgCounter = await userController.updateUser({ phone: userPhone }, { messagesSent: msgSentNow + 1 });
-  if (!updatedMsgCounter) console.log(`no updatedMsgCounter from ${msgSentNow}`);
-  console.log(`update MsgCounter!!! now: ${msgSentNow + 1}`);
-  console.log('after update', updatedMsgCounter);
-
-
   let campaign = await campaignController.readOne({ _id: capId, "msg._id": msgId })
   if (!campaign) throw { msg: "no messeges in this campaign", code: 404 }
 
-
-  let msg = campaign.msg.find(m => m._id == msgId)
-
-
+  let msg = campaign.msg.find(m => m._id == msgId);
+  //TODO
+  // const notSentLeadsList = msgNotSentLeads(campaign, msgId) || [];
   campaign.leads.forEach((l) => {
     if (!l.isActive) return;
 
@@ -170,18 +149,27 @@ async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
     socket1.emit("data", data);
   });
 
+  //TODO: לעלות פה את הקאונטר או לחכות לתשובה מהווצפ שבאמת נשלח
+  const user = userController.readOne({ phone: userPhone });
+  const msgSentNow = user.messagesSent || 0
+  const updatedMsgCounter = await userController.updateUser({ phone: userPhone }, { messagesSent: msgSentNow + 1 });
 
+  console.log('after update', updatedMsgCounter);
 
+  if (msgSentNow == 30) {
+    const updatedSubscription = await userController.updateUser({ phone: userPhone }, { subscription: 'expired' });
+    updatedSubscription ? console.log('upSubscription', updatedSubscription) : console.log('no updatedSubscription');
+    throw { code: 403, msg: 'end of trial period' }
+  }
   return { leads: campaign.leads, msg };
 }
-
 
 
 async function msgSentLeads(campaignObj, msgId) {
   const msgObject = campaignObj?.msg?.find?.(msgObj => msgObj._id === msgId)
   const arrayOfLeadsInMsg = msgObject?.leads || []
 
-  return  arrayOfLeadsInMsg
+  return arrayOfLeadsInMsg
 }
 
 async function msgNotSentLeads(campaignObj, msgId) {
