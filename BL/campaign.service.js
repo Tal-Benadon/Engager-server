@@ -4,7 +4,8 @@ const { io } = require("socket.io-client");
 const socket1 = io("http://localhost:3000");
 const { isValidObjectId  } = require('./functions')
 
-async function createNewCampaign(userId, campName) {
+async function createNewCampaign(userId, campName,starterMsg) {
+  // console.log(userId, campName);
   if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
   campName = campName.trim();
   const nameIsExist = await campaignController.readOne({
@@ -16,6 +17,7 @@ async function createNewCampaign(userId, campName) {
   const created = await campaignController.create({
     user: userId,
     title: campName,
+    starterMsg:starterMsg,
   });
   return created;
 }

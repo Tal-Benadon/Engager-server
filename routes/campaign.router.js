@@ -56,7 +56,8 @@ router.post('/', async (req, res) => {
     // {"campName":"camp1",{"user":{"_id":"65743643"}}}
     const userId = req.body.user._id;
     const campName = req.body.campName;
-    const answer = await campaignService.createNewCampaign(userId, campName);
+    const starterMsg= req.body.starterMsg;
+    const answer = await campaignService.createNewCampaign(userId, campName,starterMsg);
     console.log("the answer is:  ", answer)
     res.send(answer);
   }
