@@ -55,9 +55,8 @@ router.post('/', async (req, res) => {
   try {
     // {"campName":"camp1",{"user":{"_id":"65743643"}}}
     const userId = req.body.user._id;
-    const campName = req.body.campName;
-    const starterMsg= req.body.starterMsg;
-    const answer = await campaignService.createNewCampaign(userId, campName,starterMsg);
+    const body = req.body;
+    const answer = await campaignService.createNewCampaign(userId, body);
     console.log("the answer is:  ", answer)
     res.send(answer);
   }
@@ -68,6 +67,20 @@ router.post('/', async (req, res) => {
 
   }
 })
+//******update campeing */
+router.put('/:campId', async (req, res)=>{
+try{
+  const campId = req.params.campId;
+  const data= req.body.data
+ const campeing = await campaignService.updateCampaing(campId, data)
+ res.send(campeing)
+} 
+catch(err){
+  res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+
+}
+})
+
 
 /** - Get all campaigns of user-VV---------------------------------------------------------------------
  * @swagger
@@ -218,7 +231,7 @@ router.get('/:campId/msg', async (req, res) => {
 *         description: Internal server error
 */
 
-router.post('/:campId/msg/', async (req, res) => {
+router.post('/:campId/messages', async (req, res) => {
   try {
     const id = req.params.campId;
     const msg = await campaignService.addNewMsg(id, req.body);
