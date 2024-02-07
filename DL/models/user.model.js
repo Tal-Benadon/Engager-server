@@ -46,6 +46,11 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
+  subscription: {
+    type : String,
+    enum : [ 'trial', 'active', 'cancelled'],
+    default:'trial'
+}
 });
 
 const userModel = mongoose.model("user", userSchema);
