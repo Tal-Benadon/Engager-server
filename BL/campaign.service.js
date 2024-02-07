@@ -1,4 +1,5 @@
 const campaignController = require("../DL/controllers/campaign.controller");
+const userController = require("../DL/controllers/user.controller")
 const { io } = require("socket.io-client");
 const socket1 = io("http://localhost:3000");
 
@@ -107,8 +108,17 @@ async function getOneMsg(campId, msgId) {
 }
 
 
+
+async function checkMsgNum () {
+  // hotemet
+// לבדוק כל פעם בכל המקפיין שלו כמה הודעות נשלחו
+// או להוסיף מס הודעות בסכמה
+// ואז השאלה מה זה בדיוק אומר 30 הודעות שנשלחו
+}
+
+
 //לבדוק אחרי שאריה מעלה להוצי מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
-async function getArrLeadOfCamp(capId, msgId) {
+async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
   if (!capId) throw { code: 404, msg: "No campaign found" };
   if (!msgId) throw { code: 404, msg: "No msg found" };
   let sendMsg = await getOneMsg(capId, msgId);
@@ -116,6 +126,17 @@ async function getArrLeadOfCamp(capId, msgId) {
   let campaign = await campaignController.readOne({ _id: capId });
   const arrNew = campaign["leads"];
   if (!arrNew) throw { code: 404, msg: "No lead found" };
+
+  // hotemet
+  const user = userController.readOne({phone: userPhone});
+  const msgSentNow = user.messagesSent;
+  if (msgSentNow == 30) {
+    const updatedSubscription =await userController.updateUser(phone, {subscription: 'expired'});
+    updatedSubscription? console.log(updatedSubscription): console.log('no updatedSubscription');
+    throw {code: 403, msg: 'end of trial period'}
+    }
+
+
   const list = arrNew.map((l) => {
     if (l.isActive) {
       const data = {
@@ -133,6 +154,14 @@ async function getArrLeadOfCamp(capId, msgId) {
       };
     }
   });
+      // hotemet
+      //userId vs userPhone??
+      //TODO- לעלות פה את הקאונטר או לחכות לתשובה מהווצפ שבאמת נשלח
+  const updatedMsgCounter =await userController.updateUser(phone, {messagesSent: msgSentNow + 1});
+  if (!updatedMsgCounter) console.log(`no updatedMsgCounter from ${msgSentNow}`);
+  console.log(`update MsgCounter!!! now: ${msgSentNow + 1}`);
+  console.log('after update',updatedMsgCounter);
+
   finalArray = { leads: list, msg: sendMsg };
   return finalArray;
 }
@@ -249,7 +278,7 @@ module.exports = {
   delOneMessage,
   createNewCampaign,
   getAllMsg,
-  getArrLeadOfCamp,
+  sendSpecificMsgToCampaignLeads,
   getOneMsg,
   updateMsgStatus,
   delLeadFromCamp,

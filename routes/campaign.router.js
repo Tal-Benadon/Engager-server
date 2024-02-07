@@ -46,6 +46,7 @@ router.use(auth.checkClient)
 
 router.post('/', async (req, res) => {
   try {
+    // {"campName":"camp1",{"user":{"_id":"65743643"}}}
     const userId = req.body.user._id;
     const campName = req.body.campName;
     const answer = await campaignService.createNewCampaign(userId, campName);
@@ -389,12 +390,12 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
   }
 });
 
-//Delete a message from a campaign-VV-----------
+//Send a message to leads least of one campaign-VV-----------
 /**
  * @swagger
  * /campaigns/{campId}/msg/{msgId}:
- *   delete:
- *     summary: Delete a message from a campaign
+ *   post:
+ *     summary: Send a message to leads least of one campaign
  *     tags: [Message]
  *     parameters:
  *       - in: path
@@ -418,11 +419,13 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
  *         description: Internal server error
  */
 
-router.delete('/:campId/msg/:msgId', async (req, res) => {
+// TODO- למה זה מחיקה? זה היה אמור להיות פונ אחרת?
+router.post('/:campId/msg/:msgId', async (req, res) => {
   try {
+    const userPhone = req.body.user.phone;
     const idCamp = req.params.campId;
     const msgId = req.params.msgId;
-    const msg = await campaignService.getArrLeadOfCamp(idCamp, msgId)
+    const msg = await campaignService.sendSpecificMsgToCampaignLeads(idCamp, msgId, userPhone);
     res.send(msg);
   } catch (err) {
     // res.status(err.code).send(err.msg);
