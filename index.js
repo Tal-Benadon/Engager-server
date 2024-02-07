@@ -6,6 +6,8 @@ const campaignRouter = require('./routes/campaign.router');
 const leadRouter = require('./routes/lead.router');
 const userRouter = require("./routes/user.router");
 const loginRouter = require("./routes/login.router");
+const paymentRouter = require("./routes/payment.router")
+
 const db = require('./DL/db')
 
 const app = express();
@@ -18,7 +20,7 @@ app.use('/campaign', campaignRouter);
 app.use('/lead', leadRouter);
 app.use('/user', userRouter);
 app.use('/login', loginRouter);
-
+app.use('/payment', paymentRouter);
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerDocument = require('./swagger.json');
