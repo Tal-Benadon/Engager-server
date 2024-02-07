@@ -45,8 +45,8 @@ router.use(auth.checkClient)
 router.post('/', async (req, res) => {
   try {
     const userId = req.body.user._id;
-    const campName = req.body.campName;
-    const answer = await campaignService.createNewCampaign(userId, campName);
+    const body = req.body;
+    const answer = await campaignService.createNewCampaign(userId, body);
     console.log("the answer is:  ", answer)
     res.send(answer);
   }
@@ -56,6 +56,20 @@ router.post('/', async (req, res) => {
 
   }
 })
+//******update campeing */
+router.put('/:campId', async (req, res)=>{
+try{
+  const campId = req.params.campId;
+  const data= req.body.data
+ const campeing = await campaignService.updateCampaing(campId, data)
+ res.send(campeing)
+} 
+catch(err){
+  res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+
+}
+})
+
 
 /** - Get all campaigns of user-VV---------------------------------------------------------------------
  * @swagger
