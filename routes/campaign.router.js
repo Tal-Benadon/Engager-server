@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const campaignService = require('../BL/campaign.service');
-const auth = require("../auth");
+const auth = require('../auth')
 
-// router.use(auth.checkToken)
+router.use(auth.checkClient)
 //*************************************************************
 // List of Full Rauts & details - 
 // https://engager-g262.onrender.com/api-docs
@@ -51,7 +51,9 @@ router.post('/', async (req, res) => {
     res.send(answer);
   }
   catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    // res.status(404).send(err.msg);
+    res.status((err.code) || 404).send({msg: err.msg || 'something went wrong'});
+
   }
 })
 
@@ -73,12 +75,12 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const userId = req.body.user._id;
-    console.log(userId);
     const campaigns = await campaignService.getAllCampaignsByUser(userId)
     res.send(campaigns);
   }
   catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    // res.status(err.code).send(err.msg);
+    res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
   }
 })
 
@@ -106,47 +108,29 @@ router.get('/', async (req, res) => {
  */
 
 router.get('/:campId', async (req, res) => {
-  try {
+  try{
     const campId = req.params.campId;
     const campaign = await campaignService.getOneCamp(campId);
     res.send(campaign);
   } catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    // res.status(err.code).send(err.msg);
+    res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+
   }
 })
 
-/** Delete campaign-VV----------------------------------------------------
- * @swagger
- * /campaigns/{campId}:
- *   delete:
- *     summary: Delete a campaign by ID
- *     tags: 
- *       - Campaign
- *     parameters:
- *       - in: path
- *         name: campId
- *         required: true
- *         description: ID of the campaign to delete
- *         schema:
- *           type: string
- *     responses:
- *       '200':
- *         description: Successfully deleted the campaign
- *       '404':
- *         description: Campaign not found
- *       '500':
- *         description: Internal server error
- */
 
 
 // מחיקת קמפיין
-router.delete('/:campId', async (req, res) => {
-  try {
-    let deletedCamp = await campaignService.delCampaign(req.params.campId)
-    res.send(deletedCamp);
-  } catch (err) {
-    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
-  }
+router.delete('/:campId',async(req,res)=>{
+try{
+ let deletedCamp =  await campaignService.delCampaign(req.params.campId)
+ res.send(deletedCamp);
+}catch(err){
+  // res.status(404).send(err.msg);
+  res.status((err.code) || 404).send({msg: err.msg || 'something went wrong'});
+
+}
 })
 
 //  ######## הודעות  ##########
@@ -158,46 +142,13 @@ router.get('/:campId/msg', async (req, res) => {
     res.send(msgCampaigns);
   }
   catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    // res.status(err.code).send(err.msg);
+    res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+
   }
 })
 
 /**###### Message ######*/
-
-// get all message of singale campain ---VV-------------------------
-/**
- * @swagger
- * /{campId}/msg:
- *   get:
- *     summary: Get all messages of a single campaign
- *     description: Retrieves all messages associated with the specified campaign ID.
- *     tags:
- *       - Message
- *     parameters:
- *       - in: path
- *         name: campId
- *         required: true
- *         description: ID of the campaign
- *         schema:
- *           type: string
- *     responses:
- *       '200':
- *         description: Successfully retrieved all messages of the campaign
- *       '404':
- *         description: Campaign not found
- *       '500':
- *         description: Internal server error
- */
-
-router.get('/:campId/msg', async (req, res) => {
-  try {
-    const msgCampaign = await campaignService.getAllMsg(req.params.campId)
-    res.send(msgCampaign);
-  }
-  catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
-  }
-})
 
 // - add new msg into campaign --VV--------------------------------------------------------------------
 /** 
@@ -242,11 +193,13 @@ router.post('/:campId/msg/', async (req, res) => {
     const msg = await campaignService.addNewMsg(id, req.body);
     res.send(msg);
   } catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    // res.status(err.code).send(err.msg);
+    res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+
   }
 });
 
-//-Delete a message from a campaign----VV---------------
+//-Delete a message from a campaign-VV---------------
 /**
  * @swagger
  * /campaigns/{campId}/msg/{msgId}:
@@ -283,12 +236,12 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
     const idCamp = req.params.campId;
     const msgId = req.params.msgId;
     const del = await campaignService.delOneMessage(idCamp, msgId);
-    res.send(`message ${msgId} is deleted`);
+    res.send(del);
   }
   catch (err) {
-    {
-      res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
-    }
+    // res.status(err.code).send(err.msg);
+    res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+
   }
 })
 
@@ -328,7 +281,8 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
     res.send(msg);
   }
   catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    // res.status(502).send(err.msg);
+    res.status((err.code) || 502).send({msg: err.msg || 'something went wrong'});
 
   }
 })
@@ -371,7 +325,9 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
     res.send(msg);
   }
   catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    // res.status(502).send(err.msg);
+    res.status((err.code) || 502).send({msg: err.msg || 'something went wrong'});
+
   }
 })
 
@@ -420,11 +376,12 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
     const id = req.params.campId;
     const msgId = req.params.msgId;
     req.body = { ...req.body, msgId }
-        const msg = await campaignService.updateMsg(id, req.body);
+    const msg = await campaignService.updateMsg(id, req.body);
     res.send(msg);
-  }
-  catch (err){
-  res.status(err.code || 490).send({msg: err.msg || 'something went wrong'})
+  } catch (err) {
+    // res.status(err.code).send(err.msg);
+    res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+
   }
 });
 
@@ -461,13 +418,13 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
   try {
     const idCamp = req.params.campId;
     const msgId = req.params.msgId;
-    const msg = await campaignService.sendMsgForCampaign(idCamp, msgId)
+    const msg = await campaignService.getArrLeadOfCamp(idCamp ,msgId )
     res.send(msg);
+  }catch (err) {
+        // res.status(err.code).send(err.msg);
+        res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
 
-  } catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
-  }
-
+      }
 })
 
 // get all leads from WhatsApp ---VV-----------------
@@ -600,7 +557,6 @@ router.get('/whatsapp/camp/:idCamp/msg/:msgId/lead/:leadId', async (req, res) =>
 
 router.delete('/:idCamp/lead/:leadId', async (req, res) => {
   try {
-
     const idCamp = req.params.idCamp;
     const leadId = req.params.leadId
     const del = await campaignService.delLeadFromCamp(idCamp, leadId)

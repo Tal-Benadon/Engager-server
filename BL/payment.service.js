@@ -36,6 +36,5 @@ return res.data.Url
 
     //  לתפוס url של הסליקה ולשלוח לקיילנט שיפתח אותו בifrem 
 }
-sendRequstToCardkom()
 
     module.exports = {sendRequstToCardkom}
