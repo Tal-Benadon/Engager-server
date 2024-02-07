@@ -6,7 +6,7 @@ const router = express.Router();
 const leadService = require('../BL/lead.service');
 const auth = require("../auth")
 
-// router.use(auth.checkToken)
+router.use(auth.checkClient)
 
 //*************************************************************
 // List of Full Rauts & details - 

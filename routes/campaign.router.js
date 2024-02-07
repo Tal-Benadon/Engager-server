@@ -3,7 +3,7 @@ const router = express.Router();
 const campaignService = require('../BL/campaign.service');
 const auth = require("../auth");
 
-// router.use(auth.checkToken)
+router.use(auth.checkClient)
 //*************************************************************
 // List of Full Rauts & details - 
 // https://engager-g262.onrender.com/api-docs
@@ -73,7 +73,6 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const userId = req.body.user._id;
-    console.log(userId);
     const campaigns = await campaignService.getAllCampaignsByUser(userId)
     res.send(campaigns);
   }
