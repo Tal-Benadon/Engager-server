@@ -1,9 +1,12 @@
 const campaignController = require("../DL/controllers/campaign.controller");
+const userController = require("../DL/controllers/user.controller")
 const { io } = require("socket.io-client");
 const socket1 = io("http://localhost:3000");
+const { isValidObjectId  } = require('./functions')
 
 async function createNewCampaign(userId, campName,starterMsg) {
   // console.log(userId, campName);
+  if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
   campName = campName.trim();
   const nameIsExist = await campaignController.readOne({
     user: userId,
@@ -21,19 +24,23 @@ async function createNewCampaign(userId, campName,starterMsg) {
 
 async function getAllCampaignsByUser(userId) {
   // do not touch!!!!
+  if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
   const campaigns = await campaignController.read({ user: userId });
   // if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };
   return campaigns;
 }
 async function delCampaign(campId) {
+  if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
   const campaign = campaignController.readOne({ _id: campId });
   if (!campaign) throw { code: 404, msg: "Campaign is not exist!" };
   return await campaignController.update({ _id: campId }, { isActive: false })
 }
 async function delOneMessage(campId, msgId) {
-  
+  if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
+  if (!isValidObjectId(msgId)) throw { code: 401, msg: "inValid _id" };
+
   const message = await getOneMsg(campId, msgId)
-  console.log("message: ",message );
+  console.log("message: ", message);
   if (!message) throw { code: 481, msg: "msg not exist!" };
   console.log('cs1');
   const campaign = await campaignController.readOne({ _id: campId });
@@ -47,8 +54,9 @@ async function delOneMessage(campId, msgId) {
 }
 
 async function addNewMsg(id, body) {
+  if (!isValidObjectId(id)) throw { code: 401, msg: "inValid _id" };
   if (!body.subject) throw { code: 420, msg: "message without subject" };
-    if (!body.content) throw { code: 421, msg: "message without content" };
+  if (!body.content) throw { code: 421, msg: "message without content" };
   let campaign = await campaignController.readOne({ _id: id });
   if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
   let filter = { _id: id };
@@ -63,52 +71,70 @@ async function addNewMsg(id, body) {
 
 
 async function updateMsg(id, body) {
-  
+  if (!isValidObjectId(id)) throw { code: 401, msg: "inValid _id" };
+
   let campaign = await campaignController.readOne({ _id: id });
   if (!campaign) throw { code: 480, msg: "campaign is not exist!" };
-  const msgIndex = campaign.msg.findIndex(msg=> {
-    return msg._id.toString() === body.msgId});
+  const msgIndex = campaign.msg.findIndex(msg => {
+    return msg._id.toString() === body.msgId
+  });
   if (msgIndex === -1) {
-    throw {code: 404, msg: "msg not found"}
+    throw { code: 404, msg: "msg not found" }
   }
-  let filter = { _id: id, "msg._id" : body.msgId };
-  let update = { 
-    $set:{},
+  let filter = { _id: id, "msg._id": body.msgId };
+  let update = {
+    $set: {},
   };
 
-    if (body.subject) {
-  
+  if (body.subject) {
+
     update.$set[`msg.${msgIndex}.subject`] = body.subject;
   }
-    if (body.content) {
+  if (body.content) {
     update.$set[`msg.${msgIndex}.content`] = body.content;
   }
   if (!body.content && !body.subject)
-  throw { code: 403, msg: "non a text for update" };
-return await campaignController.update(filter, update);
+    throw { code: 403, msg: "non a text for update" };
+  return await campaignController.update(filter, update);
 }
 
 async function getAllMsg(id) {
+  if (!isValidObjectId(id)) throw { code: 401, msg: "inValid _id" };
   const campaign = await campaignController.readOne({ _id:id });
+
   if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
   const messages = await campaignController.read({ _id: id }, "msg");
   return messages;
 }
 async function getOneMsg(campId,msgId){
+  if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
+  if (!isValidObjectId(msgId)) throw { code: 401, msg: "inValid _id" };
+
   let campaigns = await getAllMsg(campId)
   let campaign = campaigns[0]
-  if (campaigns.length<1) ({msg: "no messeges in this campaign", code: 404})
-  let mssg =   campaign.msg
-    if (!mssg) throw ({msg: "no messeges in this campaign", code: 404})
-   let msgToFind =  mssg.find((m) => m._id== msgId)
-   if (!msgToFind) throw ({msg: "messeges is not exist", code: 404})
-    return msgToFind
-   
-  }
+  if (campaigns.length < 1) ({ msg: "no messeges in this campaign", code: 404 })
+  let mssg = campaign.msg
+  if (!mssg) throw ({ msg: "no messeges in this campaign", code: 404 })
+  let msgToFind = mssg.find((m) => m._id == msgId)
+  if (!msgToFind) throw ({ msg: "messeges is not exist", code: 404 })
+  return msgToFind
+
+}
+
+
+
+async function checkMsgNum () {
+  // hotemet
+// לבדוק כל פעם בכל המקפיין שלו כמה הודעות נשלחו
+// או להוסיף מס הודעות בסכמה
+// ואז השאלה מה זה בדיוק אומר 30 הודעות שנשלחו
+}
 
 
 //לבדוק אחרי שאריה מעלה להוצי מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
-async function getArrLeadOfCamp(capId, msgId) {
+async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
+  if (!isValidObjectId(capId)) throw { code: 401, msg: "inValid  camp_id" };
+  if (!isValidObjectId(msgId)) throw { code: 401, msg: "inValid msg_id" };
   if (!capId) throw { code: 404, msg: "No campaign found" };
   if (!msgId) throw { code: 404, msg: "No msg found" };
   let sendMsg = await getOneMsg(capId, msgId);
@@ -116,6 +142,17 @@ async function getArrLeadOfCamp(capId, msgId) {
   let campaign = await campaignController.readOne({ _id: capId });
   const arrNew = campaign["leads"];
   if (!arrNew) throw { code: 404, msg: "No lead found" };
+
+  // hotemet
+  const user = userController.readOne({phone: userPhone});
+  const msgSentNow = user.messagesSent;
+  if (msgSentNow == 30) {
+    const updatedSubscription =await userController.updateUser(phone, {subscription: 'expired'});
+    updatedSubscription? console.log(updatedSubscription): console.log('no updatedSubscription');
+    throw {code: 403, msg: 'end of trial period'}
+    }
+
+
   const list = arrNew.map((l) => {
     if (l.isActive) {
       const data = {
@@ -133,11 +170,22 @@ async function getArrLeadOfCamp(capId, msgId) {
       };
     }
   });
+      // hotemet
+      //userId vs userPhone??
+      //TODO- לעלות פה את הקאונטר או לחכות לתשובה מהווצפ שבאמת נשלח
+  const updatedMsgCounter =await userController.updateUser(phone, {messagesSent: msgSentNow + 1});
+  if (!updatedMsgCounter) console.log(`no updatedMsgCounter from ${msgSentNow}`);
+  console.log(`update MsgCounter!!! now: ${msgSentNow + 1}`);
+  console.log('after update',updatedMsgCounter);
+
   finalArray = { leads: list, msg: sendMsg };
   return finalArray;
 }
 // פונקציה שמביאה msg and lead
 async function getMsgAndLead(capId, msgId, leadId) {
+  if (!isValidObjectId(capId)) throw { code: 401, msg: "inValid camp_id" };
+  if (!isValidObjectId(msgId)) throw { code: 401, msg: "inValid msg_id" };
+  if (!isValidObjectId(leadId)) throw { code: 401, msg: "inValid lead_id" };
   if (!capId) throw { code: 404, msg: "No campaign found" };
   if (!msgId) throw { code: 404, msg: "No msg found" };
   if (!leadId) throw { code: 404, msg: "No lead found" };
@@ -166,6 +214,8 @@ async function getMsgAndLead(capId, msgId, leadId) {
 
 // לקשר לפונקציה של טל שמכניסה לידים לmsg
 async function updateMsgStatus(capId, msgId, status) {
+  if (!isValidObjectId(capId)) throw { code: 401, msg: "inValid camp_id" };
+  if (!isValidObjectId(msgId)) throw { code: 401, msg: "inValid msg_id" };
   let msgOne = await getOneMsg(capId, msgId)
   if (!msgOne) throw "not msg";
   let filter = { _id: id, "msg._id": msgId };
@@ -176,12 +226,16 @@ async function updateMsgStatus(capId, msgId, status) {
 }
 
 async function getOneCamp(campId) {
+  if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
   const campaign = await campaignController.readOne({ _id: campId })
+  console.log("cs1- campaign:", campaign);
   if (!campaign) throw ({ msg: "Campaign is not exist", code: 404 })
   return campaign
 }
 
 async function pushAllCampaignLeadsToMsgLeads(campaignId, targetMsgId) {
+  if (!isValidObjectId(campaignId)) throw { code: 401, msg: "inValid _id" };
+  if (!isValidObjectId(targetMsgId)) throw { code: 401, msg: "inValid _id" };
   try {
     const campaignToUpdate = await campaignController.readOne({ _id: campaignId });
 
@@ -220,23 +274,19 @@ async function delLeadFromCamp(capId, leadId) {
 
   return updateIsActiv;
 }
-async function getOneCamp(campId) {
-  const campaign = await campaignController.readOne({ _id: campId });
-  console.log("camp from service", campaign);
-  return campaign;
-}
+
 
 async function updateStatusMsgOfOneLead(data) {
-  const {campId, msgId, leadId, newStatus} = data ;
+  const { campId, msgId, leadId, newStatus } = data;
 
-  if (newStatus !== 'sent'  && newStatus !== 'recieved') throw {code: 405, msg: 'status not valid'};
-    const campaign = await campaignController.readOneWithoutPopulate({ _id: campId });
-    if (!campaign) throw {code: 405, msg: 'no campaign'}
-    const message = campaign["msg"].find((m) => m._id == msgId);
-    const lead = message["leads"].find((l) => l._id == leadId);
-    lead.status = newStatus;
-    const updatedCampaign = await campaign.save();
-    return updatedCampaign;
+  if (newStatus !== 'sent' && newStatus !== 'recieved') throw { code: 405, msg: 'status not valid' };
+  const campaign = await campaignController.readOneWithoutPopulate({ _id: campId });
+  if (!campaign) throw { code: 405, msg: 'no campaign' }
+  const message = campaign["msg"].find((m) => m._id == msgId);
+  const lead = message["leads"].find((l) => l._id == leadId);
+  lead.status = newStatus;
+  const updatedCampaign = await campaign.save();
+  return updatedCampaign;
 }
 
 
@@ -249,7 +299,7 @@ module.exports = {
   delOneMessage,
   createNewCampaign,
   getAllMsg,
-  getArrLeadOfCamp,
+  sendSpecificMsgToCampaignLeads,
   getOneMsg,
   updateMsgStatus,
   delLeadFromCamp,

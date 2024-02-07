@@ -15,9 +15,10 @@ const userModel = require('../models/user.model');
 // add new user 
 async function create(data) {
     let newUser = await userModel.create(data);
-    // console.log(newUser);
     return newUser;
 }
+
+
 // get all users:
 async function read() {
     let users = await userModel.find();
@@ -32,7 +33,6 @@ async function readOne(filter) {
 
 // update by filter
 async function updateUser(phone, data) {
-
     let userToUpdate = await userModel.updateOne(phone, data)
     return userToUpdate;
 }
