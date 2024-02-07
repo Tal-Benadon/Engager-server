@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const campaignService = require('../BL/campaign.service');
+const scheduleService = require('../BL/schedule.service')
+
 const auth = require('../auth')
 
 router.use(auth.checkClient)
@@ -52,7 +54,7 @@ router.post('/', async (req, res) => {
   }
   catch (err) {
     // res.status(404).send(err.msg);
-    res.status((err.code) || 404).send({msg: err.msg || 'something went wrong'});
+    res.status((err.code) || 404).send({ msg: err.msg || 'something went wrong' });
 
   }
 })
@@ -80,7 +82,7 @@ router.get('/', async (req, res) => {
   }
   catch (err) {
     // res.status(err.code).send(err.msg);
-    res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
 
@@ -108,13 +110,13 @@ router.get('/', async (req, res) => {
  */
 
 router.get('/:campId', async (req, res) => {
-  try{
+  try {
     const campId = req.params.campId;
     const campaign = await campaignService.getOneCamp(campId);
     res.send(campaign);
   } catch (err) {
     // res.status(err.code).send(err.msg);
-    res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
 
   }
 })
@@ -122,15 +124,15 @@ router.get('/:campId', async (req, res) => {
 
 
 // מחיקת קמפיין
-router.delete('/:campId',async(req,res)=>{
-try{
- let deletedCamp =  await campaignService.delCampaign(req.params.campId)
- res.send(deletedCamp);
-}catch(err){
-  // res.status(404).send(err.msg);
-  res.status((err.code) || 404).send({msg: err.msg || 'something went wrong'});
+router.delete('/:campId', async (req, res) => {
+  try {
+    let deletedCamp = await campaignService.delCampaign(req.params.campId)
+    res.send(deletedCamp);
+  } catch (err) {
+    // res.status(404).send(err.msg);
+    res.status((err.code) || 404).send({ msg: err.msg || 'something went wrong' });
 
-}
+  }
 })
 
 //  ######## הודעות  ##########
@@ -143,7 +145,7 @@ router.get('/:campId/msg', async (req, res) => {
   }
   catch (err) {
     // res.status(err.code).send(err.msg);
-    res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
 
   }
 })
@@ -194,7 +196,7 @@ router.post('/:campId/msg/', async (req, res) => {
     res.send(msg);
   } catch (err) {
     // res.status(err.code).send(err.msg);
-    res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
 
   }
 });
@@ -240,7 +242,7 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
   }
   catch (err) {
     // res.status(err.code).send(err.msg);
-    res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
 
   }
 })
@@ -276,13 +278,15 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
   try {
     const campId = req.params.campId;
     const msgId = req.params.msgId;
+    scheduleService.scheduleTest("yes", "no")
     const msg = await campaignService.getOneMsg(campId, msgId);
-    console.log("the msg that return is:  ", msg);
+
+    console.log("the returned msg is:  ", msg);
     res.send(msg);
   }
   catch (err) {
     // res.status(502).send(err.msg);
-    res.status((err.code) || 502).send({msg: err.msg || 'something went wrong'});
+    res.status((err.code) || 502).send({ msg: err.msg || 'something went wrong' });
 
   }
 })
@@ -326,7 +330,7 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
   }
   catch (err) {
     // res.status(502).send(err.msg);
-    res.status((err.code) || 502).send({msg: err.msg || 'something went wrong'});
+    res.status((err.code) || 502).send({ msg: err.msg || 'something went wrong' });
 
   }
 })
@@ -380,7 +384,7 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
     res.send(msg);
   } catch (err) {
     // res.status(err.code).send(err.msg);
-    res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
 
   }
 });
@@ -418,13 +422,13 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
   try {
     const idCamp = req.params.campId;
     const msgId = req.params.msgId;
-    const msg = await campaignService.getArrLeadOfCamp(idCamp ,msgId )
+    const msg = await campaignService.getArrLeadOfCamp(idCamp, msgId)
     res.send(msg);
-  }catch (err) {
-        // res.status(err.code).send(err.msg);
-        res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+  } catch (err) {
+    // res.status(err.code).send(err.msg);
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
 
-      }
+  }
 })
 
 // get all leads from WhatsApp ---VV-----------------
@@ -576,5 +580,20 @@ router.put('/whatsapp/camp/:campId/msg/:msgId/lead/:leadId/newStatus/:newStatus'
     res.status(405).send(err.msg);
   }
 })
+
+
+
+//====================== Schedule Demo ====================
+router.post('/schedule', (req, res) => {
+  try {
+    const dateData = req.body.datetime
+    const formattedData = new Date(dateData)
+    scheduleService.convertToDateAndExec(formattedData)
+    res.send(console.log("msg scheduled"))
+  } catch (error) {
+    res.status(500).send("error occured", console.log(error))
+  }
+})
+
 // ייצוא הראוטר
 module.exports = router;
