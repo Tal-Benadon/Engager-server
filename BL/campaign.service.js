@@ -118,12 +118,6 @@ async function checkMsgNum () {
 
 //לבדוק אחרי שאריה מעלה להוצי מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
 async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
-
-  const user = userController.readOne({phone: userPhone});
-  const msgSentNow = user.messagesSent;
-  if (msgSentNow > 30) throw {code: 403, msg: 'end of trial period'}
-
-  // בדיקה בסכמת יוזר ששלח פחות מ30 הוהדעות אחרת לשנות לו את הסבסקריפשן
   if (!capId) throw { code: 404, msg: "No campaign found" };
   if (!msgId) throw { code: 404, msg: "No msg found" };
   let sendMsg = await getOneMsg(capId, msgId);
@@ -131,6 +125,17 @@ async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
   let campaign = await campaignController.readOne({ _id: capId });
   const arrNew = campaign["leads"];
   if (!arrNew) throw { code: 404, msg: "No lead found" };
+
+  // hotemet
+  const user = userController.readOne({phone: userPhone});
+  const msgSentNow = user.messagesSent;
+  if (msgSentNow == 30) {
+    const updatedSubscription =await userController.updateUser(phone, {subscription: 'expired'});
+    updatedSubscription? console.log(updatedSubscription): console.log('no updatedSubscription');
+    throw {code: 403, msg: 'end of trial period'}
+    }
+
+
   const list = arrNew.map((l) => {
     if (l.isActive) {
       const data = {
@@ -148,13 +153,13 @@ async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
       };
     }
   });
-      //TODO- userId vs userPhone??
       // hotemet
+      //userId vs userPhone??
       //TODO- לעלות פה את הקאונטר או לחכות לתשובה מהווצפ שבאמת נשלח
   const updatedMsgCounter =await userController.updateUser(phone, {messagesSent: msgSentNow + 1});
   if (!updatedMsgCounter) console.log(`no updatedMsgCounter from ${msgSentNow}`);
   console.log(`update MsgCounter!!! now: ${msgSentNow + 1}`);
-  console.log(updatedMsgCounter);
+  console.log('after update',updatedMsgCounter);
 
   finalArray = { leads: list, msg: sendMsg };
   return finalArray;
