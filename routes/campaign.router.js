@@ -3,6 +3,7 @@ const router = express.Router();
 const campaignService = require('../BL/campaign.service');
 const auth = require("../auth");
 
+
 // router.use(auth.checkToken)
 //*************************************************************
 // List of Full Rauts & details - 
@@ -72,6 +73,7 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
+
     const userId = req.body.user._id;
     console.log(userId);
     const campaigns = await campaignService.getAllCampaignsByUser(userId)
@@ -105,9 +107,26 @@ router.get('/', async (req, res) => {
  *         description: Campaign not found
  */
 
+
+// Example usage
+// const objectIdToCheck = '5f7a1e6b8f8a1e5e42823121';
+
+// if (isValidObjectId(objectIdToCheck)) {
+//   console.log('Valid ObjectId');
+// } else {
+//   console.log('Invalid ObjectId');
+// }
+
+// ניסיון ראשון - לא עבד
+// function isValidObjectId(id) {
+//   return ObjectId.isValid(id);
+// }
 router.get('/:campId', async (req, res) => {
   try {
     const campId = req.params.campId;
+    // console.log("cr1 - campId" , campId );
+    // console.log(isValidObjectId(campId));
+   
     const campaign = await campaignService.getOneCamp(campId);
     res.send(campaign);
   } catch (err) {
@@ -142,6 +161,7 @@ router.get('/:campId', async (req, res) => {
 // מחיקת קמפיין
 router.delete('/:campId', async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.campId)) throw { code: 401, msg: "inValid _id" };
     let deletedCamp = await campaignService.delCampaign(req.params.campId)
     res.send(deletedCamp);
   } catch (err) {
@@ -154,6 +174,7 @@ router.delete('/:campId', async (req, res) => {
 // כל ההודעות של קמפיין בודד
 router.get('/:campId/msg', async (req, res) => {
   try {
+   
     const msgCampaigns = await campaignService.getAllMsg(req.params.campId)
     res.send(msgCampaigns);
   }
