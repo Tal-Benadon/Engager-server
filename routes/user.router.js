@@ -1,7 +1,39 @@
 const express = require("express");
 const router = express.Router();
 const userService = require('../BL/user.service');
+
+// get one user:
+router.get("/:phone", async (req, res) => {
+  try {
+    console.log(req.params.phone);
+    const phone = req.params.phone;
+    const user = await userService.getOneUser(phone);
+    console.log("r", user)
+    res.send(user)
+
+  } catch (err) {
+    console.log(err);
+    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
+  }
+})
 const auth = require("../auth")
+
+
+// add new user:
+router.post('/', async (req, res) => {
+  try {
+
+    const body = req.body
+    // console.log("r", req.body);
+    const answer = await userService.createNewUser(body);
+    // console.log("rr", answer);
+    res.send(answer);
+  }
+  catch (err) {
+    console.log(err);
+    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
+  }
+})
 
 router.use(auth.checkClient)
 
@@ -19,19 +51,9 @@ router.get("/", async (req, res) => {
   }
 })
 
-// get one user:
-router.get("/:phone", async (req, res) => {
-  try {
-    console.log(req.params.phone)
-    const phone = req.params.phone
-    const user = await userService.getOneUser(phone);
-    console.log("r", user)
-    res.send(user)
+// 
+// 
 
-  } catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
-  }
-})
 
 
 // update one user:
@@ -64,19 +86,5 @@ router.delete("/:phone", async (req, res) => {
   }
 })
 
-// add new user:
-router.post('/', async (req, res) => {
-  try {
-
-    const body = req.body
-    // console.log("r", req.body);
-    const answer = await userService.createNewUser(body);
-    // console.log("rr", answer);
-    res.send(answer);
-  }
-  catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
-  }
-})
 // ייצוא הראוטר
 module.exports = router;

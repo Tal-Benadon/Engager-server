@@ -1,5 +1,7 @@
 
+const { update } = require("../DL/controllers/campaign.controller");
 const userController = require("../DL/controllers/user.controller");
+const scheduleService = require("./schedule.service");
 
 
 // get all users
@@ -15,7 +17,6 @@ async function getUsers() {
 // get one user:
 async function getOneUser(phone) {
   let user = await userController.readOne({ phone: phone })
-  // console.log("s", user)
   if (!user) {
     throw { code: 408, msg: 'The phone is not exist' }
   }
@@ -41,26 +42,18 @@ async function updateOneUser(phone, data) {
 }
 
 // סיום תקופת נסיון ושינוי הסבסקרפשן ל-אקספרייד
-async function endOfTrialPeriod(userPhone){
-  const user = await userController.readOne({phone: userPhone});
+async function endOfTrialPeriod(phone){
+  const user = await userController.readOne({phone: phone});
   const subscription = user.subscription;
+  let updatedUser ;
   if(subscription == 'trial'){
-    const updated = userController.updateUser(userPhone, {subscription: 'expired'});
-    if (!updated) throw { code: 408, msg: 'The phone is not exists' }
-    throw {code: 403, msg: 'end of trial period'}
+    updatedUser = userController.updateUser({phone: phone}, {subscription: 'expired'});
   }
+  return updatedUser
 }
 
 //add new user :
 async function createNewUser(body) {
-
-    // קוד ליצירת תקופת נסיון
-        // let createdDate = new Date(); // משתנה לשמירת הזמן הנוכחי
-        // const expiredDate = new Date(createdDate); // יצירת תאריך חדש על בסיס הזמן הנוכחי
-        // expiredDate.setDate(expiredDate.getDate() + 14);
-    // talFunction(expiredDate, endOfTrialPeroid(body.phone));
-        //  יש תאריך יצירה גם בסכמה והשאלה אם לבדוק אחרי שבועיים לפי מה שכתוב שם או לפי מה שעשיתי כבר
-        // if (createdDate.getTime() === expiredDate.getTime()) console.log('timeFinisf');
   var passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
   var phoneRegex = /^(?:0(?:[23489]|[57]\d)-\d{7})|(?:0(?:5[^7]|[2-4]|[8-9])(?:-?\d){7})$/;
   const phoneIsexists = await userController.readOne({ phone: body.phone });
@@ -72,10 +65,18 @@ async function createNewUser(body) {
   let password = body.password
   if (!email.includes("@") || !email.includes(".")) throw { code: 408, msg: 'Email is not proper' }
   if (!phoneRegex.test(phone)) throw { code: 408, msg: 'Phone is not proper' }
-  if (password.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
+  if (password?.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
   if (!passwordRegex.test(password)) throw { code: 408, msg: 'The password does not contain at least 1 leter and 1 number' }
+
   // האם צריך לשלוח ביצירה דיקסקרפשן של תקופת נסיון או שיש לו אופציה ישר להרשם?
-  const newUser = await userController.create({ ...body });
+  const newUser = await userController.create({ ...body , subscription: 'trial'});
+  let createdDate = new Date(); 
+  // const expiredDate = new Date(createdDate);
+  // expiredDate.setDate(expiredDate.getDate() + 14);
+let futureDate = new Date(createdDate.getTime());
+futureDate.setMinutes(createdDate.getMinutes() + 2);
+  scheduleService.convertToDateAndExec(futureDate, ()=> endOfTrialPeriod(phone));
+
   return newUser
 }
 
