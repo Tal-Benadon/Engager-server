@@ -1,21 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const userService = require('../BL/user.service');
-
-// get one user:
-router.get("/:phone", async (req, res) => {
-  try {
-    console.log(req.params.phone);
-    const phone = req.params.phone;
-    const user = await userService.getOneUser(phone);
-    console.log("r", user)
-    res.send(user)
-
-  } catch (err) {
-    console.log(err);
-    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
-  }
-})
 const auth = require("../auth")
 
 
@@ -51,8 +36,20 @@ router.get("/", async (req, res) => {
   }
 })
 
-// 
-// 
+// get one user:
+router.get("/:phone", async (req, res) => {
+  try {
+    console.log(req.params.phone);
+    const phone = req.params.phone;
+    const user = await userService.getOneUser(phone);
+    console.log("r", user)
+    res.send(user)
+
+  } catch (err) {
+    console.log(err);
+    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
+  }
+})
 
 
 
