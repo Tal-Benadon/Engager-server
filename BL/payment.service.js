@@ -3,8 +3,8 @@ const { default: axios } = require("axios")
 
 
 
-async function sendRequstToCardkom(data){
-    
+async function sendRequstToCardkom(user){
+    const {email , name , phone} = user
     const body = {
         "TerminalNumber": 151048  ,
         "ApiName": "CHpqcSCn4IbDRQMBhSB9 ",
@@ -14,8 +14,8 @@ async function sendRequstToCardkom(data){
         "FailedRedirectUrl": "https://www.yahoo.com",
         "WebHookUrl": "https://www.mysite.com/CardComLPWebHook",
         "Document": {
-            "To": "test client",
-            "Email": "test@testDomain.com",
+            "To":  name,
+            "Email": email,
             "Products": [
                 {
                     "Description": "רפאל",
