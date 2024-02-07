@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const paymentService = require('../BL/payment.service')
-
-router.get('/', async (req, res) => {
+const auth = require('../auth')
+router.get('/', auth.checkClient, async (req, res) => {
 try{
-console.log("*****");
+console.log(req.body);
     const pay = await paymentService.sendRequstToCardkom(req.body)
     res.send(pay);
 }
