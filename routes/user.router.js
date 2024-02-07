@@ -3,12 +3,13 @@ const router = express.Router();
 const userService = require('../BL/user.service');
 const auth = require("../auth")
 
-// router.use(auth.checkToken)
+router.use(auth.checkClient)
 
 
 // get all users
 router.get("/", async (req, res) => {
   try {
+    console.log(req.body);
     const users = await userService.getUsers();
     console.log("r", users)
     res.send(users)

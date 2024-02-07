@@ -1,4 +1,5 @@
 const campaignController = require("../DL/controllers/campaign.controller");
+const userController = require("../DL/controllers/user.controller")
 const { io } = require("socket.io-client");
 const socket1 = io("http://localhost:3000");
 const { isValidObjectId  } = require('./functions')
@@ -35,8 +36,9 @@ async function delCampaign(campId) {
 async function delOneMessage(campId, msgId) {
   if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
   if (!isValidObjectId(msgId)) throw { code: 401, msg: "inValid _id" };
+
   const message = await getOneMsg(campId, msgId)
-  console.log("message: ",message );
+  console.log("message: ", message);
   if (!message) throw { code: 481, msg: "msg not exist!" };
   console.log('cs1');
   const campaign = await campaignController.readOne({ _id: campId });
@@ -52,7 +54,7 @@ async function delOneMessage(campId, msgId) {
 async function addNewMsg(id, body) {
   if (!isValidObjectId(id)) throw { code: 401, msg: "inValid _id" };
   if (!body.subject) throw { code: 420, msg: "message without subject" };
-    if (!body.content) throw { code: 421, msg: "message without content" };
+  if (!body.content) throw { code: 421, msg: "message without content" };
   let campaign = await campaignController.readOne({ _id: id });
   if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
   let filter = { _id: id };
@@ -68,33 +70,36 @@ async function addNewMsg(id, body) {
 
 async function updateMsg(id, body) {
   if (!isValidObjectId(id)) throw { code: 401, msg: "inValid _id" };
+
   let campaign = await campaignController.readOne({ _id: id });
   if (!campaign) throw { code: 480, msg: "campaign is not exist!" };
-  const msgIndex = campaign.msg.findIndex(msg=> {
-    return msg._id.toString() === body.msgId});
+  const msgIndex = campaign.msg.findIndex(msg => {
+    return msg._id.toString() === body.msgId
+  });
   if (msgIndex === -1) {
-    throw {code: 404, msg: "msg not found"}
+    throw { code: 404, msg: "msg not found" }
   }
-  let filter = { _id: id, "msg._id" : body.msgId };
-  let update = { 
-    $set:{},
+  let filter = { _id: id, "msg._id": body.msgId };
+  let update = {
+    $set: {},
   };
 
-    if (body.subject) {
-  
+  if (body.subject) {
+
     update.$set[`msg.${msgIndex}.subject`] = body.subject;
   }
-    if (body.content) {
+  if (body.content) {
     update.$set[`msg.${msgIndex}.content`] = body.content;
   }
   if (!body.content && !body.subject)
-  throw { code: 403, msg: "non a text for update" };
-return await campaignController.update(filter, update);
+    throw { code: 403, msg: "non a text for update" };
+  return await campaignController.update(filter, update);
 }
 
 async function getAllMsg(id) {
   if (!isValidObjectId(id)) throw { code: 401, msg: "inValid _id" };
   const campaign = await campaignController.readOne({ _id:id });
+
   if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
   const messages = await campaignController.read({ _id: id }, "msg");
   return messages;
@@ -102,20 +107,30 @@ async function getAllMsg(id) {
 async function getOneMsg(campId,msgId){
   if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
   if (!isValidObjectId(msgId)) throw { code: 401, msg: "inValid _id" };
+
   let campaigns = await getAllMsg(campId)
   let campaign = campaigns[0]
-  if (campaigns.length<1) ({msg: "no messeges in this campaign", code: 404})
-  let mssg =   campaign.msg
-    if (!mssg) throw ({msg: "no messeges in this campaign", code: 404})
-   let msgToFind =  mssg.find((m) => m._id== msgId)
-   if (!msgToFind) throw ({msg: "messeges is not exist", code: 404})
-    return msgToFind
-   
-  }
+  if (campaigns.length < 1) ({ msg: "no messeges in this campaign", code: 404 })
+  let mssg = campaign.msg
+  if (!mssg) throw ({ msg: "no messeges in this campaign", code: 404 })
+  let msgToFind = mssg.find((m) => m._id == msgId)
+  if (!msgToFind) throw ({ msg: "messeges is not exist", code: 404 })
+  return msgToFind
+
+}
+
+
+
+async function checkMsgNum () {
+  // hotemet
+// לבדוק כל פעם בכל המקפיין שלו כמה הודעות נשלחו
+// או להוסיף מס הודעות בסכמה
+// ואז השאלה מה זה בדיוק אומר 30 הודעות שנשלחו
+}
 
 
 //לבדוק אחרי שאריה מעלה להוצי מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
-async function getArrLeadOfCamp(capId, msgId) {
+async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
   if (!isValidObjectId(capId)) throw { code: 401, msg: "inValid  camp_id" };
   if (!isValidObjectId(msgId)) throw { code: 401, msg: "inValid msg_id" };
   if (!capId) throw { code: 404, msg: "No campaign found" };
@@ -125,6 +140,17 @@ async function getArrLeadOfCamp(capId, msgId) {
   let campaign = await campaignController.readOne({ _id: capId });
   const arrNew = campaign["leads"];
   if (!arrNew) throw { code: 404, msg: "No lead found" };
+
+  // hotemet
+  const user = userController.readOne({phone: userPhone});
+  const msgSentNow = user.messagesSent;
+  if (msgSentNow == 30) {
+    const updatedSubscription =await userController.updateUser(phone, {subscription: 'expired'});
+    updatedSubscription? console.log(updatedSubscription): console.log('no updatedSubscription');
+    throw {code: 403, msg: 'end of trial period'}
+    }
+
+
   const list = arrNew.map((l) => {
     if (l.isActive) {
       const data = {
@@ -142,6 +168,14 @@ async function getArrLeadOfCamp(capId, msgId) {
       };
     }
   });
+      // hotemet
+      //userId vs userPhone??
+      //TODO- לעלות פה את הקאונטר או לחכות לתשובה מהווצפ שבאמת נשלח
+  const updatedMsgCounter =await userController.updateUser(phone, {messagesSent: msgSentNow + 1});
+  if (!updatedMsgCounter) console.log(`no updatedMsgCounter from ${msgSentNow}`);
+  console.log(`update MsgCounter!!! now: ${msgSentNow + 1}`);
+  console.log('after update',updatedMsgCounter);
+
   finalArray = { leads: list, msg: sendMsg };
   return finalArray;
 }
@@ -241,16 +275,16 @@ async function delLeadFromCamp(capId, leadId) {
 
 
 async function updateStatusMsgOfOneLead(data) {
-  const {campId, msgId, leadId, newStatus} = data ;
+  const { campId, msgId, leadId, newStatus } = data;
 
-  if (newStatus !== 'sent'  && newStatus !== 'recieved') throw {code: 405, msg: 'status not valid'};
-    const campaign = await campaignController.readOneWithoutPopulate({ _id: campId });
-    if (!campaign) throw {code: 405, msg: 'no campaign'}
-    const message = campaign["msg"].find((m) => m._id == msgId);
-    const lead = message["leads"].find((l) => l._id == leadId);
-    lead.status = newStatus;
-    const updatedCampaign = await campaign.save();
-    return updatedCampaign;
+  if (newStatus !== 'sent' && newStatus !== 'recieved') throw { code: 405, msg: 'status not valid' };
+  const campaign = await campaignController.readOneWithoutPopulate({ _id: campId });
+  if (!campaign) throw { code: 405, msg: 'no campaign' }
+  const message = campaign["msg"].find((m) => m._id == msgId);
+  const lead = message["leads"].find((l) => l._id == leadId);
+  lead.status = newStatus;
+  const updatedCampaign = await campaign.save();
+  return updatedCampaign;
 }
 
 
@@ -263,7 +297,7 @@ module.exports = {
   delOneMessage,
   createNewCampaign,
   getAllMsg,
-  getArrLeadOfCamp,
+  sendSpecificMsgToCampaignLeads,
   getOneMsg,
   updateMsgStatus,
   delLeadFromCamp,
