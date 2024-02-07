@@ -19,9 +19,7 @@ async function createNewCampaign(userId, campName) {
 }
 
 async function getAllCampaignsByUser(userId) {
-
-  const user = campaignController.readOne({ _id: userId });
-  if (!user) throw { code: 404, msg: "user is not exist" };
+  // do not touch!!!!
   const campaigns = await campaignController.read({ user: userId });
   if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };
   return campaigns;
