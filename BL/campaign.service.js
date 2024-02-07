@@ -2,7 +2,7 @@ const campaignController = require("../DL/controllers/campaign.controller");
 const userController = require("../DL/controllers/user.controller")
 const { io } = require("socket.io-client");
 const socket1 = io("http://localhost:3000");
-const { isValidObjectId  } = require('./functions')
+const { isValidObjectId } = require('./functions')
 
 async function createNewCampaign(userId, campName) {
   if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
@@ -98,13 +98,13 @@ async function updateMsg(id, body) {
 
 async function getAllMsg(id) {
   if (!isValidObjectId(id)) throw { code: 401, msg: "inValid _id" };
-  const campaign = await campaignController.readOne({ _id:id });
+  const campaign = await campaignController.readOne({ _id: id });
 
   if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
   const messages = await campaignController.read({ _id: id }, "msg");
   return messages;
 }
-async function getOneMsg(campId,msgId){
+async function getOneMsg(campId, msgId) {
   if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
   if (!isValidObjectId(msgId)) throw { code: 401, msg: "inValid _id" };
 
@@ -121,11 +121,11 @@ async function getOneMsg(campId,msgId){
 
 
 
-async function checkMsgNum () {
+async function checkMsgNum() {
   // hotemet
-// לבדוק כל פעם בכל המקפיין שלו כמה הודעות נשלחו
-// או להוסיף מס הודעות בסכמה
-// ואז השאלה מה זה בדיוק אומר 30 הודעות שנשלחו
+  // לבדוק כל פעם בכל המקפיין שלו כמה הודעות נשלחו
+  // או להוסיף מס הודעות בסכמה
+  // ואז השאלה מה זה בדיוק אומר 30 הודעות שנשלחו
 }
 
 
@@ -142,13 +142,13 @@ async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
   if (!arrNew) throw { code: 404, msg: "No lead found" };
 
   // hotemet
-  const user = userController.readOne({phone: userPhone});
-  const msgSentNow = user.messagesSent;
+  const user = userController.readOne({ phone: userPhone });
+  const msgSentNow = user.messagesSent || 0;
   if (msgSentNow == 30) {
-    const updatedSubscription =await userController.updateUser(phone, {subscription: 'expired'});
-    updatedSubscription? console.log(updatedSubscription): console.log('no updatedSubscription');
-    throw {code: 403, msg: 'end of trial period'}
-    }
+    const updatedSubscription = await userController.updateUser({ phone: userPhone }, { subscription: 'expired' });
+    updatedSubscription ? console.log(updatedSubscription) : console.log('no updatedSubscription');
+    throw { code: 403, msg: 'end of trial period' }
+  }
 
 
   const list = arrNew.map((l) => {
@@ -168,13 +168,13 @@ async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
       };
     }
   });
-      // hotemet
-      //userId vs userPhone??
-      //TODO- לעלות פה את הקאונטר או לחכות לתשובה מהווצפ שבאמת נשלח
-  const updatedMsgCounter =await userController.updateUser(phone, {messagesSent: msgSentNow + 1});
+  // hotemet
+  //userId vs userPhone??
+  //TODO- לעלות פה את הקאונטר או לחכות לתשובה מהווצפ שבאמת נשלח
+  const updatedMsgCounter = await userController.updateUser({ phone: userPhone }, { messagesSent: msgSentNow + 1 });
   if (!updatedMsgCounter) console.log(`no updatedMsgCounter from ${msgSentNow}`);
   console.log(`update MsgCounter!!! now: ${msgSentNow + 1}`);
-  console.log('after update',updatedMsgCounter);
+  console.log('after update', updatedMsgCounter);
 
   finalArray = { leads: list, msg: sendMsg };
   return finalArray;

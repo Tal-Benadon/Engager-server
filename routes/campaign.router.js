@@ -137,7 +137,7 @@ router.get('/:campId', async (req, res) => {
     const campId = req.params.campId;
     // console.log("cr1 - campId" , campId );
     // console.log(isValidObjectId(campId));
-   
+
     const campaign = await campaignService.getOneCamp(campId);
     res.send(campaign);
   } catch (err) {
@@ -166,7 +166,7 @@ router.delete('/:campId', async (req, res) => {
 // כל ההודעות של קמפיין בודד
 router.get('/:campId/msg', async (req, res) => {
   try {
-   
+
     const msgCampaigns = await campaignService.getAllMsg(req.params.campId)
     res.send(msgCampaigns);
   }
@@ -494,9 +494,10 @@ router.get('/whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
   try {
     const idCamp = req.params.idCamp;
     const msgId = req.params.msgId;
-    const msg = await campaignService.getArrLeadOfCamp(idCamp, msgId)
+    const msg = await campaignService.sendSpecificMsgToCampaignLeads(idCamp, msgId, "05057095558")
     res.send(msg);
   } catch (err) {
+    console.log({ err });
     res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
@@ -540,7 +541,7 @@ router.get('/whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
 
 router.get('/whatsapp/camp/:idCamp/msg/:msgId/lead/:leadId', async (req, res) => {
   try {
-        // TODO funcion to the middleware
+    // TODO funcion to the middleware
 
     // if(user.subscription !== "trial" && user.subscription !== "active")throw { code: 480, msg: "The user without proper authorization" };
 
