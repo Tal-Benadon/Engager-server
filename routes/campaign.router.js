@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
     const campName = req.body.campName;
     const answer = await campaignService.createNewCampaign(userId, campName);
     console.log("the answer is:  ", answer)
-    res.send(answer);
+    res.status(200).send({ answer, msg: 'sent successfully' }); // Sending data
   }
   catch (err) {
     res.status(err.code || 500).send({msg: err.msg || 'something went wrong'});
