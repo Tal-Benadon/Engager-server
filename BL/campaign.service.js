@@ -2,18 +2,19 @@ const campaignController = require("../DL/controllers/campaign.controller");
 const { io } = require("socket.io-client");
 const socket1 = io("http://localhost:3000");
 
-async function createNewCampaign(userId, campName) {
-  console.log(userId, campName);
+async function createNewCampaign(userId, campName,starterMsg) {
+  // console.log(userId, campName);
   campName = campName.trim();
   const nameIsExist = await campaignController.readOne({
     user: userId,
     title: campName,
   });
-  console.log(nameIsExist);
+  // console.log(nameIsExist);
   if (nameIsExist) throw { code: 404, msg: "This name already exists" };
   const created = await campaignController.create({
     user: userId,
     title: campName,
+    starterMsg:starterMsg,
   });
   return created;
 }
