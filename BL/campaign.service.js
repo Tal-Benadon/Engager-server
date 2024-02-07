@@ -91,7 +91,8 @@ async function updateMsg(id, body) {
   if (msgIndex === -1) {
     throw { code: 404, msg: "msg not found" };
 
-
+  }
+}
 async function updateMsg(id, body) {
 
   let campaign = await campaignController.readOne({ _id: id });
