@@ -17,7 +17,8 @@ const msgSchema = new mongoose.Schema({
       lead: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: "lead",
-        required: true,
+        // TODO- להחזיר את הריקוורד טרו אחרי שהמונגו נקי
+        // required: true,
       },
       receptionDate: {
         type: Date,
@@ -32,7 +33,7 @@ const msgSchema = new mongoose.Schema({
   ],
   status:{
     type : String,
-    enum:["created", "read","sent", "received"],
+    enum:["created" ,"sent", "received"],
     default: "created",
     
   }
