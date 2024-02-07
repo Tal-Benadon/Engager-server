@@ -46,7 +46,9 @@ router.post('/', async (req, res) => {
     res.send(answer);
   }
   catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    // res.status(404).send(err.msg);
+    res.status((err.code) || 404).send({ msg: err.msg || 'something went wrong' });
+
   }
 })
 
@@ -72,7 +74,8 @@ router.get('/', async (req, res) => {
     res.send(campaigns);
   }
   catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    // res.status(err.code).send(err.msg);
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
 
@@ -105,7 +108,9 @@ router.get('/:campId', async (req, res) => {
     const campaign = await campaignService.getOneCamp(campId);
     res.send(campaign);
   } catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    // res.status(err.code).send(err.msg);
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
+
   }
 })
 
@@ -117,7 +122,9 @@ router.delete('/:campId', async (req, res) => {
     let deletedCamp = await campaignService.delCampaign(req.params.campId)
     res.send(deletedCamp);
   } catch (err) {
-    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
+    // res.status(404).send(err.msg);
+    res.status((err.code) || 404).send({ msg: err.msg || 'something went wrong' });
+
   }
 })
 
@@ -130,7 +137,9 @@ router.get('/:campId/msg', async (req, res) => {
     res.send(msgCampaigns);
   }
   catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    // res.status(err.code).send(err.msg);
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
+
   }
 })
 
@@ -179,7 +188,9 @@ router.post('/:campId/msg/', async (req, res) => {
     const msg = await campaignService.addNewMsg(id, req.body);
     res.send(msg);
   } catch (err) {
-    res.status(err.code).send(err.msg);
+    // res.status(err.code).send(err.msg);
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
+
   }
 });
 
@@ -223,7 +234,9 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
     res.send(del);
   }
   catch (err) {
-    res.status(err.code).send(err.msg);
+    // res.status(err.code).send(err.msg);
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
+
   }
 })
 
@@ -265,7 +278,9 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
     res.send(msg);
   }
   catch (err) {
-    res.status(502).send(err.msg);
+    // res.status(502).send(err.msg);
+    res.status((err.code) || 502).send({ msg: err.msg || 'something went wrong' });
+
   }
 })
 
@@ -307,7 +322,9 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
     res.send(msg);
   }
   catch (err) {
-    res.status(502).send(err.msg);
+    // res.status(502).send(err.msg);
+    res.status((err.code) || 502).send({ msg: err.msg || 'something went wrong' });
+
   }
 })
 
@@ -359,7 +376,9 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
     const msg = await campaignService.updateMsg(id, req.body);
     res.send(msg);
   } catch (err) {
-    res.status(err.code).send(err.msg);
+    // res.status(err.code).send(err.msg);
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
+
   }
 });
 
@@ -396,15 +415,45 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
   try {
     const idCamp = req.params.campId;
     const msgId = req.params.msgId;
-    const msg = await campaignService.sendMsgForCampaign(idCamp, msgId)
+    const msg = await campaignService.getArrLeadOfCamp(idCamp, msgId)
     res.send(msg);
-
   } catch (err) {
-    res.status(err.code).send(err.msg);
-  }
+    // res.status(err.code).send(err.msg);
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
 
+  }
 })
-// function for whatsapp all leads
+
+// get all leads from WhatsApp ---VV-----------------
+/**
+ * @swagger
+ * /whatsapp/camp/{idCamp}/msg/{msgId}/leads:
+ *   get:
+ *     summary: Get all leads from WhatsApp
+ *     tags:
+ *       - WhatsApp
+ *     parameters:
+ *       - in: path
+ *         name: idCamp
+ *         required: true
+ *         description: ID of the campaign
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: msgId
+ *         required: true
+ *         description: ID of the message
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Successfully retrieved WhatsApp leads
+ *       '404':
+ *         description: Leads not found for the given campaign and message ID
+ *       '500':
+ *         description: Internal server error
+ */
+
 router.get('/whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
   try {
     const idCamp = req.params.idCamp;
@@ -412,10 +461,47 @@ router.get('/whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
     const msg = await campaignService.getArrLeadOfCamp(idCamp, msgId)
     res.send(msg);
   } catch (err) {
-    res.status(err.code).send(err.msg);
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
   }
 })
-// function for whatsapp single lead
+
+// function for whatsapp single lead -VV------------------------
+/**
+ * @swagger
+ * /whatsapp/camp/{idCamp}/msg/{msgId}/lead/{leadId}:
+ *   get:
+ *     summary: Get a single lead from WhatsApp
+ *     description: Retrieves a single lead from WhatsApp based on the specified campaign ID, message ID, and lead ID.
+ *     tags:
+ *       - WhatsApp
+ *     parameters:
+ *       - in: path
+ *         name: idCamp
+ *         required: true
+ *         description: ID of the campaign
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: msgId
+ *         required: true
+ *         description: ID of the message
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: leadId
+ *         required: true
+ *         description: ID of the lead
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Successfully retrieved the WhatsApp lead
+ *       '404':
+ *         description: Lead not found for the given campaign, message, and lead ID
+ *       '444':
+ *         description: Custom error code for the specific scenario
+ */
+
 router.get('/whatsapp/camp/:idCamp/msg/:msgId/lead/:leadId', async (req, res) => {
   try {
     const idCamp = req.params.idCamp;
@@ -431,15 +517,59 @@ router.get('/whatsapp/camp/:idCamp/msg/:msgId/lead/:leadId', async (req, res) =>
   }
 })
 
-// delet lead
+// delet lead from Campaign --VV---------------------------------
+/**
+ * @swagger
+ * /{idCamp}/lead/{leadId}:
+ *   delete:
+ *     summary: Delete a lead from a campaign
+ *     description: Deletes a lead from the specified campaign.
+ *     tags:
+ *       - Campaign
+ *     parameters:
+ *       - in: path
+ *         name: idCamp
+ *         required: true
+ *         description: ID of the campaign
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: leadId
+ *         required: true
+ *         description: ID of the lead to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Successfully deleted the lead
+ *       '404':
+ *         description: Lead not found for the given campaign and lead ID
+ *       '405':
+ *         description: Method Not Allowed
+ */
+
 router.delete('/:idCamp/lead/:leadId', async (req, res) => {
   try {
-
     const idCamp = req.params.idCamp;
     const leadId = req.params.leadId
     const del = await campaignService.delLeadFromCamp(idCamp, leadId)
     res.send(del);
   } catch (err) {
+    res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+  }
+})
+
+
+router.put('/whatsapp/camp/:campId/msg/:msgId/lead/:leadId/newStatus/:newStatus', async (req, res) => {
+  try {
+    const campId = req.params.campId;
+    const msgId = req.params.msgId;
+    const leadId = req.params.leadId;
+    const newStatus = req.params.newStatus;
+    const ans = await campaignService.updateStatusMsgOfOneLead(campId, msgId, leadId, newStatus);
+    res.send(ans);
+  } catch (err) {
+    console.log(err);
     res.status(405).send(err.msg);
   }
 })
