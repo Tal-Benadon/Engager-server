@@ -21,7 +21,7 @@ async function createNewCampaign(userId, campName) {
 
 async function getAllCampaignsByUser(userId) {
   // do not touch!!!!
-  if (!isValidObjectId(userIdId)) throw { code: 401, msg: "inValid _id" };
+  if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
   const campaigns = await campaignController.read({ user: userId });
   // if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };
   return campaigns;

@@ -161,7 +161,6 @@ router.get('/:campId', async (req, res) => {
 // מחיקת קמפיין
 router.delete('/:campId', async (req, res) => {
   try {
-    if (!isValidObjectId(req.params.campId)) throw { code: 401, msg: "inValid _id" };
     let deletedCamp = await campaignService.delCampaign(req.params.campId)
     res.send(deletedCamp);
   } catch (err) {
