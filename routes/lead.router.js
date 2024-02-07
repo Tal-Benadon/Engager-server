@@ -5,9 +5,7 @@ const router = express.Router();
 // ייבוא השירותים
 const leadService = require('../BL/lead.service');
 
-<<<<<<< HEAD
 router.use(auth.checkClient)
-=======
 // router.get("/:leadId", async (req, res) => {
 //     try {
 //         const lead = await leadService.getAllSentMsgs(req.params.leadId)
@@ -16,7 +14,6 @@ router.use(auth.checkClient)
 //         res.status(500).send("error occured", console.log(error))
 //     }
 // })
->>>>>>> 956d3579921203f4366945c0290287dd4d669383
 
 router.post('/', async (req ,res) => {
     try {
