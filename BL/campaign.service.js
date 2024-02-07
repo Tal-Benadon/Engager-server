@@ -52,8 +52,31 @@ async function addNewMsg(id, body) {
     content: body.content,
   };
   console.log("on service the req body:  ", messages);
-  return await campaignController.update(filter, { $push: { msg: messages } });
+  await campaignController.update(filter, { $push: { msg: messages } });
+
 }
+
+async function sendMsgToLeads(campId, msgContent) {
+  const campaign = await campaignController.readOne({ _id: campId })
+  const campaignLeadsArray = campaign.leads
+  const data = campaignLeadsArray.map(lead => {
+    if (lead.isActive) {
+      const data = {
+        phone: lead["lead"].phone,
+        name: lead["lead"].name,
+        _id: lead["lead"]._id,
+        msg: msgContent
+      }
+      socket1.emit("data", data)
+      return data
+    }
+  })
+
+}
+
+
+
+
 
 async function updateMsg(id, body) {
   let campaign = await campaignController.readOne({ _id: id });
