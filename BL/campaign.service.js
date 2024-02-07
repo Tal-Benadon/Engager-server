@@ -172,24 +172,24 @@ async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
 
 
 
-  return { leads: campaign.leads, msg: "accepted" };
+  return { leads: campaign.leads, msg };
 }
 
 
+
+async function msgSentLeads(campaignObj, msgId) {
+  const msgObject = campaignObj?.msg?.find?.(msgObj => msgObj._id === msgId)
+  const arrayOfLeadsInMsg = msgObject?.leads || []
+
+  return  arrayOfLeadsInMsg
+}
+
 async function msgNotSentLeads(campaignObj, msgId) {
   const leadsInCampaign = campaignObj.leads
-  const numberOfLeadsInCampaign = leadsInCampaign.length
-
   const sentLeadsResultsArray = msgSentLeads(campaignObj, msgId)
+  const NotSentLeadsArray = leadsInCampaign.filter(campLead => !sentLeadsResultsArray.some(msgLead => msgLead._id === campLead._id))
 
-  const NotSentLeadsArray = leadsInCampaign.filter(campLead => !sentLeadsResultsArray[0].some(msgLead => msgLead._id === campLead._id))
-
-  const NumberOfNotSentLeads = numberOfLeadsInCampaign - sentLeadsResultsArray[1]
-
-
-
-
-  return [NotSentLeadsArray, NumberOfNotSentLeads]
+  return NotSentLeadsArray
 }
 
 // פונקציה שמביאה msg and lead
