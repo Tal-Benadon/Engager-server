@@ -217,7 +217,7 @@ router.get('/:campId/msg', async (req, res) => {
 *         description: Internal server error
 */
 
-router.post('/:campId/msg/', async (req, res) => {
+router.post('/:campId/messages', async (req, res) => {
   try {
     const id = req.params.campId;
     const msg = await campaignService.addNewMsg(id, req.body);
