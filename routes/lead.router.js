@@ -4,6 +4,9 @@ const express = require('express');
 const router = express.Router();
 // ייבוא השירותים
 const leadService = require('../BL/lead.service');
+const auth = require("../auth")
+
+// router.use(auth.checkToken)
 
 //*************************************************************
 // List of Full Rauts & details - 
@@ -43,10 +46,10 @@ const leadService = require('../BL/lead.service');
  *         description: Internal server error
  */
 
-router.post('/', async (req ,res) => {
-    try {      
-        const newLead = await leadService.addLeadToCamp(req.body.data);
-        console.log("cr3");
+router.post('/', async (req, res) => {
+    try {
+        const data = req.body.data
+        const newLead = await leadService.addLeadToCamp(data);
         res.send(newLead)
         console.log("cr4");
     } catch (err) {
