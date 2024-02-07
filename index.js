@@ -6,7 +6,12 @@ const campaignRouter = require('./routes/campaign.router');
 const leadRouter = require('./routes/lead.router');
 const userRouter = require("./routes/user.router");
 const loginRouter = require("./routes/login.router");
+<<<<<<< HEAD
 const webhookRouter = require("./routes/webhook.router")
+=======
+const paymentRouter = require("./routes/payment.router")
+
+>>>>>>> 6752e451b01e2af7d3818fc3614079df46083a85
 const db = require('./DL/db')
 
 const app = express();
@@ -19,8 +24,12 @@ app.use('/campaign', campaignRouter);
 app.use('/lead', leadRouter);
 app.use('/user', userRouter);
 app.use('/login', loginRouter);
+<<<<<<< HEAD
 app.use('/webhook', webhookRouter)
 
+=======
+app.use('/payment', paymentRouter);
+>>>>>>> 6752e451b01e2af7d3818fc3614079df46083a85
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerDocument = require('./swagger.json');
