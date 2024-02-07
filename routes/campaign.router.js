@@ -596,7 +596,6 @@ router.get('/whatsapp/camp/:idCamp/msg/:msgId/lead/:leadId', async (req, res) =>
 
 router.delete('/:idCamp/lead/:leadId', async (req, res) => {
   try {
-
     const idCamp = req.params.idCamp;
     const leadId = req.params.leadId
     const del = await campaignService.delLeadFromCamp(idCamp, leadId)
