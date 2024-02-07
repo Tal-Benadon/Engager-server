@@ -35,9 +35,9 @@ const campaignService = require('../BL/campaign.service');
  *       '200':
  *         description: Successfully created a new campaign
  *       '400':
- *         description: Bad request, check your payload
+ *         description: Bad request, This name already exists
  *       '500':
- *         description: Internal server error
+ *         description: Internal server error/something went wrong
  */
 
 router.post('/', async (req, res) => {

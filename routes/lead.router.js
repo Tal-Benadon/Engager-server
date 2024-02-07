@@ -44,10 +44,11 @@ const leadService = require('../BL/lead.service');
  */
 
 router.post('/', async (req ,res) => {
-    try {
-        const data = req.body.data
-        const newLead = await leadService.addLeadToCamp(data);
+    try {      
+        const newLead = await leadService.addLeadToCamp(req.body.data);
+        console.log("cr3");
         res.send(newLead)
+        console.log("cr4");
     } catch (err) {
         res.status(400).send(err.msg)
     }
@@ -87,7 +88,7 @@ router.post('/', async (req ,res) => {
  *       '500':
  *         description: Internal server error
  */
-
+ 
 router.put('/:id', async (req ,res) => {
     try {
         res.send(await leadService.updateLead(req.params.id, req.body))
