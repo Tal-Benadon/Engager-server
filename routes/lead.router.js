@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 // ייבוא השירותים
 const leadService = require('../BL/lead.service');
+const auth = require('../auth')
 
 router.use(auth.checkClient)
 // router.get("/:leadId", async (req, res) => {

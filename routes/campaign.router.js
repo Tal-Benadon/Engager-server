@@ -1,16 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const campaignService = require('../BL/campaign.service');
+const auth = require('../auth')
 
-<<<<<<< HEAD
 router.use(auth.checkClient)
 //*************************************************************
 // List of Full Rauts & details - 
 // https://engager-g262.onrender.com/api-docs
 //*************************************************************
-=======
-
->>>>>>> 956d3579921203f4366945c0290287dd4d669383
 
 // TODO: לשלוף את המשתמש מהטוקן
 
