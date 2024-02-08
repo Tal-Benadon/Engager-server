@@ -294,19 +294,38 @@ async function deleteMsgFromCampaign() {
 
 
 async function updateStatusMsgOfOneLead(data) {
-  const { campId, msgId, leadId, newStatus } = data;
-  if (newStatus !== "sent" && newStatus !== "recieved")
+  const { campId, msgId, leadId, issend } = data;
+  console.log('issend', issend);
+  if (issend != "sent" && issend != "recieved")
     throw { code: 405, msg: "status not valid" };
   const campaign = await campaignController.readOneWithoutPopulate({
-    _id: campId,
+    _id: campId
   });
   if (!campaign) throw { code: 405, msg: "no campaign" };
   const message = campaign["msg"].find((m) => m._id == msgId);
-  const lead = message["leads"].find((l) => l._id == leadId);
-  lead.status = newStatus;
+  console.log("message",message);
+  const lead = message["leads"].find((l) => l.lead == leadId);
+  console.log("**************************lead",lead,"*********************");
+  lead.status = issend;
   const updatedCampaign = await campaign.save();
   return updatedCampaign;
 }
+
+socket1.on('connect', () => {
+  console.log('Connected to server');
+});
+
+ socket1.on('sent', async (data) => {
+  try{
+    console.log(data.rtrnData);
+    const res = await updateStatusMsgOfOneLead(data.rtrnData)
+    console.log(res);
+
+  }
+  catch(err){
+    console.error(err)
+  }
+});
 
 module.exports = {
   addNewMsg,
