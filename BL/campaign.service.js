@@ -35,8 +35,8 @@ async function updateCampaing(campId, data) {
 
 async function getAllCampaignsByUser(userId) {
   // do not touch!!!!
-  const campaigns = await campaignController.read({ user: userId });
-  // if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };
+  const campaigns = await campaignController.read({ user: userId }); 
+  // if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };  להוסיף פילטר ללידים לפי  isactiv
   return campaigns;
 }
 async function delCampaign(campId) {
