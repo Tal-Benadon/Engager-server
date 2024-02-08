@@ -4,6 +4,20 @@ const campaignService = require('../BL/campaign.service');
 const scheduleService = require('../BL/schedule.service');
 const { scheduledJobs } = require("node-schedule");
 
+const auth = require("../auth");
+
+
+router.use(auth.checkClient)
+//*************************************************************
+// List of Full Rauts & details - 
+// https://engager-g262.onrender.com/api-docs
+//*************************************************************
+
+// router.use(auth.checkToken)
+//*************************************************************
+// List of Full Rauts & details - 
+// https://engager-g262.onrender.com/api-docs
+//*************************************************************
 
 // TODO: לשלוף את המשתמש מהטוקן
 
@@ -33,25 +47,41 @@ const { scheduledJobs } = require("node-schedule");
  *       '200':
  *         description: Successfully created a new campaign
  *       '400':
- *         description: Bad request, check your payload
+ *         description: Bad request, This name already exists
  *       '500':
- *         description: Internal server error
+ *         description: Internal server error/something went wrong
  */
 
 router.post('/', async (req, res) => {
   try {
+    // {"campName":"camp1",{"user":{"_id":"65743643"}}}
     const userId = req.body.user._id;
-    const campName = req.body.campName;
-    const answer = await campaignService.createNewCampaign(userId, campName);
+    const body = req.body;
+    const answer = await campaignService.createNewCampaign(userId, body);
     console.log("the answer is:  ", answer)
     res.send(answer);
   }
   catch (err) {
+    console.log(err);
     // res.status(404).send(err.msg);
     res.status((err.code) || 404).send({ msg: err.msg || 'something went wrong' });
 
   }
 })
+//******update campeing */
+router.put('/:campId', async (req, res)=>{
+try{
+  const campId = req.params.campId;
+  const data= req.body.data
+ const campeing = await campaignService.updateCampaing(campId, data)
+ res.send(campeing)
+} 
+catch(err){
+  res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+
+}
+})
+
 
 /** - Get all campaigns of user-VV---------------------------------------------------------------------
  * @swagger
@@ -70,6 +100,7 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
+
     const userId = req.body.user._id;
     const campaigns = await campaignService.getAllCampaignsByUser(userId)
     res.send(campaigns);
@@ -103,9 +134,26 @@ router.get('/', async (req, res) => {
  *         description: Campaign not found
  */
 
+
+// Example usage
+// const objectIdToCheck = '5f7a1e6b8f8a1e5e42823121';
+
+// if (isValidObjectId(objectIdToCheck)) {
+//   console.log('Valid ObjectId');
+// } else {
+//   console.log('Invalid ObjectId');
+// }
+
+// ניסיון ראשון - לא עבד
+// function isValidObjectId(id) {
+//   return ObjectId.isValid(id);
+// }
 router.get('/:campId', async (req, res) => {
   try {
     const campId = req.params.campId;
+    // console.log("cr1 - campId" , campId );
+    // console.log(isValidObjectId(campId));
+   
     const campaign = await campaignService.getOneCamp(campId);
     res.send(campaign);
   } catch (err) {
@@ -134,6 +182,7 @@ router.delete('/:campId', async (req, res) => {
 // כל ההודעות של קמפיין בודד
 router.get('/:campId/msg', async (req, res) => {
   try {
+    // TODO: לבדוק האם יש שימוש בקליינט ואם לא למחוק
     const msgCampaigns = await campaignService.getAllMsg(req.params.campId)
     res.send(msgCampaigns);
   }
@@ -183,7 +232,7 @@ router.get('/:campId/msg', async (req, res) => {
 *         description: Internal server error
 */
 
-router.post('/:campId/msg/', async (req, res) => {
+router.post('/:campId/messages', async (req, res) => {
   try {
     const id = req.params.campId;
     const msg = await campaignService.addNewMsg(id, req.body);
@@ -383,12 +432,12 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
   }
 });
 
-//Delete a message from a campaign-VV-----------
+//Send a message to leads least of one campaign-VV-----------
 /**
  * @swagger
  * /campaigns/{campId}/msg/{msgId}:
- *   delete:
- *     summary: Delete a message from a campaign
+ *   post:
+ *     summary: Send a message to leads least of one campaign
  *     tags: [Message]
  *     parameters:
  *       - in: path
@@ -412,11 +461,13 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
  *         description: Internal server error
  */
 
-router.delete('/:campId/msg/:msgId', async (req, res) => {
+// TODO- למה זה מחיקה? זה היה אמור להיות פונ אחרת?
+router.post('/:campId/msg/:msgId', async (req, res) => {
   try {
+    const userPhone = req.body.user.phone;
     const idCamp = req.params.campId;
     const msgId = req.params.msgId;
-    const msg = await campaignService.getArrLeadOfCamp(idCamp, msgId)
+    const msg = await campaignService.sendSpecificMsgToCampaignLeads(idCamp, msgId, userPhone);
     res.send(msg);
   } catch (err) {
     // res.status(err.code).send(err.msg);
@@ -505,6 +556,10 @@ router.get('/whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
 
 router.get('/whatsapp/camp/:idCamp/msg/:msgId/lead/:leadId', async (req, res) => {
   try {
+        // TODO funcion to the middleware
+
+    // if(user.subscription !== "trial" && user.subscription !== "active")throw { code: 480, msg: "The user without proper authorization" };
+
     const idCamp = req.params.idCamp;
     const msgId = req.params.msgId;
     const leadId = req.params.leadId;
@@ -563,6 +618,8 @@ router.delete('/:idCamp/lead/:leadId', async (req, res) => {
 
 router.put('/whatsapp/camp/:campId/msg/:msgId/lead/:leadId/newStatus/:newStatus', async (req, res) => {
   try {
+    // TODO funcion to the middleware
+    // if(user.subscription !== "trial" && user.subscription !== "active")throw { code: 480, msg: "The user without proper authorization" };
     const campId = req.params.campId;
     const msgId = req.params.msgId;
     const leadId = req.params.leadId;
