@@ -5,7 +5,7 @@ const socket1 = io("http://localhost:3000");
 const { isValidObjectId  } = require('./functions')
 
 async function createNewCampaign(userId, body) {
-  console.log(userId, campName);
+  // console.log(userId, campName);
   const {title, details , img}= body
   if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
     campName = title.trim();

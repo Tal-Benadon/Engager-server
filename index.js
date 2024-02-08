@@ -19,6 +19,7 @@ app.use(express.json());
 app.use('/campaign', campaignRouter);
 app.use('/lead', leadRouter);
 app.use('/user', userRouter);
+app.use('/', loginRouter);
 app.use('/login', loginRouter);
 app.use('/payment', paymentRouter);
 const swaggerUi = require('swagger-ui-express');
