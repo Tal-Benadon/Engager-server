@@ -36,8 +36,9 @@ async function updateUser(filter, data) {
     let userToUpdate = await userModel.updateOne(filter, data, {new: true})
     return userToUpdate;
 }
+
 async function updateOneByFilter(filter, data) {
-    let userToUpdate = await userModel.updateOne(filter, data, {new: true})
+    let userToUpdate = await userModel.updateOne(filter, data, { new: true })
     return userToUpdate;
 }
 

@@ -71,11 +71,11 @@ async function createNewUser(body) {
   // האם צריך לשלוח ביצירה דיקסקרפשן של תקופת נסיון או שיש לו אופציה ישר להרשם?
   const newUser = await userController.create({ ...body , subscription: 'trial'});
   let createdDate = new Date(); 
-  // const expiredDate = new Date(createdDate);
-  // expiredDate.setDate(expiredDate.getDate() + 14);
-let futureDate = new Date(createdDate.getTime());
-futureDate.setMinutes(createdDate.getMinutes() + 2);
-  scheduleService.convertToDateAndExec(futureDate, ()=> endOfTrialPeriod(phone));
+  const expiredDate = new Date(createdDate);
+  expiredDate.setDate(expiredDate.getDate() + 14);
+// let futureDate = new Date(createdDate.getTime());
+// futureDate.setMinutes(createdDate.getMinutes() + 2);
+  scheduleService.convertToDateAndExec(expiredDate, ()=> endOfTrialPeriod(phone));
 
   return newUser
 }
