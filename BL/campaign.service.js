@@ -2,7 +2,7 @@ const campaignController = require("../DL/controllers/campaign.controller");
 const userController = require("../DL/controllers/user.controller")
 const { io } = require("socket.io-client");
 const socket1 = io("http://localhost:3000");
-const { isValidObjectId  } = require('./functions')
+const { isValidObjectId } = require('./functions')
 
 async function createNewCampaign(userId, body) {
   console.log(userId, campName);
@@ -122,25 +122,25 @@ async function updateMsg(id, body) {
 }
 
 async function getAllMsg(id) {
+  if (!isValidObjectId(id)) throw { code: 401, msg: "inValid _id" };
   const campaign = await campaignController.readOne({ _id: id });
+
   if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
   const messages = await campaignController.read({ _id: id }, "msg");
   return messages;
 }
 async function getOneMsg(campId, msgId) {
-  let campaigns = await getAllMsg(campId);
-  let campaign = campaigns[0];
-  if (campaigns.length < 1)
-    ({ msg: "no messeges in this campaign", code: 404 });
-  let mssg = campaign.msg;
-  if (!mssg) throw { msg: "no messeges in this campaign", code: 404 };
-  let msgToFind = mssg.find((m) => m._id == msgId);
-  if (!msgToFind) throw { msg: "messeges is not exist", code: 404 };
-  return msgToFind;
+  if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
+  if (!isValidObjectId(msgId)) throw { code: 401, msg: "inValid _id" };
+
+  let camp = await campaignController.readOne({ _id: campId, "msg._id": msgId })
+  if (!camp) throw { msg: "no messeges in this campaign", code: 404 }
+
+  return camp.msg.find(m => m._id == msgId)
 }
 
 
-//לבדוק אחרי שאריה מעלה להוצי מערך שם ומספר טלפון שליחת הודעה לכל הלידים בקמפיין מסויים
+
 async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
   if (!isValidObjectId(capId)) throw { code: 401, msg: "inValid  camp_id" };
   if (!isValidObjectId(msgId)) throw { code: 401, msg: "inValid msg_id" };
@@ -307,7 +307,6 @@ module.exports = {
   delOneMessage,
   createNewCampaign,
   getAllMsg,
-  sendSpecificMsgToCampaignLeads,
   getOneMsg,
   updateMsgStatus,
   delLeadFromCamp,
@@ -317,5 +316,6 @@ module.exports = {
   delLeadFromCamp,
   getMsgAndLead,
   updateStatusMsgOfOneLead,
-  updateCampaing
+  updateCampaing,
+  sendSpecificMsgToCampaignLeads,
 };
