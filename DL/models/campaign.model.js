@@ -84,6 +84,20 @@ const campaignSchema = new mongoose.Schema({
       },
     },
   ],
+  leadMsg : [{
+    idMsg : {}, 
+    idLead : {},
+    receptionDate: {
+      type: Date,
+      default: Date.now,
+    },
+    status: {
+      type: String,
+      enum: ["sent", "recieved"],
+      default: "sent"
+    }
+  }],
+  
   isActive: {
     type: Boolean,
     default: true,
