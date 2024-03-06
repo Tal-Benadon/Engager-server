@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const PORT = 2500
 const campaignRouter = require('./routes/campaign.router');
-const leadRouter = require('./routes/lead.router');
 const userRouter = require("./routes/user.router");
 const loginRouter = require("./routes/login.router");
 const webhookRouter = require("./routes/webhook.router")
@@ -18,7 +17,6 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/campaign', campaignRouter);
-app.use('/lead', leadRouter);
 app.use('/user', userRouter);
 app.use('/', loginRouter);
 app.use('/login', loginRouter);
