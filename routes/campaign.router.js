@@ -4,7 +4,6 @@ const campaignService = require('../BL/campaign/campaign.service');
 const msgService = require('../BL/campaign/msg.service')
 const scheduleService = require('../BL/schedule.service');
 const { scheduledJobs } = require("node-schedule");
-const msgService = require('../BL/campaign/msg.service')
 const auth = require("../auth");
 
 router.use(auth.checkClient)
