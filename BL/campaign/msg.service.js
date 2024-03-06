@@ -3,6 +3,8 @@ const { io } = require("socket.io-client");
 const socket1 = io("http://localhost:3000"); // ?
 const { isValidObjectId } = require('../functions')
 
+
+
 // To delete msg from campaign
 async function delOneMessage(campId, msgId) {
 
@@ -10,12 +12,10 @@ async function delOneMessage(campId, msgId) {
     { _id: campId, 'msg._id': msgId },
     { $set: { 'msg.$.isActive': false } },
   )
-
-
 }
 
 
-//To add a new msg
+//To add a new msg  
 async function addNewMsg(id, body) {
   if (!isValidObjectId(id)) throw { code: 401, msg: "inValid _id" };
   if (!body.subject) throw { code: 420, msg: "message without subject" };
@@ -32,19 +32,21 @@ async function addNewMsg(id, body) {
 }
 
 //To update a msg
-async function updateMsg(campId, body) {
+async function updateMsg(campId, msgId ,body) {
   console.log("***in msg");
   if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
 
   let campaign = await campaignController.readOne({ _id: campId });
+  console.log( " S " , campaign);
   if (!campaign) throw { code: 480, msg: "campaign is not exist!" };
   const msgIndex = campaign.msg.findIndex(msg => {
-    return msg._id.toString() === body.msgId
+    return msg._id.toString() === msgId
   });
+  console.log( "msgIndex" , msgIndex);
   if (msgIndex === -1) {
     throw { code: 404, msg: "msg not found" }
   }
-  let filter = { _id: id, "msg._id": body.msgId };
+  let filter = { _id: campId, "msg._id": msgId };
   let update = {
     $set: {},
   };
@@ -56,10 +58,12 @@ async function updateMsg(campId, body) {
   if (body.content) {
     update.$set[`msg.${msgIndex}.content`] = body.content;
   }
-  if (!body.content || !body.subject)
+  if (!body.content && !body.subject)
 
     throw { code: 403, msg: "non a text for update" };
-  return await campaignController.update(filter, update);
+    let resolt = await campaignController.update(filter, update);
+    console.log( "res" ,resolt);
+  return resolt
 }
 
 
