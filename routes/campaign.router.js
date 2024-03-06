@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const campaignService = require('../BL/campaign/campaign.service');
-const msgService = require ('../BL/campaign/msg.service')
+const msgService = require('../BL/campaign/msg.service')
 const scheduleService = require('../BL/schedule.service');
 const { scheduledJobs } = require("node-schedule");
 
@@ -238,12 +238,11 @@ router.get('/:campId/msg', async (req, res) => {
 *         description: Internal server error
 */
 
-//To add a new msg
 router.post('/:campId/msg', async (req, res) => {
   try {
     const campId = req.params.campId;
     const data = req.body.data
-    const msg = await msgService.addNewMsg(campId , data);
+    const msg = await msgService.addNewMsg(campId, data);
     res.send(msg);
   } catch (err) {
     // res.status(err.code).send(err.msg);
@@ -284,6 +283,7 @@ router.post('/:campId/msg', async (req, res) => {
  *         description: Internal server error
  */
 
+// To delete msg [isActive : false ]
 router.delete('/:campId/msg/:msgId', async (req, res) => {
   try {
     const idCamp = req.params.campId;
@@ -325,12 +325,13 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
  *       '502':
  *         description: Bad gateway, internal server error
  */
+
 router.get('/:campId/msg/:msgId', async (req, res) => {
   try {
     const campId = req.params.campId;
     const msgId = req.params.msgId;
     scheduleService.scheduleTest("yes", "no")
-    const msg = await msgService.getOneMsg(campId, msgId);
+    const msg = await msgService.addNewMsg(campId, msgId);
 
     console.log("the returned msg is:  ", msg);
     res.send(msg);
@@ -428,10 +429,10 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
  */
 router.put("/:campId/msg/:msgId", async (req, res) => {
   try {
-    const id = req.params.campId;
+    const campId = req.params.campId;
     const msgId = req.params.msgId;
-    req.body = { ...req.body, msgId }
-    const msg = await campaignService.updateMsg(id, req.body);
+    body = req.body
+    const msg = await msgService.updateMsg(campId, msgId, body);
     res.send(msg);
   } catch (err) {
     // res.status(err.code).send(err.msg);
