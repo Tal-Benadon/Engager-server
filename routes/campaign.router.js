@@ -238,7 +238,6 @@ router.get('/:campId/msg', async (req, res) => {
 *         description: Internal server error
 */
 
-//To add a new msg
 router.post('/:campId/msg', async (req, res) => {
   try {
     const campId = req.params.campId;
@@ -284,6 +283,7 @@ router.post('/:campId/msg', async (req, res) => {
  *         description: Internal server error
  */
 
+// To delete msg [isActive : false ]
 router.delete('/:campId/msg/:msgId', async (req, res) => {
   try {
     const idCamp = req.params.campId;
@@ -325,12 +325,13 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
  *       '502':
  *         description: Bad gateway, internal server error
  */
+
 router.get('/:campId/msg/:msgId', async (req, res) => {
   try {
     const campId = req.params.campId;
     const msgId = req.params.msgId;
     scheduleService.scheduleTest("yes", "no")
-    const msg = await msgService.getOneMsg(campId, msgId);
+    const msg = await msgService.addNewMsg(campId, msgId);
 
     console.log("the returned msg is:  ", msg);
     res.send(msg);
@@ -431,7 +432,7 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
     const id = req.params.campId;
     const msgId = req.params.msgId;
     req.body = { ...req.body, msgId }
-    const msg = await campaignService.updateMsg(id, req.body);
+    const msg = await msgService.updateMsg(id, req.body);
     res.send(msg);
   } catch (err) {
     // res.status(err.code).send(err.msg);

@@ -70,12 +70,12 @@ async function getAllMsg(id) {
   const campaign = await campaignController.readOne({ _id: id });
 
   if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
-  const messages = await campaignController.read({ _id: id }, "msg");
+  const messages = await campaignController.read({ _id: id, isActive: true }, "msg");
   return messages;
 }
 
 
-
+// To get just one msg 
 async function getOneMsg(campId, msgId) {
   if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
   if (!isValidObjectId(msgId)) throw { code: 401, msg: "inValid _id" };
