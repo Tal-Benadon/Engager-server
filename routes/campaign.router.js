@@ -4,7 +4,7 @@ const campaignService = require('../BL/campaign/campaign.service');
 const msgService = require('../BL/campaign/msg.service')
 const scheduleService = require('../BL/schedule.service');
 const { scheduledJobs } = require("node-schedule");
-
+const msgService = require('../BL/campaign/msg.service')
 const auth = require("../auth");
 
 router.use(auth.checkClient)
@@ -431,8 +431,9 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
   try {
     const campId = req.params.campId;
     const msgId = req.params.msgId;
-    body = req.body
-    const msg = await msgService.updateMsg(campId, msgId, body);
+    body = req.body.data
+    console.log("rutbody", body);
+    const msg = await msgService.updateMsg(campId,msgId, body);
     res.send(msg);
   } catch (err) {
     // res.status(err.code).send(err.msg);

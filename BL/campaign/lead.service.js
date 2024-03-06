@@ -2,17 +2,14 @@ const leadController = require("../../DL/controllers/lead.controller");
 const campaignController = require("../../DL/controllers/campaign.controller");
 
 async function addLeadToCamp(campId, data) {
+  console.log("datainser", data);
   if (!data.phone || !data.fName)
     throw { code: 500, msg: "User details are missing" };
   // TODO- check if phone is valid
 
-  const campaign = await campaignController.read({_id : campId});
-  console.log(campaign , campId);
-  if (!campaign) {
-    throw {
-         code: 404, msg: "Campaign not found" 
-};
-  }
+  const campaign = await campaignController.readOne({_id : campId});
+  console.log("campin",campaign , campId);
+  if (!campaign) throw {  code: 404, msg: "Campaign not found"};
 
   const phoneIsExist = await campaign.leads.some((lead) => lead.phone === data.phone);
   if (phoneIsExist)
@@ -57,7 +54,7 @@ async function updateLeadInCamp(campId,leadId, newData) {
       newData.phone && (update.$set[`leads.${leadIndex}.phone`]=newData.phone )
 
   
-  return campaignController.update(filter, update);
+  return  await campaignController.update(filter, update);
 }
 
 async function delLeadFromCamp(capId, leadId) {
@@ -81,4 +78,4 @@ async function delLeadFromCamp(capId, leadId) {
 //     // return lead
 // }
 
-module.exports = { addLeadToCamp, updateLeadInCamp, addLeadToCamp, delLeadFromCamp };
+module.exports = { updateLeadInCamp, addLeadToCamp, delLeadFromCamp };

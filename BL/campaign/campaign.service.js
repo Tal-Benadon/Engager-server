@@ -7,6 +7,8 @@ const { isValidObjectId } = require('../functions')
 
 
 
+
+
 // To get all the campaigns (only if is active) and the information (user & msg & leads & received msgs)
 // do not touch!!!!
 async function getAllCampaignsByUser(userId) {
@@ -34,7 +36,6 @@ async function createNewCampaign(userId, body) {
     user: userId,
     title: campName,
   });
- 
   if (nameIsExist) throw { code: 404, msg: "This name already exists" };
   const created = await campaignController.create({
     user: userId,
