@@ -10,9 +10,11 @@ async function read(filter, select = "") {
 }
 
 
-async function readOne(filter, populate) {
-    populate = 'leads.lead'
-    return await campaignModel.findOne(filter).populate(populate)
+async function readOne(filter={}) {
+console.log(filter);
+     let cam = await campaignModel.findOne(filter)
+     console.log("campcon",cam);
+    return cam
 }
 async function readOneWithoutPopulate(filter, populate) {
     return await campaignModel.findOne(filter).populate(populate)

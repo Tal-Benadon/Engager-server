@@ -3,7 +3,7 @@ const router = express.Router();
 const campaignService = require('../BL/campaign/campaign.service');
 const scheduleService = require('../BL/schedule.service');
 const { scheduledJobs } = require("node-schedule");
-
+const msgService = require('../BL/campaign/msg.service')
 const auth = require("../auth");
 
 
@@ -419,10 +419,10 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
  */
 router.put("/:campId/msg/:msgId", async (req, res) => {
   try {
-    const id = req.params.campId;
+    const campId = req.params.campId;
     const msgId = req.params.msgId;
-    req.body = { ...req.body, msgId }
-    const msg = await campaignService.updateMsg(id, req.body);
+    body = req.body
+    const msg = await msgService.updateMsg(campId,msgId, body);
     res.send(msg);
   } catch (err) {
     // res.status(err.code).send(err.msg);

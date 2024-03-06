@@ -1,22 +1,12 @@
 
 async function delOneMessage(campId, msgId) {
-    const message = await getOneMsg(campId, msgId);
-    console.log("message: ", message);
-    if (!message) throw { code: 481, msg: "msg not exist!" };
-    console.log("cs1");
-    const campaign = await campaignController.readOne({ _id: campId });
-    console.log("cs2");
-    if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
-    console.log("cs3");
-    try {
+
       return await campaignController.updateOne(
         { _id: campId, 'msg._id': msgId },
         { $set: { 'msg.$.isActive': false } },
       )
   
-    } catch (error) {
-      console.log(error);
-    }
+
   }
 
   async function addNewMsg(id, body) {
@@ -34,10 +24,11 @@ async function delOneMessage(campId, msgId) {
     return await campaignController.update(filter, { $push: { msg: messages } });
   }
 
-  async function updateMsg(id, body) {
-    if (!isValidObjectId(id)) throw { code: 401, msg: "inValid _id" };
+  async function updateMsg(campId, body) {
+    console.log("***in msg");
+    if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
   
-    let campaign = await campaignController.readOne({ _id: id });
+    let campaign = await campaignController.readOne({ _id: campId });
     if (!campaign) throw { code: 480, msg: "campaign is not exist!" };
     const msgIndex = campaign.msg.findIndex(msg => {
       return msg._id.toString() === body.msgId
@@ -93,3 +84,4 @@ async function delOneMessage(campId, msgId) {
   
     return campaignController.update(filter, $set("status", status));
   }
+  module.exports ={ updateMsg , delOneMessage}

@@ -21,7 +21,11 @@ const receivedMsg= new mongoose.Schema({
 })
 
 const leadSchema = new mongoose.Schema({
-  name: {
+  fName: {
+    type: String,
+    required: true,
+  },
+  lName: {
     type: String,
     required: true,
   },
