@@ -4,9 +4,9 @@ const express = require('express');
 const router = express.Router();
 // ייבוא השירותים
 const leadService = require('../BL/campaign/lead.service');
-const auth = require('../auth')
+// const auth = require('../auth')
 
-router.use(auth.checkClient)
+// router.use(auth.checkClient)
 // router.get("/:leadId", async (req, res) => {
 //     try {
 //         const lead = await leadService.getAllSentMsgs(req.params.leadId)
@@ -65,11 +65,11 @@ router.post('/:campId', async (req ,res) => {
  *         description: Internal server error
  */
  
-router.put('/:campId/:leadId', async (req ,res) => {
+router.put('/:campId/lead/:leadId', async (req ,res) => {
     try {
         const campId= req.params.campId
         const leadId= req.params.leadId
-        const newData= req.body
+        const newData= req.body.data
         res.send(await leadService.updateLeadInCamp(campId, leadId, newData ))
     } catch (err) {
         res.status(400).send(err.msg)

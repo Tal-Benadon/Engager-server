@@ -10,7 +10,7 @@ async function read(filter, select = "") {
 }
 
 
-async function readOne(filter={}) {
+async function readOne(filter={}){
 console.log(filter);
      let cam = await campaignModel.findOne(filter)
      console.log("campcon",cam);

@@ -69,18 +69,18 @@ router.post('/', async (req, res) => {
   }
 })
 //******update campeing */
-router.put('/:campId', async (req, res)=>{
-try{
-  const campId = req.params.campId;
-  const data= req.body.data
- const campeing = await campaignService.updateCampaing(campId, data)
- res.send(campeing)
-} 
-catch(err){
-  res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
+router.put('/:campId', async (req, res) => {
+  try {
+    const campId = req.params.campId;
+    const data = req.body.data
+    const campeing = await campaignService.updateCampaign(campId, data)
+    res.send(campeing)
+  }
+  catch (err) {
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
 
-}
-})
+  }
+  })
 
 
 /** - Get all campaigns of user-VV---------------------------------------------------------------------
@@ -231,10 +231,11 @@ router.get('/:campId/msg', async (req, res) => {
 *         description: Internal server error
 */
 
-router.post('/:campId/messages', async (req, res) => {
+router.post('/:campId/msg', async (req, res) => {
   try {
-    const id = req.params.campId;
-    const msg = await campaignService.addNewMsg(id, req.body);
+    const campId = req.params.campId;
+    const data = req.body.data
+    const msg = await msgService.addNewMsg(campId, data);
     res.send(msg);
   } catch (err) {
     // res.status(err.code).send(err.msg);
@@ -421,7 +422,8 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
   try {
     const campId = req.params.campId;
     const msgId = req.params.msgId;
-    body = req.body
+    body = req.body.data
+    console.log("rutbody", body);
     const msg = await msgService.updateMsg(campId,msgId, body);
     res.send(msg);
   } catch (err) {
