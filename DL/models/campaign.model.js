@@ -1,42 +1,47 @@
 const mongoose = require("mongoose");
-const receivedMsg= new mongoose.Schema({
-  leadId : {
-  type:  mongoose.SchemaTypes.ObjectId
-  }, 
-  msgId: {
-    type:  mongoose.SchemaTypes.ObjectId
 
-  }, 
+const receivedMsg = new mongoose.Schema({
+  leadId: {
+    type: mongoose.SchemaTypes.ObjectId
+  },
+  msgId: {
+    type: mongoose.SchemaTypes.ObjectId
+
+  },
   status: {
     type: String,
     enum: ["created", "sent", "received"],
     default: "created",
 
   },
-  sentData:{
+  sentData: {
     type: Date,
-    default : Date.now
+    default: Date.now
   }
-  
+
 })
 
 const leadSchema = new mongoose.Schema({
-  name: {
+  fName: {
+    type: String,
+    required: true,
+  },
+  lName: {
     type: String,
     required: true,
   },
   email: {
     type: String,
-    default:''
+    default: ''
     // ???OK
   },
   phone: {
-    type: String,  
+    type: String,
     required: true,
   },
   notes: {
     type: String,
-    default:''
+    default: ''
   },
   joinDate: {
     type: Date,
@@ -65,7 +70,7 @@ const msgSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  
+
   status: {
     type: String,
     enum: ["created", "sent", "received"],
@@ -99,8 +104,8 @@ const campaignSchema = new mongoose.Schema({
   msg: [msgSchema],
 
   leads: [leadSchema],
-  receivedMsgs :[receivedMsg],
-  
+  receivedMsgs: [receivedMsg],
+
 
 });
 
