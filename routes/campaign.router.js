@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const campaignService = require('../BL/campaign.service');
+const campaignService = require('../BL/campaign/campaign.service');
 const scheduleService = require('../BL/schedule.service');
 const { scheduledJobs } = require("node-schedule");
 

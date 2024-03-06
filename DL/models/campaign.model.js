@@ -1,4 +1,53 @@
 const mongoose = require("mongoose");
+const receivedMsg= new mongoose.Schema({
+  leadId : {
+  type:  mongoose.SchemaTypes.ObjectId
+  }, 
+  msgId: {
+    type:  mongoose.SchemaTypes.ObjectId
+
+  }, 
+  status: {
+    type: String,
+    enum: ["created", "sent", "received"],
+    default: "created",
+
+  },
+  sentData:{
+    type: Date,
+    default : Date.now
+  }
+  
+})
+
+const leadSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    default:''
+    // ???OK
+  },
+  phone: {
+    type: String,  
+    required: true,
+  },
+  notes: {
+    type: String,
+    default:''
+  },
+  joinDate: {
+    type: Date,
+    default: Date.now,
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
+
+});
 const msgSchema = new mongoose.Schema({
   subject: {
     type: String,
@@ -16,25 +65,7 @@ const msgSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  leads: [
-    {
-      lead: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: "lead",
-        // TODO- להחזיר את הריקוורד טרו אחרי שהמונגו נקי
-        // required: true,
-      },
-      receptionDate: {
-        type: Date,
-        default: Date.now,
-      },
-      status: {
-        type: String,
-        enum: ["sent", "recieved"],
-        default: "sent"
-      }
-    },
-  ],
+  
   status: {
     type: String,
     enum: ["created", "sent", "received"],
@@ -67,28 +98,12 @@ const campaignSchema = new mongoose.Schema({
 
   msg: [msgSchema],
 
-  leads: [
-    {
-      lead: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'lead',
-        required: true,
-      },
-      joinDate: {
-        type: Date,
-        default: Date.now,
-      },
-      isActive: {
-        type: Boolean,
-        default: true,
-      },
-    },
-  ],
-  isActive: {
-    type: Boolean,
-    default: true,
-  }
+  leads: [leadSchema],
+  receivedMsgs :[receivedMsg],
+  
+
 });
 
 const campaignModel = mongoose.model("campaign", campaignSchema);
 module.exports = campaignModel;
+

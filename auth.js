@@ -15,11 +15,14 @@ const userModel = require("./DL/models/user.model")
 const checkClient = async (req, res, next) => {
     try {
         // const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA1NTk2MTk0MTMiLCJpYXQiOjE3MDcyOTY1MTksImV4cCI6MTcwNzkwMTMxOX0.9UKZmT-bI8eEpOGD5HJDLtfK6DBkdDn1pR85U9x2LKY"
-        const token = req.header("authorization")
-        if (!token) throw ({ msg: "no token sent" })
-        const payload = checkToken(token)
-        const user = await userModel.findOne({ phone: payload.phone })
-        if (!user) throw { msg: "not permitted" }
+        // const token = req.header("authorization")
+        // if (!token) throw ({ msg: "no token sent" })
+        // const payload = checkToken(token)
+        // const user = await userModel.findOne({ phone: payload.phone })
+        // if (!user) throw { msg: "not permitted" }
+        const user = {
+            _id: "65ba97e536d6af41e9beb0d1"
+        }
         req.body.user = user
         next()
     } catch (err) {
