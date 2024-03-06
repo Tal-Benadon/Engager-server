@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const campaignService = require('../BL/campaign.service');
+const campaignService = require('../BL/campaign/campaign.service');
+const msgService = require('../BL/campaign/msg.service')
 const scheduleService = require('../BL/schedule.service');
 const { scheduledJobs } = require("node-schedule");
 
 const auth = require("../auth");
-
 
 router.use(auth.checkClient)
 //*************************************************************
@@ -68,18 +68,20 @@ router.post('/', async (req, res) => {
 
   }
 })
-//******update campeing */
-router.put('/:campId', async (req, res)=>{
-try{
-  const campId = req.params.campId;
-  const data= req.body.data
- const campeing = await campaignService.updateCampaing(campId, data)
- res.send(campeing)
-} 
-catch(err){
-  res.status((err.code) || 500).send({msg: err.msg || 'something went wrong'});
 
-}
+
+//******update campeing */
+router.put('/:campId', async (req, res) => {
+  try {
+    const campId = req.params.campId;
+    const data = req.body.data
+    const campeing = await campaignService.updateCampaign(campId, data)
+    res.send(campeing)
+  }
+  catch (err) {
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
+
+  }
 })
 
 
@@ -177,12 +179,17 @@ router.delete('/:campId', async (req, res) => {
   }
 })
 
+
+
+
+
+
 //  ######## הודעות  ##########
 
-// כל ההודעות של קמפיין בודד
+// To get all messages of a specific campaign
 router.get('/:campId/msg', async (req, res) => {
   try {
-    const msgCampaigns = await campaignService.getAllMsg(req.params.campId)
+    const msgCampaigns = await msgService.getAllMsg(req.params.campId)
     res.send(msgCampaigns);
   }
   catch (err) {
@@ -231,10 +238,11 @@ router.get('/:campId/msg', async (req, res) => {
 *         description: Internal server error
 */
 
-router.post('/:campId/messages', async (req, res) => {
+router.post('/:campId/msg', async (req, res) => {
   try {
-    const id = req.params.campId;
-    const msg = await campaignService.addNewMsg(id, req.body);
+    const campId = req.params.campId;
+    const data = req.body.data
+    const msg = await msgService.addNewMsg(campId, data);
     res.send(msg);
   } catch (err) {
     // res.status(err.code).send(err.msg);
@@ -275,11 +283,12 @@ router.post('/:campId/messages', async (req, res) => {
  *         description: Internal server error
  */
 
+// To delete msg [isActive : false ]
 router.delete('/:campId/msg/:msgId', async (req, res) => {
   try {
     const idCamp = req.params.campId;
     const msgId = req.params.msgId;
-    const del = await campaignService.delOneMessage(idCamp, msgId);
+    const del = await msgService.delOneMessage(idCamp, msgId);
     res.send(del);
   }
   catch (err) {
@@ -316,12 +325,13 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
  *       '502':
  *         description: Bad gateway, internal server error
  */
+
 router.get('/:campId/msg/:msgId', async (req, res) => {
   try {
     const campId = req.params.campId;
     const msgId = req.params.msgId;
     scheduleService.scheduleTest("yes", "no")
-    const msg = await campaignService.getOneMsg(campId, msgId);
+    const msg = await msgService.addNewMsg(campId, msgId);
 
     console.log("the returned msg is:  ", msg);
     res.send(msg);
@@ -419,10 +429,10 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
  */
 router.put("/:campId/msg/:msgId", async (req, res) => {
   try {
-    const id = req.params.campId;
+    const campId = req.params.campId;
     const msgId = req.params.msgId;
-    req.body = { ...req.body, msgId }
-    const msg = await campaignService.updateMsg(id, req.body);
+    body = req.body
+    const msg = await msgService.updateMsg(campId, msgId, body);
     res.send(msg);
   } catch (err) {
     // res.status(err.code).send(err.msg);
@@ -658,5 +668,8 @@ router.put('/schedule', (req, res) => {
     res.status(500).send("problem occured")
   }
 })
+
+
+
 // ייצוא הראוטר
 module.exports = router;

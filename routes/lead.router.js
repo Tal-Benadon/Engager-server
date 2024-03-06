@@ -3,7 +3,7 @@ const express = require('express');
 // הגדרת הראוטר בתוך האקספרס
 const router = express.Router();
 // ייבוא השירותים
-const leadService = require('../BL/lead.service');
+const leadService = require('../BL/campaign/lead.service');
 const auth = require('../auth')
 
 router.use(auth.checkClient)
@@ -16,14 +16,17 @@ router.use(auth.checkClient)
 //     }
 // })
 
-router.post('/', async (req ,res) => {
+router.post('/:campId', async (req ,res) => {
     try {
+        console.log("in rou");
+        const campId= req.params.campId
         const data = req.body.data;
-        const newLead = await leadService.addLeadToCamp(data);
+        console.log(data, campId);
+        const newLead = await leadService.addLeadToCamp(campId, data);
         res.send(newLead)
-        console.log("cr4");
     } catch (err) {
         // res.status(400).send(err)
+        console.error(err);
         res.status((err.code) || 400).send({msg: err.msg || 'something went wrong'});
     }
 })
@@ -62,9 +65,12 @@ router.post('/', async (req ,res) => {
  *         description: Internal server error
  */
  
-router.put('/:id', async (req ,res) => {
+router.put('/:campId/:leadId', async (req ,res) => {
     try {
-        res.send(await leadService.updateLead(req.params.id, req.body))
+        const campId= req.params.campId
+        const leadId= req.params.leadId
+        const newData= req.body
+        res.send(await leadService.updateLeadInCamp(campId, leadId, newData ))
     } catch (err) {
         res.status(400).send(err.msg)
     }
