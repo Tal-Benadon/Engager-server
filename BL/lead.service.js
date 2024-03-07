@@ -1,15 +1,17 @@
 const leadController = require("../DL/controllers/lead.controller");
 const campaignController = require("../DL/controllers/campaign.controller");
 
+
+
+// ADD A NEW LEAD TO A CAMP 
 async function addLeadToCamp(campId, data) {
   console.log("datainser", data);
   if (!data.phone || !data.fName)
     throw { code: 500, msg: "User details are missing" };
   // TODO- check if phone is valid
-
-  const campaign = await campaignController.readOne({_id : campId});
-  console.log("campin",campaign , campId);
-  if (!campaign) throw {  code: 404, msg: "Campaign not found"};
+  const campaign = await campaignController.readOne({ _id: campId });
+  console.log("campin", campaign, campId);
+  if (!campaign) throw { code: 404, msg: "Campaign not found" };
 
   const phoneIsExist = await campaign.leads.some((lead) => lead.phone === data.phone);
   if (phoneIsExist)
@@ -34,27 +36,30 @@ async function addLeadToCamp(campId, data) {
   return mappedLead;
 }
 
-async function updateLeadInCamp(campId,leadId, newData) {
-    const campaign = await campaignController.readOne({_id:campId}) 
-       if (!campaign) throw { code: 500, msg: "phoneExist" };
-       const leadIndex = campaign.leads.findIndex((lead)=> lead._id.toString() ===leadId)
-       if (leadIndex === -1 ) throw { code: 404, msg: "lead not found" }
+// TO UPDATE ONE LEAD IN A CAMP 
+async function updateLeadInCamp(campId, leadId, newData) {
+  const campaign = await campaignController.readOne({ _id: campId })
+  if (!campaign) throw { code: 500, msg: "phoneExist" };
+  const leadIndex = campaign.leads.findIndex((lead) => lead._id.toString() === leadId)
+  if (leadIndex === -1) throw { code: 404, msg: "lead not found" }
 
-       let filter = { _id: campId, "leads._id": leadId };
+  let filter = { _id: campId, "leads._id": leadId };
 
-       let update = {
-        $set: {},
-      };
-      newData.fName && (update.$set[`leads.${leadIndex}.fName`]=newData.fName) 
-      newData.lName && (update.$set[`leads.${leadIndex}.lName`]=newData.lName) 
-      newData.email &&( update.$set[`leads.${leadIndex}.email`]=newData.email) 
-      newData.notes &&( update.$set[`leads.${leadIndex}.notes`]=newData.notes )
-      newData.phone && (update.$set[`leads.${leadIndex}.phone`]=newData.phone )
+  let update = {
+    $set: {},
+  };
+  newData.fName && (update.$set[`leads.${leadIndex}.fName`] = newData.fName)
+  newData.lName && (update.$set[`leads.${leadIndex}.lName`] = newData.lName)
+  newData.email && (update.$set[`leads.${leadIndex}.email`] = newData.email)
+  newData.notes && (update.$set[`leads.${leadIndex}.notes`] = newData.notes)
+  newData.phone && (update.$set[`leads.${leadIndex}.phone`] = newData.phone)
 
-  
-  return  await campaignController.update(filter, update);
+
+  return await campaignController.update(filter, update);
 }
 
+
+// TO DELETE LEAD FROM A SINGEL CAMP
 async function delLeadFromCamp(capId, leadId) {
   if (!capId) throw { code: 404, msg: "No campaign found" };
   if (!leadId) throw { code: 404, msg: "No lead found" };
@@ -66,14 +71,22 @@ async function delLeadFromCamp(capId, leadId) {
   return updateIsActiv;
 }
 
-// async function getAllSentMsgs({ id_: leadId }) {
-//     const lead = await leadController.getOne({ _id: leadId })
-//     const thisLeadCampaigns = lead.campaigns.map(camp => {
-//         campaignController.getOne({ _id: camp.campaign })
-//     })
-//     console.log(lead);
-//     console.log(thisLeadCampaigns);
-//     // return lead
-// }
+//TODO
+// TO DELETE LEAD FROM ALL THE CAMPS 
+async function delLeadFromAllCampS() {
 
-module.exports = { updateLeadInCamp, addLeadToCamp, delLeadFromCamp };
+}
+
+//GET LEAD FROM ALL THE CAMPS 
+async function getLeadFromAllCampS() {
+
+}
+
+
+module.exports = {
+  updateLeadInCamp,
+  addLeadToCamp,
+  delLeadFromCamp,
+  delLeadFromAllCampS,
+  getLeadFromAllCampS,
+};

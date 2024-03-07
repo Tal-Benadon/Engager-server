@@ -12,7 +12,8 @@ const accountRouter = require('./routes/account.router');
 const adminRouter = require('./routes/admin.router');
 const apiRouter = require ('./routes/api.router');
 const fileRouter = require( './routes/file.router');
-const whatsAppArouter = require('./routes/whatsApp.router')
+const whatsAppArouter = require('./routes/whatsApp.router');
+
 const db = require('./DL/db')
 
 const app = express();

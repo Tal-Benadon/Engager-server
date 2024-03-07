@@ -1,6 +1,12 @@
 const jwt = require('jsonwebtoken')
 const campaignController = require('../DL/controllers/campaign.controller')
 const leadService = require('../BL/campaign/lead.service')
+
+
+//  ??להעביר ל  MIDELLWERE
+
+
+
 // יצירת טוקן
 const createToken = async (campaignId) => {
     const campaign = await campaignController.read({ _id: campaignId })

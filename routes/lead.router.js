@@ -1,23 +1,11 @@
-// ייבוא האקספרס
 const express = require('express');
-// הגדרת הראוטר בתוך האקספרס
 const router = express.Router();
-// ייבוא השירותים
 const leadService = require('../BL/lead.service');
-const auth = require('../auth')
-
-// router.use(auth.checkClient)
-// router.get("/:leadId", async (req, res) => {
-//     try {
-//         const lead = await leadService.getAllSentMsgs(req.params.leadId)
-//         res.send(lead)
-//     } catch (error) {
-//         res.status(500).send("error occured", console.log(error))
-//     }
-// })
+const auth = require('../auth');
 
 
 
+//ADD LEAD 
 router.post('/:campId', async (req, res) => {
     try {
         console.log("in rou");
@@ -78,6 +66,20 @@ router.put('/:campId/lead/:leadId', async (req, res) => {
     }
 })
 
+//get Lead From All Camps
+router.get('/:camp/lead/:leadId', async (req, res) => {
+    try {
+        const userId = req.body.user._id;
+        const leadId = req.params.leadId
+        const leads = await leadService.getLeadFromAllCampS(userId, leadId)
+        res.send(leads);
+
+    } catch (err) {
+        res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    }
+})
+
+
 
 // delet lead from Campaign --VV---------------------------------
 /**
@@ -109,13 +111,27 @@ router.put('/:campId/lead/:leadId', async (req, res) => {
  *       '405':
  *         description: Method Not Allowed
  */
-
-router.delete('/:idCamp/lead/:leadId', async (req, res) => {
+//delete Lead From Camp
+router.delete('/:campId/lead/:leadId', async (req, res) => {
     try {
-        const idCamp = req.params.idCamp;
+        const campId = req.params.campId;
         const leadId = req.params.leadId
-        const del = await campaignService.delLeadFromCamp(idCamp, leadId)
+        const del = await leadService.delLeadFromCamp(campId, leadId)
         res.send(del);
+    } catch (err) {
+        res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    }
+})
+
+
+//delete Lead From All the CampS
+router.delete('/:camp/lead/:leadId', async (req, res) => {
+    try {
+        const userId = req.body.user._id;
+        const leadId = req.params.leadId
+        const leads = await leadService.delLeadFromAllCampS(userId, leadId)
+        res.send(leads);
+
     } catch (err) {
         res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
     }
