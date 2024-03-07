@@ -99,10 +99,15 @@ const campaignSchema = new mongoose.Schema({
   img: {
     type: String,
   },
+  webhook: {
+    type: string,
+
+  },
 
   msg: [msgSchema],
   leads: [leadSchema],
   receivedMsgs: [receivedMsg],
+
 
 
 });

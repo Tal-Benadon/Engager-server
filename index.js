@@ -8,7 +8,11 @@ const userRouter = require("./routes/user.router");
 const loginRouter = require("./routes/login.router");
 const webhookRouter = require("./routes/webhook.router")
 const paymentRouter = require("./routes/payment.router")
-
+const accountRouter = require('./routes/account.router');
+const adminRouter = require('./routes/admin.router');
+const apiRouter = require ('./routes/api.router');
+const fileRouter = require( './routes/file.router');
+const whatsAppArouter = require('./routes/whatsApp.router')
 const db = require('./DL/db')
 
 const app = express();
@@ -16,6 +20,8 @@ db.connect();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'))
+
 
 app.use('/campaign', campaignRouter);
 app.use('/lead', leadRouter);
@@ -23,8 +29,13 @@ app.use('/user', userRouter);
 app.use('/', loginRouter);
 app.use('/login', loginRouter);
 app.use('/webhook', webhookRouter)
-
 app.use('/payment', paymentRouter);
+app.use('/accout' , accountRouter);
+app.use('./admin' , adminRouter)
+app.use('./api' , apiRouter)
+app.use('./files' , fileRouter)
+app.use('./whatsapp' , whatsAppArouter)
+
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerDocument = require('./swagger.json');
