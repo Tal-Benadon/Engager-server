@@ -1,27 +1,15 @@
-// ייבוא האקספרס
 const express = require('express');
-// הגדרת הראוטר בתוך האקספרס
 const router = express.Router();
-// ייבוא השירותים
 const leadService = require('../BL/lead.service');
-const auth = require('../auth')
-
-// router.use(auth.checkClient)
-// router.get("/:leadId", async (req, res) => {
-//     try {
-//         const lead = await leadService.getAllSentMsgs(req.params.leadId)
-//         res.send(lead)
-//     } catch (error) {
-//         res.status(500).send("error occured", console.log(error))
-//     }
-// })
+const auth = require('../auth');
 
 
 
-router.post('/:campId', async (req ,res) => {
+//ADD LEAD 
+router.post('/:campId', async (req, res) => {
     try {
         console.log("in rou");
-        const campId= req.params.campId
+        const campId = req.params.campId
         const data = req.body.data;
         console.log(data, campId);
         const newLead = await leadService.addLeadToCamp(campId, data);
@@ -29,7 +17,7 @@ router.post('/:campId', async (req ,res) => {
     } catch (err) {
         // res.status(400).send(err)
         console.error(err);
-        res.status((err.code) || 400).send({msg: err.msg || 'something went wrong'});
+        res.status((err.code) || 400).send({ msg: err.msg || 'something went wrong' });
     }
 })
 //Update a lead by ID -------------------------------------------
@@ -66,17 +54,89 @@ router.post('/:campId', async (req ,res) => {
  *       '500':
  *         description: Internal server error
  */
- 
-router.put('/:campId/lead/:leadId', async (req ,res) => {
+
+router.put('/:campId/lead/:leadId', async (req, res) => {
     try {
-        const campId= req.params.campId
-        const leadId= req.params.leadId
-        const newData= req.body.data
-        res.send(await leadService.updateLeadInCamp(campId, leadId, newData ))
+        const campId = req.params.campId
+        const leadId = req.params.leadId
+        const newData = req.body.data
+        res.send(await leadService.updateLeadInCamp(campId, leadId, newData))
     } catch (err) {
         res.status(400).send(err.msg)
     }
 })
+
+//get Lead From All Camps
+router.get('/:camp/lead/:leadId', async (req, res) => {
+    try {
+        const userId = req.body.user._id;
+        const leadId = req.params.leadId
+        const leads = await leadService.getLeadFromAllCampS(userId, leadId)
+        res.send(leads);
+
+    } catch (err) {
+        res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    }
+})
+
+
+
+// delet lead from Campaign --VV---------------------------------
+/**
+ * @swagger
+ * /{idCamp}/lead/{leadId}:
+ *   delete:
+ *     summary: Delete a lead from a campaign
+ *     description: Deletes a lead from the specified campaign.
+ *     tags:
+ *       - Campaign
+ *     parameters:
+ *       - in: path
+ *         name: idCamp
+ *         required: true
+ *         description: ID of the campaign
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: leadId
+ *         required: true
+ *         description: ID of the lead to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Successfully deleted the lead
+ *       '404':
+ *         description: Lead not found for the given campaign and lead ID
+ *       '405':
+ *         description: Method Not Allowed
+ */
+//delete Lead From Camp
+router.delete('/:campId/lead/:leadId', async (req, res) => {
+    try {
+        const campId = req.params.campId;
+        const leadId = req.params.leadId
+        const del = await leadService.delLeadFromCamp(campId, leadId)
+        res.send(del);
+    } catch (err) {
+        res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    }
+})
+
+
+//delete Lead From All the CampS
+router.delete('/:camp/lead/:leadId', async (req, res) => {
+    try {
+        const userId = req.body.user._id;
+        const leadId = req.params.leadId
+        const leads = await leadService.delLeadFromAllCampS(userId, leadId)
+        res.send(leads);
+
+    } catch (err) {
+        res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    }
+})
+
 
 
 

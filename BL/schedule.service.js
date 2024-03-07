@@ -1,13 +1,13 @@
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');
 
-let scheduledJob
-
+// SCHEDULE AT A SPECIFIC DATE
 function scheduleFunctionAtSpecificDate(cb, targetDate) {
     const job = schedule.scheduleJob(targetDate, cb);
     return job;
 }
 
+// CONVERT TO DATE & EXEC
 function convertToDateAndExec(dateData, functionToExec) {
     const timeZone = 'Asia/Jerusalem';
     const targetDate = moment.tz(dateData, timeZone).toDate();
@@ -20,7 +20,7 @@ function convertToDateAndExec(dateData, functionToExec) {
         console.log(error);
     }
 }
-
+// EXECUTE AT A SPECIFIC DATE
 function executeFunctionAtSpecificDate(callback, targetDate) {
     const timeZone = 'Asia/Jerusalem';
     const targetTime = moment.tz(targetDate, timeZone);
@@ -45,15 +45,14 @@ function cancelScheduledTask() {
 }
 
 
-module.exports = { convertToDateAndExec, cancelScheduledTask };
+module.exports = {
+    scheduleFunctionAtSpecificDate,
+    convertToDateAndExec,
+    executeFunctionAtSpecificDate,
+    cancelScheduledTask
+};
 
 
 
 
 
-
-
-
-
-
-// job.cancel() - will be used to cancel a recurring job

@@ -1,6 +1,16 @@
+// TODO:
+// 1. auth - basic user
+// 2. auth - admin
+// 3. move login func to _______
+
 const jwt = require("jsonwebtoken")
 const userService = require('../BL/user.service');
+const jwt = require('jsonwebtoken')
+const campaignController = require('../DL/controllers/campaign.controller')
+const leadService = require('../BL/campaign/lead.service')
 
+
+//LOGIN
 async function login(phone, password) {
     const user = await userService.getOneUser(phone)
     if (password != user.password) throw "The password incorrect"
@@ -8,6 +18,7 @@ async function login(phone, password) {
     const token = jwt.sign({ phone: phone }, process.env.SECRET, { expiresIn: "7d" })
     return {token,user}
 }
+
 // פונקציה לבדיקת טוקן בבקשות לקבלת מידע 
 const userModel = require("../DL/models/user.model")
 
@@ -29,16 +40,41 @@ const checkClient = async (req, res, next) => {
     }
 }
 
-const checkToken = (token) => {
 
-    const payload = jwt.verify(token, process.env.SECRET)
-    return payload
+
+// const checkToken = (token) => {
+//     const payload = jwt.verify(token, process.env.SECRET)
+//     return payload
+// }
+
+
+// יצירת טוקן
+const createToken = async (campaignId) => {
+    const campaign = await campaignController.read({ _id: campaignId })
+    if (!campaign) throw { msg: 'campaign not found' }
+    let token = jwt.sign({ campaignId }, process.env.JWT_SECRET)
+    return token
+}
+
+// בדיקת טוקן 
+const checkToken = async (token) => {
+    try {
+        const approval = jwt.verify(token, process.env.JWT_SECRET)
+        if (!approval) throw { msg: 'token is not valid' }
+        const campaign = await campaignController.read({ _id: approval.campaignId })
+        if (!campaign) throw { msg: 'campaign not found' }
+        return approval.campaignId
+    } catch (error) {
+        return error
+    }
 }
 
 
-module.exports = { login, checkClient }
+// שליחה להוספת לייד
+const sendToAddLead = async (token, data) => {
+    let campaignId = await checkToken(token)
+    data.campaign = campaignId
+    return 'the lede create' +  await leadService.addLeadToCamp(data)
+}
+module.exports = { createToken, sendToAddLead, login, checkClient }
 
-// TODO:
-// 1. auth - basic user
-// 2. auth - admin
-// 3. move login func to _______

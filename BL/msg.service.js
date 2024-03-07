@@ -3,6 +3,9 @@ const { io } = require("socket.io-client");
 const socket1 = io("http://localhost:3000"); // ?
 const { isValidObjectId } = require("../DL/utilities/helper");
 
+
+
+
 // To delete msg from campaign
 async function delOneMessage(campId, msgId) {
   return await campaignController.updateOne(
@@ -86,6 +89,11 @@ async function getOneMsg(campId, msgId) {
   return camp.msg.find((m) => m._id == msgId);
 }
 
+
+
+
+// TO CHECK IF IS NECESSARY !!
+//TO UPDATE MSG STATUS  
 async function updateMsgStatus(capId, msgId, status) {
   if (!isValidObjectId(capId)) throw { code: 401, msg: "inValid camp_id" };
   if (!isValidObjectId(msgId)) throw { code: 401, msg: "inValid msg_id" };
@@ -98,6 +106,18 @@ async function updateMsgStatus(capId, msgId, status) {
 
   return campaignController.update(filter, $set("status", status));
 }
+
+
+// TO CHECK IF IS NECESSARY !!
+// async function getAllSentMsgs({ id_: leadId }) {
+//     const lead = await leadController.getOne({ _id: leadId })
+//     const thisLeadCampaigns = lead.campaigns.map(camp => {
+//         campaignController.getOne({ _id: camp.campaign })
+//     })
+//     console.log(lead);
+//     console.log(thisLeadCampaigns);
+//     // return lead
+// }
 
 module.exports = {
   delOneMessage,

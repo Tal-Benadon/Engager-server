@@ -3,10 +3,10 @@ const { default: axios } = require("axios")
 
 
 
-async function sendRequstToCardkom(user){
-    const {email , name , phone} = user
+async function sendRequstToCardkom(user) {
+    const { email, name, phone } = user
     const body = {
-        "TerminalNumber": 151048  ,
+        "TerminalNumber": 151048,
         "ApiName": "CHpqcSCn4IbDRQMBhSB9 ",
         "ReturnValue": "Z12332X",
         "Amount": 10.5,
@@ -14,7 +14,7 @@ async function sendRequstToCardkom(user){
         "FailedRedirectUrl": "https://www.yahoo.com",
         "WebHookUrl": "https://www.mysite.com/CardComLPWebHook",
         "Document": {
-            "To":  name,
+            "To": name,
             "Email": email,
             "Products": [
                 {
@@ -25,16 +25,18 @@ async function sendRequstToCardkom(user){
         }
 
     }
-  const res = await  axios.post("https://secure.cardcom.solutions/api/v11/LowProfile/Create" , body)
-  
-return res.data.Url
+    const res = await axios.post("https://secure.cardcom.solutions/api/v11/LowProfile/Create", body)
 
-  
-  
-   
+    return res.data.Url
+
+
+
+
 
 
     //  לתפוס url של הסליקה ולשלוח לקיילנט שיפתח אותו בifrem 
 }
 
-    module.exports = {sendRequstToCardkom}
+module.exports = {
+    sendRequstToCardkom
+}
