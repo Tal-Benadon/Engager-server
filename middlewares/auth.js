@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken")
-const userService = require('./BL/user.service');
+const userService = require('../BL/user.service');
 
 async function login(phone, password) {
     const user = await userService.getOneUser(phone)
@@ -9,7 +9,7 @@ async function login(phone, password) {
     return {token,user}
 }
 // פונקציה לבדיקת טוקן בבקשות לקבלת מידע 
-const userModel = require("./DL/models/user.model")
+const userModel = require("../DL/models/user.model")
 
 const checkClient = async (req, res, next) => {
     try {
@@ -37,3 +37,8 @@ const checkToken = (token) => {
 
 
 module.exports = { login, checkClient }
+
+// TODO:
+// 1. auth - basic user
+// 2. auth - admin
+// 3. move login func to _______

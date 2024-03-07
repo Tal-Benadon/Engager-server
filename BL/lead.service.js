@@ -1,5 +1,5 @@
-const leadController = require("../../DL/controllers/lead.controller");
-const campaignController = require("../../DL/controllers/campaign.controller");
+const leadController = require("../DL/controllers/lead.controller");
+const campaignController = require("../DL/controllers/campaign.controller");
 
 async function addLeadToCamp(campId, data) {
   console.log("datainser", data);
@@ -35,8 +35,6 @@ async function addLeadToCamp(campId, data) {
 }
 
 async function updateLeadInCamp(campId,leadId, newData) {
-   // const phoneIsExist = await leadController.readOne({ phone: newData.phone });
-
     const campaign = await campaignController.readOne({_id:campId}) 
        if (!campaign) throw { code: 500, msg: "phoneExist" };
        const leadIndex = campaign.leads.findIndex((lead)=> lead._id.toString() ===leadId)
