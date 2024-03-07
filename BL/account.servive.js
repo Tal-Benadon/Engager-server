@@ -40,16 +40,6 @@ async function updateOneUser(phone, data) {
     return user
 }
 
-// סיום תקופת נסיון ושינוי הסבסקרפשן ל-אקספרייד
-async function endOfTrialPeriod(phone) {
-    const user = await userController.readOne({ phone: phone });
-    const subscription = user.subscription;
-    let updatedUser;
-    if (subscription == 'trial') {
-        updatedUser = userController.updateUser({ phone: phone }, { subscription: 'expired' });
-    }
-    return updatedUser
-}
 
 //add new user :
 async function createNewUser(body) {

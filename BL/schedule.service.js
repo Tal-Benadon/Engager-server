@@ -7,7 +7,6 @@ function scheduleFunctionAtSpecificDate(cb, targetDate) {
     return job;
 }
 
-
 // CONVERT TO DATE & EXEC
 function convertToDateAndExec(dateData, functionToExec) {
     const timeZone = 'Asia/Jerusalem';
