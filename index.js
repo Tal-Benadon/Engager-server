@@ -23,6 +23,7 @@ app.use(express.json());
 app.use(express.static('public'))
 
 
+
 app.use('/campaign', campaignRouter);
 app.use('/lead', leadRouter);
 app.use('/user', userRouter);
