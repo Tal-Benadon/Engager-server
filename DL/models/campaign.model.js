@@ -20,7 +20,6 @@ const receivedMsg = new mongoose.Schema({
   }
 
 })
-
 const leadSchema = new mongoose.Schema({
   fName: {
     type: String,
@@ -102,7 +101,6 @@ const campaignSchema = new mongoose.Schema({
   },
 
   msg: [msgSchema],
-
   leads: [leadSchema],
   receivedMsgs: [receivedMsg],
 

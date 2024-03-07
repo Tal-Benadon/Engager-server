@@ -3,7 +3,7 @@ const express = require('express');
 // הגדרת הראוטר בתוך האקספרס
 const router = express.Router();
 // ייבוא השירותים
-const leadService = require('../BL/campaign/lead.service');
+const leadService = require('../BL/lead.service');
 const auth = require('../auth')
 
 // router.use(auth.checkClient)
@@ -15,6 +15,8 @@ const auth = require('../auth')
 //         res.status(500).send("error occured", console.log(error))
 //     }
 // })
+
+
 
 router.post('/:campId', async (req ,res) => {
     try {

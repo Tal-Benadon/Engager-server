@@ -1,7 +1,7 @@
-const campaignController = require("../../DL/controllers/campaign.controller");
+const campaignController = require("../DL/controllers/campaign.controller");
 const { io } = require("socket.io-client");
 const socket1 = io("http://localhost:3000"); // ?
-const { isValidObjectId } = require("../functions");
+const { isValidObjectId } = require("./functions");
 
 // To delete msg from campaign
 async function delOneMessage(campId, msgId) {

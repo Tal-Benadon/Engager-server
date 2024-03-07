@@ -1,44 +1,13 @@
-const leadModel = require('../models/lead.model');
 const campaignModel = require('../models/campaign.model')
 
 
-const create = async (data) => {
-    return await leadModel.create(data)
-}
+const create = async (campId, data) => { }
 
-const update = async (id, newData) => {
-    return leadModel.findByIdAndUpdate(id, newData)
-}
+const update = async (campId, filter, newData) => { }
 
-const read = async (filter) => {
-    return await leadModel.find(filter)
-}
-const readOne = async (filter) => {
-    return await leadModel.findOne(filter)
-}
+const read = async (campId, filter) => { }
 
-// const readOne = async (filter) => {
-//     const lead = await leadModel.findOne(filter)
-//         .populate("campaigns")
+const readOne = async (campId, filter) => { }
 
 
-//     return lead
-// }
-
-// getOne({ _id: "65bf91d6beecba97e97e8baf" })
-
-
-// const turnInactive = async (id) => {
-//     return await leadModel.findByIdAndUpdate(id, { isActive: false })
-// }
-
-// const turnActive = async (id) => {
-//     await leadModel.findByIdAndUpdate(id, { isActive: true })
-// }
-
-
-
-
-
-
-module.exports = { create, update, read,readOne}
+module.exports = { create, update, read, readOne }
