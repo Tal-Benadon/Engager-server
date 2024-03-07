@@ -66,14 +66,16 @@ async function delLeadFromCamp(capId, leadId) {
   return updateIsActiv;
 }
 
-// async function getAllSentMsgs({ id_: leadId }) {
-//     const lead = await leadController.getOne({ _id: leadId })
-//     const thisLeadCampaigns = lead.campaigns.map(camp => {
-//         campaignController.getOne({ _id: camp.campaign })
-//     })
-//     console.log(lead);
-//     console.log(thisLeadCampaigns);
-//     // return lead
-// }
+// TODO: delete Lead From All Camp
+async function deleteLeadFromAllCamp( leadId) {
 
-module.exports = { updateLeadInCamp, addLeadToCamp, delLeadFromCamp };
+}
+// TODO: get LeadS From All Camps
+async function getLeadFromAllCamps(){
+
+}
+
+
+
+
+module.exports = { updateLeadInCamp, getLeadFromAllCamps,addLeadToCamp, delLeadFromCamp ,deleteLeadFromAllCamp};
