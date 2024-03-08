@@ -1,11 +1,7 @@
 const express = require("express");
 const router = express.Router();
-//TODO
-
-// ראוטר account, לכתוב את הניתובים הבאים :
 
 
-// TODO :signin
 router.post("/singin", async (req, res) => {
   try {
 
@@ -15,8 +11,6 @@ router.post("/singin", async (req, res) => {
       .send({ msg: err.msg || "something went wrong" });
   }
 });
-
-// TODO signup
 
 router.post("/signup", async (req, res) => {
   try {
@@ -28,7 +22,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// TODO  renew 	(שינוי סיסמא)
+// renew password - שינוי סיסמא
 router.post("/renew", async (req, res) => {
   try {
 
@@ -39,7 +33,7 @@ router.post("/renew", async (req, res) => {
   }
 });
 
-// restore (איפוס סיסמא)
+// reset password - איפוס סיסמא
 router.post("/restore", async (req, res) => {
   try {
 
@@ -50,7 +44,7 @@ router.post("/restore", async (req, res) => {
   }
 });
 
-//TODO feedback (פידבק)
+// feedback - פידבק
 router.post("/feedback", async (req, res) => {
     try {
 
@@ -61,8 +55,8 @@ router.post("/feedback", async (req, res) => {
     }
   });
 
-  //TODO  info/dashboard  (מידע על חבילה, נתוני לידים והודעות, פרטים אישיים)
-  router.get("/info", async (req, res) => {
+// dashboard  - מידע על חבילה, נתוני לידים והודעות, פרטים אישיים
+  router.get("/dashboard", async (req, res) => {
     try {
 
     } catch (err) {
@@ -71,4 +65,5 @@ router.post("/feedback", async (req, res) => {
         .send({ msg: err.msg || "something went wrong" });
     }
   });
+
 module.exports = router;

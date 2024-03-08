@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const leadService = require('../BL/lead.service');
-const auth = require('../auth');
+const auth = require('../middlewares/auth');
 
 
 

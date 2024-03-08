@@ -4,10 +4,9 @@
 // 3. move login func to _______
 
 const jwt = require("jsonwebtoken")
-const userService = require('../BL/user.service');
-const jwt = require('jsonwebtoken')
+const userService = require('../BL/account.service');
 const campaignController = require('../DL/controllers/campaign.controller')
-const leadService = require('../BL/campaign/lead.service')
+const leadService = require('../BL/lead.service')
 
 
 //LOGIN

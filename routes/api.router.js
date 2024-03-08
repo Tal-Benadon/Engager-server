@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
-//TODO
 
-// TODO webhook/:id	POST
+// new lead by webhook from landing-page
 router.post("/webhook/:campId", async (req, res) => {
     try {
   
@@ -13,7 +12,7 @@ router.post("/webhook/:campId", async (req, res) => {
     }
   });
 
-// TODO refresh webhook
+// refresh webhook
 router.post("/refresh/:campId", async (req, res) => {
     try {
   

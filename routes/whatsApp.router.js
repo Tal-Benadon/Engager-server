@@ -1,7 +1,5 @@
-//TODO
-
-// send
-// status
+const express = require("express");
+const router = express.Router();
 
 
 
@@ -127,3 +125,4 @@ router.put('/whatsapp/camp/:campId/msg/:msgId/lead/:leadId/newStatus/:newStatus'
     }
 })
 
+module.exports = router

@@ -1,13 +1,9 @@
-
 const express = require("express");
 const router = express.Router();
-//TODO
-
-// ראוטר account, לכתוב את הניתובים הבאים :
 
 
-// TODO :update
-router.put("/", async (req, res) => {
+// get all users
+router.get("/users", async (req, res) => {
   try {
 
   } catch (err) {
@@ -17,8 +13,8 @@ router.put("/", async (req, res) => {
   }
 });
 
-// TODO users
-router.get("/", async (req, res) => {
+// get one user 
+router.get("/users/:userId", async (req, res) => {
   try {
 
   } catch (err) {
@@ -28,8 +24,8 @@ router.get("/", async (req, res) => {
   }
 });
 
-// TODO  delete user
-router.delete("/:userId", async (req, res) => {
+// update one user : change details, update plan manually
+router.put("/users/:userId", async (req, res) => {
   try {
 
   } catch (err) {
@@ -38,8 +34,20 @@ router.delete("/:userId", async (req, res) => {
       .send({ msg: err.msg || "something went wrong" });
   }
 });
-// TODO get info for admin 
-router.get("/info", async (req, res) => {
+
+// delete one user
+router.delete("users/:userId", async (req, res) => {
+  try {
+
+  } catch (err) {
+    res
+      .status(err.code || 500)
+      .send({ msg: err.msg || "something went wrong" });
+  }
+});
+
+// Dashboard of admin
+router.get("/dashboard", async (req, res) => {
     try {
   
     } catch (err) {
@@ -48,7 +56,6 @@ router.get("/info", async (req, res) => {
         .send({ msg: err.msg || "something went wrong" });
     }
   });
-
 
 
 module.exports = router;

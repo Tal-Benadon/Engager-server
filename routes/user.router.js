@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const userService = require('../BL/user.service');
-const auth = require("../auth")
+const userService = require('../BL/account.service');
+const auth = require("../middlewares/auth")
 
 
 // add new user:

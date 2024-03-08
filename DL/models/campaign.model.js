@@ -69,7 +69,7 @@ const msgSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-
+  // TODO: check if this property needs to be removed
   status: {
     type: String,
     enum: ["created", "sent", "received"],
@@ -100,8 +100,7 @@ const campaignSchema = new mongoose.Schema({
     type: String,
   },
   webhook: {
-    type: string,
-
+    type: String,
   },
 
   msg: [msgSchema],

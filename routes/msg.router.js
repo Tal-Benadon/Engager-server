@@ -3,7 +3,7 @@ const router = express.Router();
 const msgService = require('../BL/msg.service');
 const scheduleService = require('../BL/schedule.service');
 const { scheduledJobs } = require("node-schedule");
-const auth = require("../auth");
+const auth = require("../middlewares/auth");
 
 
 // To get all messages of a specific campaign

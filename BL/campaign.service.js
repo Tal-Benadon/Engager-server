@@ -43,7 +43,7 @@ async function createNewCampaign(userId, body) {
     details: details,
     img: img
   });
-  const updatedUser = await userController.updateOneByFilter({ _id: userId }, { $push: { campaigns: created._id } });
+  const updatedUser = await userController.updateOne({ _id: userId }, { $push: { campaigns: created._id } });
   if (updatedUser) console.log('update user', updatedUser);
 
   return created;

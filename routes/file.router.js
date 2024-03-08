@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
-//TODO
 
-
-//TODO download/leads
+// download leads as table + details
 router.get("/download/leads", async (req, res) => {
     try {
   
@@ -14,7 +12,7 @@ router.get("/download/leads", async (req, res) => {
     }
   });
 
-//TODO upload/leads
+// upload/leads - העלאת קובץ CSV 
 router.post("/upload/leads", async (req, res) => {
     try {
   
