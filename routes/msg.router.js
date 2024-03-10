@@ -4,6 +4,7 @@ const msgService = require('../BL/msg.service');
 const scheduleService = require('../BL/schedule.service');
 const { scheduledJobs } = require("node-schedule");
 const auth = require("../middlewares/auth");
+const campaignService = require('../BL/campaign.service');
 
 
 // To get all messages of a specific campaign
@@ -145,23 +146,23 @@ router.delete('/:campId/msg/:msgId', async (req, res) => {
  *         description: Bad gateway, internal server error
  */
 
-//get a singel messsag out of singel campaign
-router.get('/:campId/msg/:msgId', async (req, res) => {
-    try {
-        const campId = req.params.campId;
-        const msgId = req.params.msgId;
-        scheduleService.scheduleTest("yes", "no")
-        const msg = await msgService.addNewMsg(campId, msgId);
+// //get a singel messsag out of singel campaign
+// router.get('/:campId/msg/:msgId', async (req, res) => {
+//     try {
+//         const campId = req.params.campId;
+//         const msgId = req.params.msgId;
+//         scheduleService.scheduleTest("yes", "no")
+//         const msg = await msgService.addNewMsg(campId, msgId);
 
-        console.log("the returned msg is:  ", msg);
-        res.send(msg);
-    }
-    catch (err) {
-        // res.status(502).send(err.msg);
-        res.status((err.code) || 502).send({ msg: err.msg || 'something went wrong' });
+//         console.log("the returned msg is:  ", msg);
+//         res.send(msg);
+//     }
+//     catch (err) {
+//         // res.status(502).send(err.msg);
+//         res.status((err.code) || 502).send({ msg: err.msg || 'something went wrong' });
 
-    }
-})
+//     }
+// })
 
 
 //TODO
@@ -199,7 +200,7 @@ router.get('/:campId/msg/:msgId', async (req, res) => {
     try {
         const campId = req.params.campId;
         const msgId = req.params.msgId;
-        const msg = await campaignService.getOneMsg(campId, msgId);
+        const msg = await msgService.getOneMsg(campId, msgId);
         console.log("the msg that return is:  ", msg);
         res.send(msg);
     }
