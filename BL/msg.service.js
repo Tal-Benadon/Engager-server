@@ -1,7 +1,7 @@
 const campaignController = require("../DL/controllers/campaign.controller");
 const { io } = require("socket.io-client");
 const socket1 = io("http://localhost:3000"); // ?
-const { isValidObjectId } = require("../DL/utilities/helper");
+const { isValidObjectId } = require("../utilities/helper");
 
 
 

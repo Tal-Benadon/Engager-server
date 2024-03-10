@@ -1,7 +1,5 @@
-// TODO
-//to creat a api to a webhook
-async function createApi(){
+async function api(){
    
 }
 
-module.exports={}
+module.exports={api}
