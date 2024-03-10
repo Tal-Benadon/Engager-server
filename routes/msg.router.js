@@ -316,3 +316,6 @@ router.post('/:campId/msg/:msgId', async (req, res) => {
 
     }
 })
+
+
+module.exports = router

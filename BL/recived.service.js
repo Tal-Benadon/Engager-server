@@ -2,7 +2,7 @@ const campaignController = require("../DL/controllers/campaign.controller");
 const userController = require("../DL/controllers/user.controller");
 // const { io } = require("socket.io-client");
 // const socket1 = io("http://localhost:3000");  //?
-const { isValidObjectId } = require("../DL/utilities/helper");
+const { isValidObjectId } = require("../utilities/helper");
 
 async function msgSentLeads(campaignObj, msgId) {
   const msgObject = campaignObj?.msg?.find?.((msgObj) => msgObj._id === msgId);

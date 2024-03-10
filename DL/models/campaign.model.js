@@ -23,11 +23,12 @@ const receivedMsg = new mongoose.Schema({
 const leadSchema = new mongoose.Schema({
   fName: {
     type: String,
-    required: true,
   },
   lName: {
     type: String,
-    required: true,
+  },
+  fullName: {
+    type: String,
   },
   email: {
     type: String,
