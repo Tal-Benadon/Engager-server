@@ -3,7 +3,7 @@ const router = express.Router();
 const campaignService = require('../BL/campaign.service');
 // const scheduleService = require('../BL/schedule.service');
 // const { scheduledJobs } = require("node-schedule");
-const auth = require("../middlewares/auth");
+const {checkClient} = require("../middlewares/auth");
 
 // בדיקת טוקן באופן אוטומטי לפני שאר הראוטרים
 // לשקול לאפשר שורה זו
@@ -28,9 +28,9 @@ router.post('/', async (req, res) => {
 })
 
 // get all campigns
-router.get('/', async (req, res) => {
+router.get('/',checkClient, async (req, res) => {
   try {
-
+    console.log(req.body);
     const userId = req.body.user._id;
     const campaigns = await campaignService.getAllCampaignsByUser(userId)
     res.send(campaigns);
