@@ -2,7 +2,7 @@ const campaignController = require("../DL/controllers/campaign.controller");
 const userController = require("../DL/controllers/user.controller")
 // const { io } = require("socket.io-client");
 // const socket1 = io("http://localhost:3000");  //?
-const { isValidObjectId } = require('../DL/utilities/helper')
+const { isValidObjectId } = require('../utilities/helper')
 
 
 
@@ -13,7 +13,7 @@ const { isValidObjectId } = require('../DL/utilities/helper')
 // do not touch!!!!
 async function getAllCampaignsByUser(userId) {
   if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
-  const campaigns = await campaignController.read({ user: userId , isActive : true } );
+  const campaigns = await campaignController.read({ user: userId, isActive: true });
   // if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };  להוסיף פילטר ללידים לפי  isactiv
   return campaigns;
 }
@@ -21,7 +21,7 @@ async function getAllCampaignsByUser(userId) {
 // To get jus ONE campaign and the information (user & msg & leads & received msgs)
 async function getOneCamp(campId) {
   if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
-  const campaign = await campaignController.readOne({ _id: campId ,  isActive : true});
+  const campaign = await campaignController.readOne({ _id: campId, isActive: true });
   if (!campaign) throw { msg: "Campaign is not exist", code: 404 };
   return campaign;
 }
@@ -69,7 +69,7 @@ async function updateCampaign(campId, data) {
 async function delCampaign(campId) {
   if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
   const campaign = campaignController.readOne({ _id: campId });
-  console.log( "S" , campaign) ;
+  console.log("S", campaign);
   if (!campaign) throw { code: 404, msg: "Campaign is not exist!" };
   return await campaignController.update({ _id: campId }, { isActive: false });
 }
