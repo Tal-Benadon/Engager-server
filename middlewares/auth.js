@@ -30,7 +30,7 @@ const checkClient = async (req, res, next) => {
         // const user = await userModel.findOne({ phone: payload.phone })
         // if (!user) throw { msg: "not permitted" }
         const user = {
-            _id: "65ba97e536d6af41e9beb0d1"
+            _id: "65ed9c525b51ed6b4bd16107"
         }
         req.body.user = user
         next()
