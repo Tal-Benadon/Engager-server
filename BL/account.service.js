@@ -1,8 +1,12 @@
 const { update } = require("../DL/controllers/campaign.controller");
 const userController = require("../DL/controllers/user.controller");
 const scheduleService = require("./schedule.service");
-
-
+const dotenv = require('dotenv')
+const jwt = require('jsonwebtoken')
+dotenv.config()
+const linkSecret = process.env.LINKSECRET
+const createToken = (payload) => jwt.sign(payload, linkSecret, { expiresIn: '2h' })
+const decodeToken = (token) => jwt.verify(token, linkSecret)
 // get all users
 async function getUsers() {
     let users = await userController.read()
@@ -69,10 +73,33 @@ async function createNewUser(body) {
     return newUser
 }
 
+//Create Token using userData for links authentications(initial registeration auth, change password link)
+async function createLinkToken(payload) {
+    return new Promise((resolve, reject) => {
+
+        const token = createToken(payload)
+        console.log({ "token": token });
+        resolve(token)
+    })
+}
+
+async function decodeLinkToken(token) {
+    return new Promise((resolve, reject) => {
+        const result = decodeToken(token)
+        console.log(result);
+        resolve(result)
+    })
+}
+
 module.exports = {
     createNewUser,
     getUsers,
     getOneUser,
     del,
-    updateOneUser
+    updateOneUser,
+    createLinkToken,
+    decodeLinkToken
 }
+
+
+

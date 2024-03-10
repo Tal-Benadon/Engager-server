@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
 
   isActive: {
     type: Boolean,
-    default: true
+    default: false
   },
 
   campaigns: [
@@ -41,18 +41,18 @@ const userSchema = new mongoose.Schema({
   ],
 
   subscription: {
-    type : String, 
-    enum : ['trial', 'active', 'expired'],
-    default : 'trial'
+    type: String,
+    enum: ['trial', 'active', 'expired'],
+    default: 'trial'
   },
 
-  createdData : {
+  createdDate: {
     type: Date,
     default: Date.now()
   },
 
-  messagesSent : {
-    type: Number, 
+  messagesSent: {
+    type: Number,
     default: 0
   }
 

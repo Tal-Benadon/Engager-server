@@ -10,12 +10,28 @@ router.post('/', async (req, res) => {
 
     const body = req.body
     const answer = await userService.createNewUser(body);
+    console.log({ "answer:": answer });
+    const payload = {
+      email: answer.email,
+      phone: answer.phone,
+      id: answer._id
+    }
+    const userLinkToken = await userService.createLinkToken(payload)
+    console.log({ "inRouter": userLinkToken });
+    const activationLink = `http://localhost:5173/activate-user/${userLinkToken}`
     res.send(answer);
   }
   catch (err) {
     console.log(err);
     res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
   }
+})
+
+router.post('/activate/:userToken', async (req, res) => {
+  const token = req.params.userToken
+  console.log({ "Token to Compare": token });
+  const result = await userService.decodeLinkToken(token)
+  console.log({ "result in router": result });
 })
 
 router.use(auth.checkClient)
