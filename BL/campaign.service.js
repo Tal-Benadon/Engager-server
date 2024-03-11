@@ -3,6 +3,7 @@ const userController = require("../DL/controllers/user.controller")
 // const { io } = require("socket.io-client");
 // const socket1 = io("http://localhost:3000");  //?
 const { isValidObjectId } = require('../utilities/helper')
+const auth = require("../middlewares/auth")
 
 
 
@@ -43,10 +44,12 @@ async function createNewCampaign(userId, body) {
     details: details,
     img: img
   });
+  const token = await auth.createToken(created._id)
+  await campaignController.update({_id:created._id}, {webhook : token})
   const updatedUser = await userController.updateOne({ _id: userId }, { $push: { campaigns: created._id } });
   if (updatedUser) console.log('update user', updatedUser);
-
-  return created;
+  const newCamp = await getOneCamp(created._id)
+  return newCamp;
 }
 
 
