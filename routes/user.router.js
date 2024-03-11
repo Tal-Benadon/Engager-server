@@ -30,8 +30,13 @@ router.post('/', async (req, res) => {
 router.post('/activate/:userToken', async (req, res) => {
   const token = req.params.userToken
   console.log({ "Token to Compare": token });
-  const result = await userService.decodeLinkToken(token)
-  console.log({ "result in router": result });
+  try {
+    const result = await userService.confirmNewUser(token)
+    console.log(result);
+    if (result.success === true) { res.send(result) }
+  } catch (err) {
+    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
+  }
 })
 
 router.use(auth.checkClient)

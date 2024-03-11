@@ -4,9 +4,9 @@ const scheduleService = require("./schedule.service");
 const dotenv = require('dotenv')
 const jwt = require('jsonwebtoken')
 dotenv.config()
-const linkSecret = process.env.LINKSECRET
-const createToken = (payload) => jwt.sign(payload, linkSecret, { expiresIn: '2h' })
-const decodeToken = (token) => jwt.verify(token, linkSecret)
+const secret = process.env.SECRET
+const createToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2h' })
+const decodeToken = (token) => jwt.verify(token, secret)
 // get all users
 async function getUsers() {
     let users = await userController.read()
@@ -37,7 +37,7 @@ async function del(phone) {
 
 // update one user:
 async function updateOneUser(phone, data) {
-    let user = await userController.updateUser({ phone: phone }, data)
+    let user = await userController.updateOne({ phone: phone }, data)
     if (!user) {
         throw { code: 408, msg: 'The phone is not exists' }
     }
@@ -83,12 +83,39 @@ async function createLinkToken(payload) {
     })
 }
 
-async function decodeLinkToken(token) {
-    return new Promise((resolve, reject) => {
-        const result = decodeToken(token)
-        console.log(result);
-        resolve(result)
-    })
+
+const decodeLinkToken = (token) => {
+    try {
+        return jwt.verify(token, secret);
+    } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+            console.log('Token has expired');
+        } else {
+            console.error('Token verification failed:', error.message);
+        }
+        return null;
+    }
+};
+
+async function confirmNewUser(token) {
+    try {
+
+        const decodedToken = decodeLinkToken(token)
+        console.log({ "decoded Data": decodedToken });
+        const { email, phone, id } = decodedToken
+        const userToConfirm = await userController.read({ phone: phone, _id: id })
+        console.log(userToConfirm);
+        if (userToConfirm.length !== 1) throw { code: 408, msg: 'This phone already exists' }
+
+        if (userToConfirm[0].isActive == true) throw { code: 409, msg: 'This user is already active' }
+        await updateOneUser(phone, { isActive: true })
+
+
+        return { success: true, msg: 'User successfully confirmed' };
+    } catch (err) {
+        res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
+    }
+
 }
 
 module.exports = {
@@ -97,8 +124,8 @@ module.exports = {
     getOneUser,
     del,
     updateOneUser,
-    createLinkToken,
-    decodeLinkToken
+    confirmNewUser,
+    createLinkToken
 }
 
 
