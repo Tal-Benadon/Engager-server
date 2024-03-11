@@ -64,20 +64,6 @@ router.put('/:campId/lead/:leadId', async (req, res) => {
     }
 })
 
-//get Lead From All Camps
-router.get('/:camp/lead/:leadId', async (req, res) => {
-    try {
-        const userId = req.body.user._id;
-        const leadId = req.params.leadId
-        const leads = await leadService.getLeadFromAllCampS(userId, leadId)
-        res.send(leads);
-
-    } catch (err) {
-        res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
-    }
-})
-
-
 //delete Lead From Camp
 router.delete('/:campId/lead/:leadId', async (req, res) => {
     try {
