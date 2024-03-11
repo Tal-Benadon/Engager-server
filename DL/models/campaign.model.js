@@ -52,7 +52,7 @@ const leadSchema = new mongoose.Schema({
     default: true,
   },
   extra:{
-    type: mixed
+    type: mongoose.SchemaTypes.Mixed
   }
 
 });
