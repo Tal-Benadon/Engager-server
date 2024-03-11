@@ -51,6 +51,9 @@ const leadSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  extra:{
+    type: mixed
+  }
 
 });
 const msgSchema = new mongoose.Schema({

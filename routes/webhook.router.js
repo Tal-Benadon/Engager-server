@@ -6,6 +6,7 @@ router.post('/', async (req, res) => {
     try {
         res.send(await auth.createToken(req.body.campaign_id))
     } catch (error) {
+        console.log(error);
         res.status(543).send(error.msg)
     }
 })
@@ -24,3 +25,4 @@ router.post('/:token', async (req, res) => {
 })
 
 module.exports = router
+
