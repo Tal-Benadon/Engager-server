@@ -14,7 +14,7 @@ const receivedMsg = new mongoose.Schema({
     default: "created",
 
   },
-  sentData: {
+  sentDate: {
     type: Date,
     default: Date.now
   }
