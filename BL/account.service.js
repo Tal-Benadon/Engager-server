@@ -89,31 +89,39 @@ const decodeLinkToken = (token) => {
         return jwt.verify(token, secret);
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
-            console.log('Token has expired');
+
+
+            return { successStatus: 'Expired', msg: 'The link has expired' };
         } else {
             console.error('Token verification failed:', error.message);
+            return null;
         }
-        return null;
     }
 };
 
 async function confirmNewUser(token) {
     try {
-
+        //Decoding Token received from pressed Activation Link
         const decodedToken = decodeLinkToken(token)
-        console.log({ "decoded Data": decodedToken });
-        const { email, phone, id } = decodedToken
-        const userToConfirm = await userController.read({ phone: phone, _id: id })
-        console.log(userToConfirm);
-        if (userToConfirm.length !== 1) throw { code: 408, msg: 'This phone already exists' }
+        //Token time expired
+        if (decodedToken.successStatus === 'Expired') return decodedToken
 
-        if (userToConfirm[0].isActive == true) throw { code: 409, msg: 'This user is already active' }
+        //Payload of verified Token
+        const { email, phone, id } = decodedToken
+
+        //Checking if user is in database, could be changed to ReadOne
+        const userToConfirm = await userController.read({ phone: phone, _id: id })
+
+        //Read returns Array of user(s), there should be only 1 ([0])
+        if (userToConfirm.length < 1) throw { code: 401, msg: 'User does not exist' }
+        if (userToConfirm[0].isActive == true) return { successStatus: 'AlreadyActive', msg: 'User is already active' }
+
         await updateOneUser(phone, { isActive: true })
 
-
-        return { success: true, msg: 'User successfully confirmed' };
+        return { successStatus: 'Activated', msg: 'User successfully confirmed' };
     } catch (err) {
-        res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
+        console.error(err);
+        return { successStatus: 'ActivationFailed', msg: 'User could not be activated' };
     }
 
 }
