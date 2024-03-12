@@ -42,8 +42,8 @@ const userSchema = new mongoose.Schema({
 
   subscription: {
     type : String, 
-    enum : ['trial', 'active', 'expired'],
-    default : 'trial'
+    enum : ['free', 'basic', 'enterprise',"preimum"], 
+    default : 'free'
   },
 
   createdData : {
@@ -54,7 +54,17 @@ const userSchema = new mongoose.Schema({
   messagesSent : {
     type: Number, 
     default: 0
-  }
+  },
+ msg_count :{
+    default: 0,
+    type : Number
+
+  },
+  first_msg_count :{
+    default: 0,
+    type : Number
+
+  },
 
 });
 
