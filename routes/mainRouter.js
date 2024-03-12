@@ -1,3 +1,6 @@
+const express = require('express');
+const mainRouter = express.Router();
+
 const campaignRouter = require('./campaign.router');
 const leadRouter = require('./lead.router');
 const msgRouter = require('./msg.router');
@@ -11,19 +14,19 @@ const apiRouter = require ('./api.router');
 const fileRouter = require( './file.router');
 const whatsAppArouter = require('./whatsApp.router');
 
-const mainRouter=()=>{
 
-app.use('/campaign', campaignRouter);
-app.use('/campaign', msgRouter);
-app.use('/lead', leadRouter);
-app.use('/user', userRouter);
-app.use('/login', loginRouter);
-app.use('/webhook', webhookRouter)
-app.use('/payment', paymentRouter);
-app.use('/accout' , accountRouter);
-app.use('/admin' , adminRouter)
-app.use('/api' , apiRouter)
-app.use('/files' , fileRouter)
-app.use('/whatsapp' , whatsAppArouter)
-}
-module.exports = {mainRouter}
+
+mainRouter.use('/campaign', campaignRouter);
+mainRouter.use('/campaign', msgRouter);
+mainRouter.use('/lead', leadRouter);
+mainRouter.use('/user', userRouter);
+mainRouter.use('/login', loginRouter);
+mainRouter.use('/webhook', webhookRouter)
+mainRouter.use('/payment', paymentRouter);
+mainRouter.use('/accout' , accountRouter);
+mainRouter.use('/admin' , adminRouter)
+mainRouter.use('/api' , apiRouter)
+mainRouter.use('/files' , fileRouter)
+mainRouter.use('/whatsapp' , whatsAppArouter)
+
+module.exports = mainRouter
