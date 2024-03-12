@@ -64,11 +64,58 @@ router.put('/:campId/lead/:leadId', async (req, res) => {
     }
 })
 
+
+//get Lead From All Camps
+router.get('/:camp/lead/:leadId', async (req, res) => {
+    try {
+        const userId = req.body.user._id;
+        const leadId = req.params.leadId
+        const leads = await leadService.getLeadFromAllCampS(userId, leadId)
+        res.send(leads);
+
+    } catch (err) {
+        res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+    }
+})
+
+
+
+// delet lead from Campaign --VV---------------------------------
+/**
+ * @swagger
+ * /{idCamp}/lead/{leadId}:
+ *   delete:
+ *     summary: Delete a lead from a campaign
+ *     description: Deletes a lead from the specified campaign.
+ *     tags:
+ *       - Campaign
+ *     parameters:
+ *       - in: path
+ *         name: idCamp
+ *         required: true
+ *         description: ID of the campaign
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: leadId
+ *         required: true
+ *         description: ID of the lead to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Successfully deleted the lead
+ *       '404':
+ *         description: Lead not found for the given campaign and lead ID
+ *       '405':
+ *         description: Method Not Allowed
+ */
 //delete Lead From Camp
 router.delete('/:campId/lead/:leadId', async (req, res) => {
     try {
         const campId = req.params.campId;
         const leadId = req.params.leadId
+        console.log("*******", campId,"/*************", leadId);
         const del = await leadService.delLeadFromCamp(campId, leadId)
         res.send(del);
     } catch (err) {
