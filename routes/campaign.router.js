@@ -3,17 +3,19 @@ const router = express.Router();
 const campaignService = require('../BL/campaign.service');
 // const scheduleService = require('../BL/schedule.service');
 // const { scheduledJobs } = require("node-schedule");
+const {mwToken} = require("../middlewares/auth");
 const {checkClient} = require("../middlewares/auth");
+const { maxCamp } = require("../middlewares/plans");
 
 // בדיקת טוקן באופן אוטומטי לפני שאר הראוטרים
 // לשקול לאפשר שורה זו
-// router.use(auth.checkClient)
+// router.use(auth.mwToken)
 
 // create a new campaign
 // הוספנו פונ מידל-וור כי היוזר מהקונטקסט בקליינט נמחק כל ריפרוש ואז מגיע לפה ריק
 // אז באופן זמני מידל-וור דוחפת יוזר לבודי
 // מחילה על העברית לכל החכמים
-router.post('/', checkClient ,async (req, res) => {
+router.post('/', mwToken , maxCamp ,async (req, res) => {
   try {
     console.log('body',req.body);
     const userId = req.body.user._id;
@@ -33,7 +35,7 @@ router.post('/', checkClient ,async (req, res) => {
 })
 
 // get all campigns
-router.get('/',checkClient, async (req, res) => {
+router.get('/',mwToken, async (req, res) => {
   try {
     console.log(req.body);
     const userId = req.body.user._id;

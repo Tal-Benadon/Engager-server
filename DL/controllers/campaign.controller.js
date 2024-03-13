@@ -22,8 +22,6 @@ async function update(filter = {}, update) {
 
 
 
-
-
 //not in use
 async function readOneWithoutPopulate(filter, populate) {
     return await campaignModel.findOne(filter).populate(populate)
