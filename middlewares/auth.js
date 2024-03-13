@@ -51,14 +51,14 @@ const checkClient = async (req, res, next) => {
 const createToken = async (campaignId) => {
     const campaign = await campaignController.read({ _id: campaignId })
     if (!campaign) throw { msg: 'campaign not found' }
-    let token = jwt.sign({ campaignId }, process.env.JWT_SECRET)
+    let token = jwt.sign({ campaignId }, process.env.SECRET)
     return token
 }
 
 // בדיקת טוקן 
 const checkToken = async (token) => {
     try {
-        const approval = jwt.verify(token, process.env.JWT_SECRET)
+        const approval = jwt.verify(token, process.env.SECRET)
         if (!approval) throw { msg: 'token is not valid' }
         const campaign = await campaignController.read({ _id: approval.campaignId })
         if (!campaign) throw { msg: 'campaign not found' }
