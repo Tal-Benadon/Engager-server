@@ -48,10 +48,10 @@ const checkClient = async (req, res, next) => {
 
 
 // יצירת טוקן
-const createToken = async (campaignId) => {
+const createToken = async (campaignId, userId) => {
     const campaign = await campaignController.read({ _id: campaignId })
     if (!campaign) throw { msg: 'campaign not found' }
-    let token = jwt.sign({ campaignId }, process.env.SECRET)
+    let token = jwt.sign({ campaignId, userId }, process.env.SECRET)
     return token
 }
 
@@ -60,9 +60,10 @@ const checkToken = async (token) => {
     try {
         const approval = jwt.verify(token, process.env.SECRET)
         if (!approval) throw { msg: 'token is not valid' }
-        const campaign = await campaignController.read({ _id: approval.campaignId })
+        const campaign = await campaignController.read({_id : approval.userId},{ _id: approval.campaignId })
         if (!campaign) throw { msg: 'campaign not found' }
-        return approval.campaignId
+        
+        return approval
     } catch (error) {
         return error
     }
@@ -71,9 +72,9 @@ const checkToken = async (token) => {
 
 // שליחה להוספת לייד
 const sendToAddLead = async (token, data) => {
-    let campaignId = await checkToken(token)
-    data.campaign = campaignId
-    return 'the lede create' +  await leadService.addLeadToCamp(data)
+    let res = await checkToken(token)
+   const {campaignId , userId} = res 
+    return 'the lede create' +  await leadService.addLeadToCamp( campaignId , userId, data.data)
 }
 module.exports = { createToken, sendToAddLead, login, checkClient }
 
