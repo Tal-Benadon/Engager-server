@@ -3,12 +3,9 @@ const router = express.Router();
 const campaignService = require('../BL/campaign.service');
 // const scheduleService = require('../BL/schedule.service');
 // const { scheduledJobs } = require("node-schedule");
-<<<<<<< HEAD
 const {mwToken} = require("../middlewares/auth");
-=======
 const {checkClient} = require("../middlewares/auth");
 const { maxCamp } = require("../middlewares/plans");
->>>>>>> 86b3924f645d67c543190123d214b7b3af6504d9
 
 // בדיקת טוקן באופן אוטומטי לפני שאר הראוטרים
 // לשקול לאפשר שורה זו
