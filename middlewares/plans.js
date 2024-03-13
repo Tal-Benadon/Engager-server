@@ -9,24 +9,26 @@
 //split_terminals
 //notification_new_lead
 //copywriting_msg
-//connection_to_whatsApp
+//connection_to_whatsApp 
 //customer_journey
 //technical_support
 //update_version
 // max lead (ALL)
 
+const express = require('express')
+const db = require('../DL/db')
 
+const app = express();
+db.connect();
 const { getOneUserByFilter } = require('../BL/account.service')
 const { readOne } = require('../DL/controllers/plan.controller')
 
 
 async function maxCamp(req, res, next) {
     try {
-        const user = await getOneUserByFilter({ id: req.body.user._id });
+        const user = await getOneUserByFilter({ id: "65eeca187d0944e92ab44179" },"subscription");
         if (!user) throw { code: 401, msg: " user not found " }
-        const plan = await readOne({ name: user.subscription });
-        if (!plan) throw { code: 401, msg: " there is no plan :/ " }
-        if (user.campaigns < plan.num_leads_in_list) {
+        if (user.campaigns < user.subscription.num_leads_in_list) {
             return next()
         }
         res.status(444).send("there is no permission for this operate")
@@ -37,8 +39,6 @@ async function maxCamp(req, res, next) {
     }
 
 }
-
-
 // function isThirtyDaysBefore(date) {
 //     const currentDate = new Date();
 //     const thirtyDaysBefore = new Date(currentDate);
@@ -50,7 +50,6 @@ async function maxCamp(req, res, next) {
 //   // Example usage
 //   const someDate = new Date('2023-06-01');
 //   console.log(isThirtyDaysBefore(someDate));
-
 
 
 async function maxWellcomeMsg(req, res, next) {
@@ -76,15 +75,11 @@ async function totalMsg(req, res, next) {
 
 
 
-
-
 async function transferData(req, res, next) {
     try {
-        const user = await getOneUserByFilter({ id: req.body.user._id });
+        const user = await getOneUserByFilter({ id: req.body.user._id },'subscription','subscription');
         if (!user) throw { code: 401, msg: " user not found " };
-        const plan = await readOne({ name: user.subscription });
-        if (!plan) throw { code: 401, msg: " there is no plan :/ " }
-        if (plan.data_transfer_crm == true) {
+        if (user.subscription.data_transfer_crm == true) {
             return next()
         }
 
@@ -98,11 +93,9 @@ async function transferData(req, res, next) {
 
 async function splitTerminals(req, res, next) {
     try {
-        const user = await getOneUserByFilter({ id: req.body.user._id });
+        const user = await getOneUserByFilter({ id: req.body.user._id },'subscription');
         if (!user) throw { code: 401, msg: " user not found " };
-        const plan = await readOne({ name: user.subscription });
-        if (!plan) throw { code: 401, msg: " there is no plan :/ " }
-        if (plan.split_terminals == true) {
+        if (user.subscriptionsplit_terminals == true) {
             return next()
         }
 
@@ -114,15 +107,11 @@ async function splitTerminals(req, res, next) {
 }
 
 
-
-
 async function notificationForNewLead(req, res, next) {
     try {
-        const user = await getOneUserByFilter({ id: req.body.user._id });
+        const user = await getOneUserByFilter({ id: req.body.user._id },'subscription');
         if (!user) throw { code: 401, msg: " user not found " };
-        const plan = await readOne({ name: user.subscription });
-        if (!plan) throw { code: 401, msg: " there is no plan :/ " }
-        if (plan.notification_new_lead == true) {
+        if (user.subscriptionnotification_new_lead == true) {
             return next()
         }
     } catch (err) {
@@ -135,11 +124,9 @@ async function notificationForNewLead(req, res, next) {
 
 async function msgCopywriting(req, res, next) {
     try {
-        const user = await getOneUserByFilter({ id: req.body.user._id });
+        const user = await getOneUserByFilter({ id: req.body.user._id },'subscription');
         if (!user) throw { code: 401, msg: " user not found " };
-        const plan = await readOne({ name: user.subscription });
-        if (!plan) throw { code: 401, msg: " there is no plan :/ " }
-        if (plan.copywriting_msg == true) {
+        if (user.subscriptioncopywriting_msg == true) {
             return next()
         }
 
@@ -154,11 +141,9 @@ async function msgCopywriting(req, res, next) {
 
 async function whatsAppConnection(req, res, next) {
     try {
-        const user = await getOneUserByFilter({ id: req.body.user._id });
+        const user = await getOneUserByFilter({ id: req.body.user._id },'subscription');
         if (!user) throw { code: 401, msg: " user not found " };
-        const plan = await readOne({ name: user.subscription });
-        if (!plan) throw { code: 401, msg: " there is no plan :/ " }
-        if (plan.connection_to_whatsApp == true) {
+        if (user.subscriptionconnection_to_whatsApp == true) {
             return next()
         }
     } catch (err) {
@@ -172,11 +157,9 @@ async function whatsAppConnection(req, res, next) {
 
 async function journeyForClient(req, res, next) {
     try {
-        const user = await getOneUserByFilter({ id: req.body.user._id });
+        const user = await getOneUserByFilter({ id: req.body.user._id },'subscription');
         if (!user) throw { code: 401, msg: " user not found " };
-        const plan = await readOne({ name: user.subscription });
-        if (!plan) throw { code: 401, msg: " there is no plan :/ " }
-        if (plan.customer_journey == true) {
+        if (user.subscriptioncustomer_journey == true) {
             return next()
         }
     } catch (err) {

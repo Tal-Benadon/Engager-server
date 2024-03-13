@@ -6,7 +6,6 @@ const receivedMsg = new mongoose.Schema({
   },
   msgId: {
     type: mongoose.SchemaTypes.ObjectId
-
   },
   status: {
     type: String,
@@ -14,7 +13,7 @@ const receivedMsg = new mongoose.Schema({
     default: "created",
 
   },
-  sentData: {
+  sentDate: {
     type: Date,
     default: Date.now
   }
@@ -51,6 +50,9 @@ const leadSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  extra:{
+    type: mongoose.SchemaTypes.Mixed
+  }
 
 });
 const msgSchema = new mongoose.Schema({
@@ -75,8 +77,11 @@ const msgSchema = new mongoose.Schema({
     type: String,
     enum: ["created", "sent", "received"],
     default: "created",
-
+  },
+  isZeroMsg: {
+    type: Boolean
   }
+
 });
 
 const campaignSchema = new mongoose.Schema({
@@ -91,7 +96,6 @@ const campaignSchema = new mongoose.Schema({
   },
   details: {
     type: String,
-
   },
   isActive: {
     type: Boolean,

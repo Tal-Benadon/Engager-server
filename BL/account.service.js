@@ -1,8 +1,11 @@
 const { update } = require("../DL/controllers/campaign.controller");
 const userController = require("../DL/controllers/user.controller");
 const scheduleService = require("./schedule.service");
-
-
+const axios = require('axios')
+const jwt = require('jsonwebtoken')
+const secret = process.env.SECRET
+const createToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2h' })
+const decodeToken = (token) => jwt.verify(token, secret)
 // get all users
 async function getUsers() {
     let users = await userController.read()
@@ -21,11 +24,77 @@ async function getOneUser(phone) {
     }
     return user
 }
+async function getOneUserByEmail(email) {
+    let user = await userController.readOne({ email: email })
+    if (!user) {
+        throw { code: 408, msg: 'The phone is not exist' }
+    }
+    return user
+}
+
+
+async function getGoogleOAuthTokens({ code, redirect_uri }) {
+    try {
+        const url = "https://oauth2.googleapis.com/token";
+        const values = {
+            code,
+            client_id: process.env.CLIENT_ID,
+            client_secret: process.env.CLIENT_SECRET,
+            redirect_uri,
+            grant_type: "authorization_code",
+
+        }
+        const res = await axios.post(
+            url,
+            values,
+            {
+                headers: {
+                    "Content-Type": " application/x-www-form-urlencoded"
+                }
+            }
+        )
+        return res.data
+    } catch (error) {
+        console.log(error.response.data.error, "Failed to fetch Google Oauth Tokens");
+        throw new Error(error.message);
+    }
+}
+
+
+async function getGoogleUser({
+    id_token,
+    access_token
+}) {
+    try {
+        const res = await axios.get(
+            `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${id_token}`,
+                },
+            }
+        )
+        
+        // const user = await axios.get(
+        //     `https://people.googleapis.com/v1/people/me?personFields=addresses,phoneNumbers`,
+        //     {
+        //         headers: {
+        //             Authorization: `Bearer ${access_token}`,
+        //         },
+        //     }
+        // )
+        // console.log(user.data);
+        return { res: res.data }
+    } catch (error) {
+        console.log(error, "Error fetching Google user");
+        throw new Error(error.message);
+    }
+}
 
 
 //get one user by filter Object 
-async function getOneUserByFilter(filter={}) {
-    let user = await userController.readOne(filter)
+async function getOneUserByFilter(filter={} , populate = "") {
+    let user = await userController.readOne(filter, populate)
     if (!user) {
         throw { code: 408, msg: 'The phone is not exist' }
     }
@@ -43,7 +112,15 @@ async function del(phone) {
 
 // update one user:
 async function updateOneUser(phone, data) {
-    let user = await userController.updateUser({ phone: phone }, data)
+    let user = await userController.update({ phone: phone }, data)
+    if (!user) {
+        throw { code: 408, msg: 'The phone is not exists' }
+    }
+    return user
+}
+
+async function updatePhoneUser(email, data) {
+    let user = await userController.updatePhoneUser({ email: email }, data)
     if (!user) {
         throw { code: 408, msg: 'The phone is not exists' }
     }
@@ -79,11 +156,73 @@ async function createNewUser(body) {
     return newUser
 }
 
+//Create Token using userData for links authentications(initial registeration auth, change password link)
+async function createLinkToken(payload) {
+    return new Promise((resolve, reject) => {
+
+        const token = createToken(payload)
+        console.log({ "token": token });
+        resolve(token)
+    })
+}
+
+
+const decodeLinkToken = (token) => {
+    try {
+        return jwt.verify(token, secret);
+    } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+
+
+            return { successStatus: 'Expired', msg: 'The link has expired' };
+        } else {
+            console.error('Token verification failed:', error.message);
+            return null;
+        }
+    }
+};
+
+async function confirmNewUser(token) {
+    try {
+        //Decoding Token received from pressed Activation Link
+        const decodedToken = decodeLinkToken(token)
+        //Token time expired
+        if (decodedToken.successStatus === 'Expired') return decodedToken
+
+        //Payload of verified Token
+        const { email, phone, id } = decodedToken
+
+        //Checking if user is in database, could be changed to ReadOne
+        const userToConfirm = await userController.read({ phone: phone, _id: id })
+
+        //Read returns Array of user(s), there should be only 1 ([0])
+        if (userToConfirm.length < 1) throw { code: 401, msg: 'User does not exist' }
+        if (userToConfirm[0].isActive == true) return { successStatus: 'AlreadyActive', msg: 'User is already active' }
+
+        await updateOneUser(phone, { isActive: true })
+
+        return { successStatus: 'Activated', msg: 'User successfully confirmed' };
+    } catch (err) {
+        console.error(err);
+        return { successStatus: 'ActivationFailed', msg: 'User could not be activated' };
+    }
+
+}
+
 module.exports = {
     createNewUser,
     getUsers,
     getOneUser,
     del,
     updateOneUser,
+    getGoogleUser,
+    getGoogleOAuthTokens,
+    updatePhoneUser,
+    getOneUserByEmail,
+    confirmNewUser,
+    createLinkToken,
     getOneUserByFilter
 }
+
+
+
