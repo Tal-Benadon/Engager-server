@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const paymentService = require('../BL/payment.service')
 const auth = require('../middlewares/auth')
-router.get('/', auth.checkClient, async (req, res) => {
+router.get('/', auth.mwToken, async (req, res) => {
 try{
 console.log("***************",req.body["user"]);
     const pay = await paymentService.sendRequstToCardkom(req.body["user"])
