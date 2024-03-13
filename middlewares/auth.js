@@ -11,27 +11,30 @@ const leadService = require('../BL/lead.service')
 
 //LOGIN
 async function login(phone, password) {
-    const user = await userService.getOneUser(phone)
+    const user = await userService.getOneUser(phone, "+password")
+    console.log('user: ', user)
     if (password != user.password) throw "The password incorrect"
     //  הפקת טוקן בכניסה
     const token = jwt.sign({ phone: phone }, process.env.SECRET, { expiresIn: "7d" })
-    return {token,user}
+    return { token, user }
 }
 
 // פונקציה לבדיקת טוקן בבקשות לקבלת מידע 
 const userModel = require("../DL/models/user.model")
 
-const checkClient = async (req, res, next) => {
+const mwToken = async (req, res, next) => {
     try {
-        // const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA1NTk2MTk0MTMiLCJpYXQiOjE3MDcyOTY1MTksImV4cCI6MTcwNzkwMTMxOX0.9UKZmT-bI8eEpOGD5HJDLtfK6DBkdDn1pR85U9x2LKY"
-        // const token = req.header("authorization")
-        // if (!token) throw ({ msg: "no token sent" })
-        // const payload = checkToken(token)
-        // const user = await userModel.findOne({ phone: payload.phone })
-        // if (!user) throw { msg: "not permitted" }
-        const user = {
-            _id: "65ed9c525b51ed6b4bd16107"
-        }
+        const originalToken = req.headers.authorization;
+        if (!originalToken) throw "Unauthorized";
+
+        const token = originalToken.replace("Bearer ", "");
+
+        const payload = jwt.verify(token, process.env.SECRET);
+        const user = await userModel.findOne({ phone: payload.phone })
+        if (!user) throw { msg: "not permitted" }
+        // const user = {
+        //     _id: "65ed9c525b51ed6b4bd16107"
+        // }
         req.body.user = user
         next()
     } catch (err) {
@@ -39,15 +42,36 @@ const checkClient = async (req, res, next) => {
     }
 }
 
+// פונקציית בדיקת הטוקן בעליית האפליקציה
+const tokenToUser = async (req, res) => {
+    try {
+        const originalToken = req.headers.authorization;
+        if (!originalToken) throw "Unauthorized";
 
+        const token = originalToken.replace("Bearer ", "");
 
-// const checkToken = (token) => {
-//     const payload = jwt.verify(token, process.env.SECRET)
-//     return payload
-// }
+        const payload = jwt.verify(token, process.env.SECRET);
+        const data = await userModel.findOne({ phone: payload.phone });
+        if (!data) throw { msg: "not permitted" };
 
+        const user = {
+            avatar: data.avatar,
+            email: data.email,
+            name: data.name,
+            phone: data.phone,
+            _id: data._id
+        };
+        // console.log('tokenToUser: ', user)
+        return user;
+    } catch (err) {
+        res.status(401).send("Unauthorized")
+    }
+};
+
+// tokenToUser({headers: {authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA1NDYzMzkyOTAiLCJpYXQiOjE3MTAzMjA3MDUsImV4cCI6MTcxMDkyNTUwNX0.70NzWGOmIIG2vhUE3hv8aapFUYBicZ3zGmS1PPFqJy0"}})
 
 // יצירת טוקן
+// data time env
 const createToken = async (campaignId) => {
     const campaign = await campaignController.read({ _id: campaignId })
     if (!campaign) throw { msg: 'campaign not found' }
@@ -57,23 +81,12 @@ const createToken = async (campaignId) => {
 
 // בדיקת טוקן 
 const checkToken = async (token) => {
-    try {
-        const approval = jwt.verify(token, process.env.SECRET)
-        if (!approval) throw { msg: 'token is not valid' }
-        const campaign = await campaignController.read({ _id: approval.campaignId })
-        if (!campaign) throw { msg: 'campaign not found' }
-        return approval.campaignId
-    } catch (error) {
-        return error
-    }
+    const approval = jwt.verify(token, process.env.SECRET)
+    if (!approval) throw { msg: 'token is not valid' }
+    const campaign = await campaignController.read({ _id: approval.campaignId })
+    if (!campaign) throw { msg: 'campaign not found' }
+    return approval.campaignId
 }
 
-
-// שליחה להוספת לייד
-const sendToAddLead = async (token, data) => {
-    let campaignId = await checkToken(token)
-    data.campaign = campaignId
-    return 'the lede create' +  await leadService.addLeadToCamp(data)
-}
-module.exports = { createToken, sendToAddLead, login, checkClient }
+module.exports = { createToken, login, mwToken, tokenToUser }
 

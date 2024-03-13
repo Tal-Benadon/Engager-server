@@ -3,7 +3,8 @@ const router = express.Router();
 const accountService = require('../BL/account.service')
 const userController = require('../DL/controllers/user.controller')
 const userModel = require('../DL/models/user.model')
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const { tokenToUser } = require("../middlewares/auth");
 
 
 router.post("/signin", async (req, res) => {
@@ -142,6 +143,18 @@ router.post("/feedback", async (req, res) => {
 router.get("/dashboard", async (req, res) => {
   try {
 
+  } catch (err) {
+    res
+      .status(err.code || 500)
+      .send({ msg: err.msg || "something went wrong" });
+  }
+});
+
+// בדיקת הטוקן והחזרת היוזר כשאפליקציה עולה לראשונה
+router.get("/tokenToUser", async (req, res) => {
+  try {
+    let user = await tokenToUser(req, res);
+    res.send(user);
   } catch (err) {
     res
       .status(err.code || 500)

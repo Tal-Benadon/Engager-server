@@ -17,8 +17,8 @@ async function getUsers() {
 }
 
 // get one user:
-async function getOneUser(phone) {
-    let user = await userController.readOne({ phone: phone })
+async function getOneUser(phone,select) {
+    let user = await userController.readOne({ phone: phone }, select)
     if (!user) {
         throw { code: 408, msg: 'The phone is not exist' }
     }
