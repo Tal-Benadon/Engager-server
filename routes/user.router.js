@@ -215,7 +215,7 @@ router.get('/:userId/leads', async (req, res) => {
       { title: 'name', input: 'text' },
       { title: 'email', input: 'text' },
       { title: 'phone', input: 'text' },
-      { title: 'joinDate', input: 'date' },
+      { title: 'joinDate', input: 'date' },               // camp name
       { title: 'campaign', input: 'select', inputValues: ["קורס תפירה", "חדר כושר", "בריכה עירונית"] },
       { title: 'isOnline', input: '' },
     ]
