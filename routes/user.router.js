@@ -101,7 +101,7 @@ router.delete("/:phone", async (req, res) => {
   }
 })
 
-//get Lead From All Camps
+//get Leads From All Campaigns
 router.get('/:userId/leads', async (req, res) => {
   try {
     // מידע זמני
