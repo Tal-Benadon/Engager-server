@@ -125,4 +125,5 @@ module.exports = {
   updateMsg,
   getAllMsg,
   updateMsgStatus,
+  getOneMsg
 };
