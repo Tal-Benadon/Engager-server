@@ -5,7 +5,8 @@ const userController = require('../DL/controllers/user.controller')
 const userModel = require('../DL/models/user.model')
 const jwt = require("jsonwebtoken")
 
-
+const baseUrlClient = process.env.BASE_URL_CLIENT;
+const baseUrlServer = process.env.BASE_URL_SERVER;
 router.post("/signin", async (req, res) => {
   try {
 
@@ -43,7 +44,7 @@ router.get("/signInGoogle", async (req, res) => {
     }
 
     const token = jwt.sign(
-      { email: googleUser.res.email, userType: userToReturn.userType, _id:userToReturn._id },
+      { email: googleUser.res.email, userType: userToReturn.userType, _id: userToReturn._id },
       process.env.SECRET,
       { expiresIn: "1h" }
     )
@@ -65,7 +66,7 @@ router.get("/signUpGoogle", async (req, res) => {
 
     const { id_token, access_token } = await accountService.getGoogleOAuthTokens({
       code,
-      redirect_uri: process.env.GOOGLE_OAUTH_REDIRECT_URL_REGISTER,
+      redirect_uri: `${baseUrlServer}/accout/signUpGoogle`
     });
 
     const googleUser = await accountService.getGoogleUser({
@@ -73,25 +74,39 @@ router.get("/signUpGoogle", async (req, res) => {
       access_token,
     });
 
-    if (!googleUser.res.verified_email) throw {msg:'forbiden',code:403}
-
-    userToReturn = await userController.create({
-      name: googleUser.res.name,
-      email: googleUser.res.email
-    })
-
-
-    if (!userToReturn.phone) {
-      return res.redirect(`http://localhost:5173/completeDetails/${userToReturn.email}`);
+    if (!googleUser.res.verified_email) throw { msg: 'forbiden', code: 403 }
+    const userInDataBase = await accountService.getOneUserByEmail(googleUser.res.email)
+    if (!userInDataBase) {
+      userToReturn = await userController.create({
+        name: googleUser.res.name,
+        email: googleUser.res.email
+      })
+      return res.redirect(`${baseUrlClient}/completeDetails/${userToReturn.email}`);
+    }
+    if (!userInDataBase.phone) {
+      return res.redirect(`${baseUrlClient}/completeDetails/${userToReturn.email}`);
+    } else {
+      const token = jwt.sign(
+        { email: googleUser.res.email, userType: userToReturn.userType, _id: userToReturn._id },
+        process.env.SECRET,
+        { expiresIn: "1h" }
+      )
+      return res.redirect(`http://localhost:5173/redircetGoogle/${token}`)
     }
 
-    res.redirect('http://localhost:5173/login')
+
+
+
+
+
+    // res.redirect(`${baseUrlClient}/login`)
 
 
   } catch (err) {
     res
       .status(err.code || 500)
-      .send({ msg: err.msg || "something went wrong" });
+      .send("something went wrong")
+    // .send({ msg: err.msg || "something went wrong" });
   }
 });
 
