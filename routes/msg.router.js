@@ -5,7 +5,7 @@ const scheduleService = require('../BL/schedule.service');
 const { scheduledJobs } = require("node-schedule");
 const auth = require("../middlewares/auth");
 const campaignService = require('../BL/campaign.service');
-
+const {countMsg} = require ('../middlewares/plans')
 
 // To get all messages of a specific campaign
 router.get('/:campId/msg', async (req, res) => {
@@ -58,7 +58,7 @@ router.get('/:campId/msg', async (req, res) => {
 */
 
 //add new msg into campaign 
-router.post('/:campId/msg', async (req, res) => {
+router.post('/:campId/msg', countMsg, async (req, res) => {
     try {
         const campId = req.params.campId;
         const data = req.body.data
