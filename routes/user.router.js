@@ -40,7 +40,7 @@ router.post('/activate/:userToken', async (req, res) => {
   }
 })
 
-router.use(auth.checkClient)
+router.use(auth.mwToken)
 
 
 // get all users
@@ -70,8 +70,6 @@ router.get("/:phone", async (req, res) => {
     res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
   }
 })
-
-
 
 
 router.put("/update/:email", async (req, res) => {
