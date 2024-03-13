@@ -23,12 +23,12 @@ const userSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: true,
+    required: false,
   },
 
   isActive: {
     type: Boolean,
-    default: true
+    default: false
   },
 
   campaigns: [
