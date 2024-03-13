@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const accountService = require('../BL/account.service')
+const feedbackService = require('../BL/feedback.service')
 const userController = require('../DL/controllers/user.controller')
 const userModel = require('../DL/models/user.model')
 const jwt = require("jsonwebtoken");
@@ -125,17 +126,6 @@ router.post("/renew", async (req, res) => {
 
 // reset password - איפוס סיסמא
 router.post("/restore", async (req, res) => {
-  try {
-
-  } catch (err) {
-    res
-      .status(err.code || 500)
-      .send({ msg: err.msg || "something went wrong" });
-  }
-});
-
-// feedback - פידבק
-router.post("/feedback", async (req, res) => {
   try {
 
   } catch (err) {
