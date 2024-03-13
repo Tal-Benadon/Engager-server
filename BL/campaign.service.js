@@ -15,7 +15,7 @@ const auth = require("../middlewares/auth")
 async function getAllCampaignsByUser(userId) {
   if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
   const campaigns = await campaignController.read({ user: userId , isActive : true } );
-  // if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };  להוסיף פילטר ללידים לפי  isactiv
+  if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };
  campaigns.forEach(campaign => {
   campaign.leads = campaign.leads.filter(lead => lead.isActive);
 });
