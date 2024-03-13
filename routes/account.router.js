@@ -134,17 +134,6 @@ router.post("/restore", async (req, res) => {
   }
 });
 
-// feedback - פידבק
-router.post("/feedback", async (req, res) => {
-  try {
-
-  } catch (err) {
-    res
-      .status(err.code || 500)
-      .send({ msg: err.msg || "something went wrong" });
-  }
-});
-
 // dashboard  - מידע על חבילה, נתוני לידים והודעות, פרטים אישיים
 router.get("/dashboard", async (req, res) => {
   try {

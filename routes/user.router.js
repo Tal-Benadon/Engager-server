@@ -42,8 +42,6 @@ router.post('/activate/:userToken', async (req, res) => {
 
 router.use(auth.mwToken)
 
-// router.use(auth.checkClient);
-
 // get all users
 router.get("/", async (req, res) => {
   try {
