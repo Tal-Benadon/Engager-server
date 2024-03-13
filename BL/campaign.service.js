@@ -14,7 +14,7 @@ const auth = require("../middlewares/auth")
 // do not touch!!!!
 async function getAllCampaignsByUser(userId) {
   if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
-  const campaigns = await campaignController.read({ user: userId , isActive : true } );
+  const campaigns = await campaignController.read({ user: userId, isActive: true });
   // if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };  להוסיף פילטר ללידים לפי  isactiv
   return campaigns;
 }
@@ -22,7 +22,7 @@ async function getAllCampaignsByUser(userId) {
 // To get jus ONE campaign and the information (user & msg & leads & received msgs)
 async function getOneCamp(campId) {
   if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
-  const campaign = await campaignController.readOne({ _id: campId ,  isActive : true});
+  const campaign = await campaignController.readOne({ _id: campId, isActive: true });
   if (!campaign) throw { msg: "Campaign is not exist", code: 404 };
   return campaign;
 }
@@ -30,7 +30,7 @@ async function getOneCamp(campId) {
 
 //To create a new campaign [The name must be unique]
 async function createNewCampaign(userId, body) {
-  const { title, details, img } = body
+  const { title, details, img, starterMsg } = body;
   if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
   campName = title.trim();
   const nameIsExist = await campaignController.readOne({
@@ -42,16 +42,22 @@ async function createNewCampaign(userId, body) {
     user: userId,
     title: campName,
     details: details,
-    img: img
+    img: img,
+    msg: [{ subject: '!הודעת התנעה', content: starterMsg }]
   });
+  // const newMsg = {subject: '!הודעת התנעה', content: starterMsg, zeroMessage: true};
+  // const addMsg = await campaignController.updateOne({ _id: created._id }, { $push: { msg: newMsg } });
+  // console.log('addMsg', addMsg);
+  // created.msg = [{subject: '!הודעת התנעה', content: starterMsg, zeroMessage: true}]
+  // created.save();
+  // console.log('created', created);
   const token = await auth.createToken(created._id)
-  await campaignController.update({_id:created._id}, {webhook : token})
+  await campaignController.update({ _id: created._id }, { webhook: token })
   const updatedUser = await userController.updateOne({ _id: userId }, { $push: { campaigns: created._id } });
   if (updatedUser) console.log('update user', updatedUser);
   const newCamp = await getOneCamp(created._id)
   return newCamp;
 }
-
 
 
 // To uodate a campaign by _Id
@@ -72,7 +78,7 @@ async function updateCampaign(campId, data) {
 async function delCampaign(campId) {
   if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
   const campaign = campaignController.readOne({ _id: campId });
-  console.log( "S" , campaign) ;
+  console.log("S", campaign);
   if (!campaign) throw { code: 404, msg: "Campaign is not exist!" };
   return await campaignController.update({ _id: campId }, { isActive: false });
 }
