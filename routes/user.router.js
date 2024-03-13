@@ -79,11 +79,21 @@ router.put("/update/:email", async (req, res) => {
     const email = req.params.email
     const { phone } = req.body
 
-const checkUser = await userService.getOneUserByEmail(email)
-if(!checkUser) throw new Error ("user not found")
+    const checkUser = await userService.getOneUserByEmail(email)
+    if (!checkUser) throw new Error("user not found")
 
     const user = await userService.updatePhoneUser(email, { phone });
-    //להביא את היוזר המלא ולקחת משם את האימייל ואידי המונגואי ולשים את הקוד של טל שזה יצירת טוקן, ושליחת לינק לפלאפון שמפעיל את היוזר
+    const userWithPhone = await userService.getOneUser(phone)
+    const payload = {
+      email: userWithPhone.email,
+      phone: userWithPhone.phone,
+      id: userWithPhone._id
+    }
+    const userLinkToken = await userService.createLinkToken(payload)
+    //send confirmationLink through whatsapp.
+    const confirmationLink = `${process.env.BASE_PATH}activate-user/${userLinkToken}`
+    console.log(confirmationLink);
+
     res.send(user)
 
   } catch (err) {
