@@ -1,15 +1,13 @@
 const feedbackModel = require('../models/feedback.model')
 
 
-async function create(data){
+async function create(data) {
     console.log(data);
     return await feedbackModel.create(data)
 }
 
-async function read(userId) {
-    return await feedbackModel.find({ User: userId }).populate('User');
+async function read(filter = {}) {
+    return await feedbackModel.find(filter).populate('User');
 }
 
-module.exports = {create,read}
-
-
+module.exports = { create, read }
