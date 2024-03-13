@@ -4,13 +4,14 @@ const campaignService = require('../BL/campaign.service');
 // const scheduleService = require('../BL/schedule.service');
 // const { scheduledJobs } = require("node-schedule");
 const {checkClient} = require("../middlewares/auth");
+const { maxCamp } = require("../middlewares/plans");
 
 // בדיקת טוקן באופן אוטומטי לפני שאר הראוטרים
 // לשקול לאפשר שורה זו
 // router.use(auth.checkClient)
 
 // create a new campaign
-router.post('/', async (req, res) => {
+router.post('/', maxCamp,  async (req, res) => {
   try {
     // {"campName":"camp1",{"user":{"_id":"65743643"}}}
     const userId = req.body.user._id;

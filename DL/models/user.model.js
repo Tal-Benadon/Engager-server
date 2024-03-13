@@ -41,20 +41,35 @@ const userSchema = new mongoose.Schema({
   ],
 
   subscription: {
-    type : String, 
-    enum : ['trial', 'active', 'expired'],
-    default : 'trial'
+    type: String,
+    enum: ['free', 'basic', 'premium', 'enterprise'],
+    default: 'free'
   },
 
-  createdData : {
+  createdData: {
     type: Date,
     default: Date.now()
   },
 
-  messagesSent : {
-    type: Number, 
+  messagesSent: {
+    type: Number,
     default: 0
+  },
+  msg_count: {
+    counter: {
+      type: Number,
+      default: 0,
+    },
+    countingStart: {
+      type: Date,
+      default: Date.now()
+    }
+  },
+  first_msg_count: {
+    default: 0,
+    type: Number
   }
+
 
 });
 

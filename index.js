@@ -25,7 +25,6 @@ app.use(express.json());
 app.use(express.static('public'))
 
 
-
 app.use('/campaign', campaignRouter);
 app.use('/campaign', msgRouter);
 app.use('/lead', leadRouter);
@@ -42,6 +41,7 @@ app.use('/whatsapp' , whatsAppArouter)
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerDocument = require('./swagger.json');
+const { maxCamp } = require('./middlewares/plans');
 
 const options = {
     swaggerDefinition: {

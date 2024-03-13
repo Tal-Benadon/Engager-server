@@ -22,6 +22,16 @@ async function getOneUser(phone) {
     return user
 }
 
+
+//get one user by filter Object 
+async function getOneUserByFilter(filter={}) {
+    let user = await userController.readOne(filter)
+    if (!user) {
+        throw { code: 408, msg: 'The phone is not exist' }
+    }
+    return user
+}
+
 // delete user:
 async function del(phone) {
     let user = await userController.update({ phone, isActive: true })
@@ -74,5 +84,6 @@ module.exports = {
     getUsers,
     getOneUser,
     del,
-    updateOneUser
+    updateOneUser,
+    getOneUserByFilter
 }
