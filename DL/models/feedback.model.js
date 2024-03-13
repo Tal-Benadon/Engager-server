@@ -7,14 +7,14 @@ const feedbackSchema = new mongoose.Schema({
     },
     User: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user' 
+        ref: 'user'
     },
     createdDate:
     {
-        type:Date,
+        type: Date,
         default: Date.now
     }
 })
 
-const feedbackModel = mongoose.model('feedback',feedbackSchema)
+const feedbackModel = mongoose.model('feedback', feedbackSchema)
 module.exports = feedbackModel;
