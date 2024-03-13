@@ -3,7 +3,9 @@ const campaignModel = require('../models/campaign.model')
 
 const create = async (campId, data) => { }
 
-const update = async (campId, filter, newData) => { }
+const update = async (campId, filter, newData) => { 
+
+}
 
 const read = async (campId, filter) => { }
 
