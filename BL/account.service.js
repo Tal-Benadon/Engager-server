@@ -2,7 +2,10 @@ const { update } = require("../DL/controllers/campaign.controller");
 const userController = require("../DL/controllers/user.controller");
 const scheduleService = require("./schedule.service");
 const axios = require('axios')
-
+const jwt = require('jsonwebtoken')
+const secret = process.env.SECRET
+const createToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2h' })
+const decodeToken = (token) => jwt.verify(token, secret)
 // get all users
 async function getUsers() {
     let users = await userController.read()
@@ -143,6 +146,59 @@ async function createNewUser(body) {
     return newUser
 }
 
+//Create Token using userData for links authentications(initial registeration auth, change password link)
+async function createLinkToken(payload) {
+    return new Promise((resolve, reject) => {
+
+        const token = createToken(payload)
+        console.log({ "token": token });
+        resolve(token)
+    })
+}
+
+
+const decodeLinkToken = (token) => {
+    try {
+        return jwt.verify(token, secret);
+    } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+
+
+            return { successStatus: 'Expired', msg: 'The link has expired' };
+        } else {
+            console.error('Token verification failed:', error.message);
+            return null;
+        }
+    }
+};
+
+async function confirmNewUser(token) {
+    try {
+        //Decoding Token received from pressed Activation Link
+        const decodedToken = decodeLinkToken(token)
+        //Token time expired
+        if (decodedToken.successStatus === 'Expired') return decodedToken
+
+        //Payload of verified Token
+        const { email, phone, id } = decodedToken
+
+        //Checking if user is in database, could be changed to ReadOne
+        const userToConfirm = await userController.read({ phone: phone, _id: id })
+
+        //Read returns Array of user(s), there should be only 1 ([0])
+        if (userToConfirm.length < 1) throw { code: 401, msg: 'User does not exist' }
+        if (userToConfirm[0].isActive == true) return { successStatus: 'AlreadyActive', msg: 'User is already active' }
+
+        await updateOneUser(phone, { isActive: true })
+
+        return { successStatus: 'Activated', msg: 'User successfully confirmed' };
+    } catch (err) {
+        console.error(err);
+        return { successStatus: 'ActivationFailed', msg: 'User could not be activated' };
+    }
+
+}
+
 module.exports = {
     createNewUser,
     getUsers,
@@ -152,5 +208,10 @@ module.exports = {
     getGoogleUser,
     getGoogleOAuthTokens,
     updatePhoneUser,
-    getOneUserByEmail
+    getOneUserByEmail,
+    confirmNewUser,
+    createLinkToken
 }
+
+
+

@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: true
   },
   avatar: {
     type: String,
@@ -46,13 +47,13 @@ const userSchema = new mongoose.Schema({
     default : 'free'
   },
 
-  createdData : {
+  createdDate: {
     type: Date,
     default: Date.now()
   },
 
-  messagesSent : {
-    type: Number, 
+  messagesSent: {
+    type: Number,
     default: 0
   },
  msg_count :{
