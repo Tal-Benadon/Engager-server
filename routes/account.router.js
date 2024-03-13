@@ -46,17 +46,14 @@ router.get("/signInGoogle", async (req, res) => {
 
     const token = jwt.sign(
       { email: googleUser.res.email, userType: userToReturn.userType, _id: userToReturn._id },
-      { email: googleUser.res.email, userType: userToReturn.userType, _id: userToReturn._id },
       process.env.SECRET,
       { expiresIn: "1h" }
     )
 
-    res.redirect(`${baseUrlClient}/redircetGoogle/${token}`)
+    return res.redirect(`${baseUrlClient}/redircetGoogle/${token}`)
 
   } catch (err) {
-    res
-      .status(err.code || 500)
-      .send({ msg: err.msg || "something went wrong" });
+    console.log(err);
   }
 });
 
