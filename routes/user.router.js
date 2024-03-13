@@ -10,6 +10,15 @@ router.post("/", async (req, res) => {
   try {
     const body = req.body;
     const answer = await userService.createNewUser(body);
+    console.log({ "answer:": answer });
+    const payload = {
+      email: answer.email,
+      phone: answer.phone,
+      id: answer._id
+    }
+    const userLinkToken = await userService.createLinkToken(payload)
+    console.log({ "inRouter": userLinkToken });
+    const activationLink = `${process.env.BASE_PATH}activate-user/${userLinkToken}`
     res.send(answer);
   } catch (err) {
     console.log(err);
@@ -17,9 +26,21 @@ router.post("/", async (req, res) => {
       .status(err.code || 500)
       .send({ msg: err.msg || "something went wrong" });
   }
-});
+})
 
-router.use(auth.checkClient);
+router.post('/activate/:userToken', async (req, res) => {
+  const token = req.params.userToken
+  console.log({ "Token to Compare": token });
+  try {
+    const result = await userService.confirmNewUser(token)
+    console.log(result);
+    res.send(result)
+  } catch (err) {
+    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
+  }
+})
+
+router.use(auth.mwToken)
 
 // get all users
 router.get("/", async (req, res) => {
@@ -49,19 +70,20 @@ router.get("/:phone", async (req, res) => {
       .status(err.code || 500)
       .send({ msg: err.msg || "something went wrong" });
   }
-});
+})
+
 
 router.put("/update/:email", async (req, res) => {
   try {
-    const email = req.params.email;
-    const { phone } = req.body;
+    const email = req.params.email
+    const data = req.body
 
     const checkUser = await userService.getOneUserByEmail(email);
     if (!checkUser) throw new Error("user not found");
 
-    const user = await userService.updatePhoneUser(email, { phone });
-    //להביא את היוזר המלא ולקחת משם את האימייל ואידי המונגואי ולשים את הקוד של טל שזה יצירת טוקן, ושליחת לינק לפלאפון שמפעיל את היוזר
-    res.send(user);
+    const user = await userService.updatePhoneUser(email, data);
+    res.send(user)
+
   } catch (err) {
     res
       .status(err.code || 500)
@@ -101,8 +123,8 @@ router.delete("/:phone", async (req, res) => {
   }
 });
 
-//get Leads From All Campaigns
-router.get("/:userId/leads", async (req, res) => {
+//get Lead From All Camps
+router.get('/:userId/leads', async (req, res) => {
   try {
     const userId = req.params.userId;
     const campaigns = await campaignService.getAllCampaignsByUser(userId);

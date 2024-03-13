@@ -13,17 +13,6 @@ router.post('/', async (req, res) => {
 })
 
 
-// בדיקת טוקן ושליחה להוספת לייד
-router.post('/:token', async (req, res) => {
-    try {
-        res.send(await auth.sendToAddLead(req.params.token, req.body))
-    } catch (error) {
-        if (error.msg) { res.status(543).send(error.msg) }
-        else {
-            res.status(543).send('there is a problem')
-        }
-    }
-})
 
 router.post('/', async (req,token, res)=>{
     const payload = jwt.verify(token, process.env.SECRET);
