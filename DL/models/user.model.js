@@ -12,14 +12,12 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-
   },
   password: {
     type: String,
     // required: true,
     // אביעד אמר לא לעשות סיסמה חובה בגלל שאנשים נכנסים עם גוגל וכד'
     // select: false,
-
   },
   phone: {
     type: String,
@@ -28,7 +26,7 @@ const userSchema = new mongoose.Schema({
 
   isActive: {
     type: Boolean,
-    default: false
+    default: false,
   },
 
   campaigns: [
@@ -41,33 +39,35 @@ const userSchema = new mongoose.Schema({
   ],
 
   subscription: {
-    type : String, 
-    enum : ['free', 'basic', 'enterprise',"preimum"], 
-    default : 'free'
+    type: mongoose.Schema.Types.ObjectId,
+    ref:"plans",
+    default:'65edcdf022a62790e4b5caf6'
   },
 
-  createdData : {
+  createdData: {
     type: Date,
-    default: Date.now()
+    default: Date.now(),
   },
 
-  messagesSent : {
-    type: Number, 
-    default: 0
-  },
- msg_count :{
+  messagesSent: {
+    type: Number,
     default: 0,
-    type : Number
-
   },
-  first_msg_count :{
-    default: 0,
-    type : Number
-
+  msgCount: {
+    counter: {
+      default: 0,
+      type: Number,
+    },
+    date:{
+      type:Date,
+      default: Date.now(),
+    },
+    firstMsgCount: {
+      default: 0,
+      type: Number,
+    },
   },
-
 });
 
 const userModel = mongoose.model("user", userSchema);
 module.exports = userModel;
-
