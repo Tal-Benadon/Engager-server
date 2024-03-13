@@ -74,7 +74,7 @@ async function getGoogleUser({
                 },
             }
         )
-        
+
         // const user = await axios.get(
         //     `https://people.googleapis.com/v1/people/me?personFields=addresses,phoneNumbers`,
         //     {
@@ -110,11 +110,17 @@ async function updateOneUser(phone, data) {
 }
 
 async function updatePhoneUser(email, data) {
-    let user = await userController.updatePhoneUser({ email: email }, data)
-    if (!user) {
-        throw { code: 408, msg: 'The phone is not exists' }
-    }
-    return user
+    let newData = {
+        name: data.fullName,
+        phone: data.phone,
+        occupation: data.occupation,
+        amountOfEmployees: data.amountOfEmployees
+}
+let user = await userController.updatePhoneUser({ email: email }, newData)
+if (!user) {
+    throw { code: 408, msg: 'The phone is not exists' }
+}
+return user
 }
 
 

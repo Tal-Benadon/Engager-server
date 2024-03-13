@@ -88,10 +88,10 @@ router.get("/signUpGoogle", async (req, res) => {
 
 
     if (!userToReturn.phone) {
-      return res.redirect(`${baseUrlClient}/completeDetails/${userToReturn.email}`);
+      return res.redirect(`${baseUrlClient}/completeDetails/${userToReturn.email}/${userToReturn.name}`);
     }
 
-    res.redirect(`${baseUrlClient}/login`)
+    // res.redirect(`${ba6seUrlClient}/login`)
 
 
   } catch (err) {

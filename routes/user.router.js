@@ -77,13 +77,12 @@ router.get("/:phone", async (req, res) => {
 router.put("/update/:email", async (req, res) => {
   try {
     const email = req.params.email
-    const { phone } = req.body
+    const data = req.body
 
 const checkUser = await userService.getOneUserByEmail(email)
 if(!checkUser) throw new Error ("user not found")
 
-    const user = await userService.updatePhoneUser(email, { phone });
-    //להביא את היוזר המלא ולקחת משם את האימייל ואידי המונגואי ולשים את הקוד של טל שזה יצירת טוקן, ושליחת לינק לפלאפון שמפעיל את היוזר
+    const user = await userService.updatePhoneUser(email, data);
     res.send(user)
 
   } catch (err) {
