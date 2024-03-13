@@ -4,7 +4,7 @@ async function create(data) {
     return await userModel.create(data);
 }
 
-async function read(filter={}) {
+async function read(filter = {}) {
     return await userModel.find(filter);
 }
 
@@ -13,11 +13,15 @@ async function readOne(filter) {
 }
 
 async function update(filter, data) {
-    return await userModel.updateOne(filter, data, {new: true})
+    return await userModel.updateOne(filter, data, { new: true })
 }
 
 async function updateOne(filter, data) {
     return await userModel.updateOne(filter, data, { new: true })
 }
 
-module.exports = { create, read, readOne, update, updateOne }
+async function updatePhoneUser(query, data) {
+    return await userModel.updateOne(query, { $set: data }, { upsert: true });
+}
+
+module.exports = { create, read, readOne, update, updateOne, updatePhoneUser }
