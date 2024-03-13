@@ -1,8 +1,4 @@
 
-const express = require('express')
-const db = require('../DL/db')
-const app = express();
-db.connect();
 const { getOneUserByFilter } = require('../BL/account.service')
 const { readOne } = require('../DL/controllers/plan.controller')
 const { getOneCamp } = require('../BL/lead.service');
@@ -42,10 +38,10 @@ async function countMsg(req, res, next) {
         if (isThirtyDaysBefore(user.msgCount.date)) {
             const updates = await Promise.all([
                 updateOne({ _id: user._id },
-                 { 'msgCount.counter': 0 },
-                 { 'msgCount.firstMsgCount': 0 },
-                 { 'msgCount.date': date.setDate(date.getDate()+30)}),
-                
+                    { 'msgCount.counter': 0 },
+                    { 'msgCount.firstMsgCount': 0 },
+                    { 'msgCount.date': date.setDate(date.getDate() + 30) }),
+
             ]);
         }
         if (user.firstMsgCount < user.subscription.opening_msg_to_new_lids) {
