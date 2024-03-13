@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     // required: true,
     // אביעד אמר לא לעשות סיסמה חובה בגלל שאנשים נכנסים עם גוגל וכד'
-    // select: false,
+    select: false,
   },
   phone: {
     type: String,
