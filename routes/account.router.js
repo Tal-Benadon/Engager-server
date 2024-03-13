@@ -35,9 +35,10 @@ router.get("/signInGoogle", async (req, res) => {
     }
 
     let userToReturn = await userModel.findOne({ email: googleUser.res.email });
+
     if (!userToReturn) {
       // Redirect the user to the registration page if they're not registered
-      return res.redirect("http://localhost:5173/register");
+      return res.redirect("http://localhost:5173/user-doesnt-exists");
     } else if (!userToReturn.phone) {
       // Redirect the user to complete their details if phone number is missing
       return res.redirect(`http://localhost:5173/completeDetails/${userToReturn.email}`);
