@@ -142,6 +142,7 @@ router.get('/:userId/leads', async (req, res) => {
         notes: lead.notes,
         joinDate: lead.joinDate,
         campaign: camp.title,
+        _id: lead._id
       }));
       leadsArr.push(...mappedLeads);
     });
