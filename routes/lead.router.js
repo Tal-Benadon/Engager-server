@@ -65,7 +65,6 @@ router.put('/:campId/lead/:leadId', async (req, res) => {
 })
 
 
-
 //delete Lead From Camp
 router.delete('/:campId/lead/:leadId', async (req, res) => {
     try {
