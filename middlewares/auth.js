@@ -71,22 +71,33 @@ const tokenToUser = async (req, res) => {
 // tokenToUser({headers: {authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA1NDYzMzkyOTAiLCJpYXQiOjE3MTAzMjA3MDUsImV4cCI6MTcxMDkyNTUwNX0.70NzWGOmIIG2vhUE3hv8aapFUYBicZ3zGmS1PPFqJy0"}})
 
 // יצירת טוקן
-// data time env
-const createToken = async (campaignId) => {
+const createToken = async (campaignId, userId) => {
     const campaign = await campaignController.read({ _id: campaignId })
     if (!campaign) throw { msg: 'campaign not found' }
-    let token = jwt.sign({ campaignId }, process.env.SECRET)
+    let token = jwt.sign({ campaignId, userId }, process.env.SECRET)
     return token
 }
 
 // בדיקת טוקן 
 const checkToken = async (token) => {
-    const approval = jwt.verify(token, process.env.SECRET)
-    if (!approval) throw { msg: 'token is not valid' }
-    const campaign = await campaignController.read({ _id: approval.campaignId })
-    if (!campaign) throw { msg: 'campaign not found' }
-    return approval.campaignId
+    try {
+        const approval = jwt.verify(token, process.env.SECRET)
+        if (!approval) throw { msg: 'token is not valid' }
+        const campaign = await campaignController.read({_id : approval.userId},{ _id: approval.campaignId })
+        if (!campaign) throw { msg: 'campaign not found' }
+        
+        return approval
+    } catch (error) {
+        return error
+    }
 }
 
-module.exports = { createToken, login, mwToken, tokenToUser }
+
+// שליחה להוספת לייד
+const sendToAddLead = async (token, data) => {
+    let res = await checkToken(token)
+   const {campaignId , userId} = res 
+    return 'the lede create' +  await leadService.addLeadToCamp( campaignId , userId, data.data)
+}
+module.exports = { createToken, sendToAddLead, login, checkClient }
 
