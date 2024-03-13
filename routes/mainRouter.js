@@ -13,6 +13,7 @@ const adminRouter = require('./admin.router');
 const apiRouter = require ('./api.router');
 const fileRouter = require( './file.router');
 const whatsAppArouter = require('./whatsApp.router');
+const feedbackRouter = require('./feedback.router');
 
 
 
@@ -28,5 +29,6 @@ mainRouter.use('/admin' , adminRouter)
 mainRouter.use('/api' , apiRouter)
 mainRouter.use('/files' , fileRouter)
 mainRouter.use('/whatsapp' , whatsAppArouter)
+mainRouter.use('/feedback' , feedbackRouter)
 
 module.exports = mainRouter
