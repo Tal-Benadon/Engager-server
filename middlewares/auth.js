@@ -54,9 +54,15 @@ const tokenToUser = async (req, res) => {
         const data = await userModel.findOne({ phone: payload.phone });
         if (!data) throw { msg: "not permitted" };
 
-        const user = {};
+        const user = {
+            avatar: data.avatar,
+            email: data.email,
+            name: data.name,
+            phone: data.phone,
+            _id: data._id
+        };
         // console.log('tokenToUser: ', user)
-        return data;
+        return user;
     } catch (err) {
         res.status(401).send("Unauthorized")
     }
