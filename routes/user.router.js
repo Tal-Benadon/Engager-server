@@ -40,6 +40,24 @@ router.post('/activate/:userToken', async (req, res) => {
   }
 })
 
+//control token
+router.get('/controlToken/:token', async (req, res) => {
+  const token = req.params.token
+  console.log({ "Token to Compare": token });
+  try {
+    const result = await userService.controlToken(token)
+    if (result.successStatus === "Expired") {
+const expiredTokenRes = {successStatus:"ExpiredPass", msg: "password token expired"}
+res.send(expiredTokenRes)
+    } else {
+      res.send(result)
+    }
+  } catch (err) {
+    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
+  }
+})
+
+
 router.use(auth.checkClient)
 
 
@@ -71,7 +89,29 @@ router.get("/:phone", async (req, res) => {
   }
 })
 
-
+// get one user and send link to change password:
+router.get("/forgetPassword/:phone", async (req, res) => {
+  try {
+    console.log(req.params.phone);
+    const phone = req.params.phone;
+    const user = await userService.getOneUser(phone);
+    console.log("r", user)
+    // res.send(user)
+    const payload = {
+      email: user.email,
+      phone: user.phone,
+      id: user._id
+    }
+    const userLinkToken = userService.createPasswordToken(payload)
+    console.log({ "inRouter": userLinkToken });
+    const activationLink =  `${process.env.BASE_PATH}/changePassword/${userLinkToken}`
+    console.log(activationLink);
+    res.send(activationLink);
+  } catch (err) {
+    console.log(err);
+    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
+  }
+})
 
 
 router.put("/update/:email", async (req, res) => {

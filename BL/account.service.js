@@ -5,6 +5,7 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken')
 const secret = process.env.SECRET
 const createToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2h' })
+const createPasswordToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2s' })
 const decodeToken = (token) => jwt.verify(token, secret)
 // get all users
 async function getUsers() {
@@ -199,6 +200,21 @@ async function confirmNewUser(token) {
 
 }
 
+async function controlToken(token) {
+    try {
+        //Decoding Token received from pressed Activation Link
+        const decodedToken = decodeLinkToken(token)
+        //Token time expired
+        if (decodedToken.successStatus === 'Expired') return decodedToken
+
+        return { successStatus: 'ValidToken', msg: 'Token is valid' };
+    } catch (err) {
+        console.error(err);
+        return { successStatus: 'ActivationFailed', msg: 'token not be activated' };
+    }
+
+}
+
 module.exports = {
     createNewUser,
     getUsers,
@@ -210,7 +226,9 @@ module.exports = {
     updatePhoneUser,
     getOneUserByEmail,
     confirmNewUser,
-    createLinkToken
+    createLinkToken,
+    controlToken,
+    createPasswordToken
 }
 
 
