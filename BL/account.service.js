@@ -17,8 +17,8 @@ async function getUsers() {
 }
 
 // get one user:
-async function getOneUser(phone) {
-    let user = await userController.readOne({ phone: phone })
+async function getOneUser(phone,select) {
+    let user = await userController.readOne({ phone: phone }, select)
     if (!user) {
         throw { code: 408, msg: 'The phone is not exist' }
     }
@@ -74,7 +74,7 @@ async function getGoogleUser({
                 },
             }
         )
-        
+
         // const user = await axios.get(
         //     `https://people.googleapis.com/v1/people/me?personFields=addresses,phoneNumbers`,
         //     {
@@ -89,6 +89,16 @@ async function getGoogleUser({
         console.log(error, "Error fetching Google user");
         throw new Error(error.message);
     }
+}
+
+
+//get one user by filter Object 
+async function getOneUserByFilter(filter={} , populate = "") {
+    let user = await userController.readOne(filter,undefined, populate)
+    if (!user) {
+        throw { code: 408, msg: 'The phone is not exist' }
+    }
+    return user
 }
 
 // delete user:
@@ -110,11 +120,17 @@ async function updateOneUser(phone, data) {
 }
 
 async function updatePhoneUser(email, data) {
-    let user = await userController.updatePhoneUser({ email: email }, data)
-    if (!user) {
-        throw { code: 408, msg: 'The phone is not exists' }
-    }
-    return user
+    let newData = {
+        name: data.fullName,
+        phone: data.phone,
+        occupation: data.occupation,
+        amountOfEmployees: data.amountOfEmployees
+}
+let user = await userController.updatePhoneUser({ email: email }, newData)
+if (!user) {
+    throw { code: 408, msg: 'The phone is not exists' }
+}
+return user
 }
 
 
@@ -210,7 +226,8 @@ module.exports = {
     updatePhoneUser,
     getOneUserByEmail,
     confirmNewUser,
-    createLinkToken
+    createLinkToken,
+    getOneUserByFilter
 }
 
 

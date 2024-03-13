@@ -12,11 +12,13 @@ db.connect();
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'))
+
 app.use('/',mainRouter)
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerDocument = require('./swagger.json');
+const { maxCamp } = require('./middlewares/plans');
 
 const options = {
     swaggerDefinition: {

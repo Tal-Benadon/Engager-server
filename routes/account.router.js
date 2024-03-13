@@ -3,7 +3,8 @@ const router = express.Router();
 const accountService = require('../BL/account.service')
 const userController = require('../DL/controllers/user.controller')
 const userModel = require('../DL/models/user.model')
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const { tokenToUser } = require("../middlewares/auth");
 
 const baseUrlClient = process.env.BASE_URL_CLIENT;
 const baseUrlServer = process.env.BASE_URL_SERVER;
@@ -20,10 +21,9 @@ router.post("/signin", async (req, res) => {
 router.get("/signInGoogle", async (req, res) => {
   try {
     const code = req.query.code;
-    // let userToReturn = {}
     const { id_token, access_token } = await accountService.getGoogleOAuthTokens({
       code,
-      redirect_uri: process.env.GOOGLE_OAUTH_REDIRECT_URL,
+      redirect_uri: `${baseUrlServer}/accout/signInGoogle`,
     });
     const googleUser = await accountService.getGoogleUser({
       id_token,
@@ -46,11 +46,12 @@ router.get("/signInGoogle", async (req, res) => {
 
     const token = jwt.sign(
       { email: googleUser.res.email, userType: userToReturn.userType, _id: userToReturn._id },
+      { email: googleUser.res.email, userType: userToReturn.userType, _id: userToReturn._id },
       process.env.SECRET,
       { expiresIn: "1h" }
     )
 
-    res.redirect(`http://localhost:5173/redircetGoogle/${token}`)
+    res.redirect(`${baseUrlClient}/redircetGoogle/${token}`)
 
   } catch (err) {
     res
@@ -143,8 +144,8 @@ router.post("/restore", async (req, res) => {
   }
 });
 
-// feedback - פידבק
-router.post("/feedback", async (req, res) => {
+// dashboard  - מידע על חבילה, נתוני לידים והודעות, פרטים אישיים
+router.get("/dashboard", async (req, res) => {
   try {
 
   } catch (err) {
@@ -154,10 +155,11 @@ router.post("/feedback", async (req, res) => {
   }
 });
 
-// dashboard  - מידע על חבילה, נתוני לידים והודעות, פרטים אישיים
-router.get("/dashboard", async (req, res) => {
+// בדיקת הטוקן והחזרת היוזר כשאפליקציה עולה לראשונה
+router.get("/tokenToUser", async (req, res) => {
   try {
-
+    let user = await tokenToUser(req, res);
+    res.send(user);
   } catch (err) {
     res
       .status(err.code || 500)
