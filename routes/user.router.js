@@ -11,10 +11,31 @@ router.post('/', async (req, res) => {
 
     const body = req.body
     const answer = await userService.createNewUser(body);
+    console.log({ "answer:": answer });
+    const payload = {
+      email: answer.email,
+      phone: answer.phone,
+      id: answer._id
+    }
+    const userLinkToken = await userService.createLinkToken(payload)
+    console.log({ "inRouter": userLinkToken });
+    const activationLink = `${process.env.BASE_PATH}activate-user/${userLinkToken}`
     res.send(answer);
   }
   catch (err) {
     console.log(err);
+    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
+  }
+})
+
+router.post('/activate/:userToken', async (req, res) => {
+  const token = req.params.userToken
+  console.log({ "Token to Compare": token });
+  try {
+    const result = await userService.confirmNewUser(token)
+    console.log(result);
+    res.send(result)
+  } catch (err) {
     res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
   }
 })
@@ -101,7 +122,7 @@ router.delete("/:phone", async (req, res) => {
   }
 })
 
-//get Leads From All Campaigns
+//get Lead From All Camps
 router.get('/:userId/leads', async (req, res) => {
   try {
     // מידע זמני

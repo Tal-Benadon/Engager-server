@@ -64,11 +64,13 @@ router.put('/:campId/lead/:leadId', async (req, res) => {
     }
 })
 
+
 //delete Lead From Camp
 router.delete('/:campId/lead/:leadId', async (req, res) => {
     try {
         const campId = req.params.campId;
         const leadId = req.params.leadId
+        console.log("*******", campId,"/*************", leadId);
         const del = await leadService.delLeadFromCamp(campId, leadId)
         res.send(del);
     } catch (err) {
