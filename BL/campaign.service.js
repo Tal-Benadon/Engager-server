@@ -3,6 +3,7 @@ const userController = require("../DL/controllers/user.controller")
 // const { io } = require("socket.io-client");
 // const socket1 = io("http://localhost:3000");  //?
 const { isValidObjectId } = require('../utilities/helper')
+const auth = require("../middlewares/auth")
 
 
 
@@ -29,7 +30,7 @@ async function getOneCamp(campId) {
 
 //To create a new campaign [The name must be unique]
 async function createNewCampaign(userId, body) {
-  const { title, details, img } = body
+  const { title, details,starterMsg, img} = body;
   if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
   campName = title.trim();
   const nameIsExist = await campaignController.readOne({
@@ -37,16 +38,28 @@ async function createNewCampaign(userId, body) {
     title: campName,
   });
   if (nameIsExist) throw { code: 404, msg: "This name already exists" };
-  const created = await campaignController.create({
+  const campaignData = {
     user: userId,
     title: campName,
     details: details,
-    img: img
-  });
-  const updatedUser = await userController.updateOne({ _id: userId }, { $push: { campaigns: created._id } });
-  if (updatedUser) console.log('update user', updatedUser);
+    img: img,
+    msg: [{subject: 'הודעת התנעה!', content: starterMsg, zeroMessage: true}]
+  }
+  console.log("campaignData", campaignData)
 
-  return created;
+  const createdCampaign = await campaignController.create(campaignData);
+  console.log("createdCampaign", createdCampaign)
+
+  //creating webhook from campaign id:
+  const token = await auth.createToken(createdCampaign._id)
+  const updatedCampaign = await campaignController.update({_id:createdCampaign._id}, {webhook : token})
+  console.log("updatedCampaign",updatedCampaign)
+
+  //updating user to include new campaign:
+  const updatedUser = await userController.updateOne({ _id: userId }, { $push: { campaigns: createdCampaign._id } });
+  console.log('updated user', updatedUser);
+  // const newCamp = await getOneCamp(createdCampaign._id)
+  return updatedCampaign;
 }
 
 

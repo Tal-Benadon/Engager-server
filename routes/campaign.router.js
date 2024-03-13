@@ -10,10 +10,15 @@ const {checkClient} = require("../middlewares/auth");
 // router.use(auth.checkClient)
 
 // create a new campaign
-router.post('/', async (req, res) => {
+// הוספנו פונ מידל-וור כי היוזר מהקונטקסט בקליינט נמחק כל ריפרוש ואז מגיע לפה ריק
+// אז באופן זמני מידל-וור דוחפת יוזר לבודי
+// מחילה על העברית לכל החכמים
+router.post('/', checkClient ,async (req, res) => {
   try {
-    // {"campName":"camp1",{"user":{"_id":"65743643"}}}
+    console.log('body',req.body);
     const userId = req.body.user._id;
+    console.log('userId', userId);
+
     const body = req.body;
     const answer = await campaignService.createNewCampaign(userId, body);
     console.log("the answer is:  ", answer)
@@ -45,9 +50,6 @@ router.get('/',checkClient, async (req, res) => {
 router.get('/:campId', async (req, res) => {
   try {
     const campId = req.params.campId;
-    // console.log("cr1 - campId" , campId );
-    // console.log(isValidObjectId(campId));
-
     const campaign = await campaignService.getOneCamp(campId);
     res.send(campaign);
   } catch (err) {
