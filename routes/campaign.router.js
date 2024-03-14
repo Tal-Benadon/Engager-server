@@ -35,9 +35,9 @@ router.post('/', mwToken, maxCamp, async (req, res) => {
 })
 
 // get all campigns
-router.get('/', async (req, res) => {
+router.get('/', mwToken, async (req, res) => {
   try {
-    console.log(req.body);
+    console.log({ "hihihihihih": req.body });
     const userId = req.body.user._id;
     const campaigns = await campaignService.getAllCampaignsByUser(userId)
     res.send(campaigns);
