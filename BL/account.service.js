@@ -20,7 +20,7 @@ async function getUsers() {
 }
 
 // get one user:
-async function getOneUser(phone,select) {
+async function getOneUser(phone, select) {
     let user = await userController.readOne({ phone: phone }, select)
     if (!user) {
         throw { code: 408, msg: 'The phone is not exist' }
@@ -96,8 +96,8 @@ async function getGoogleUser({
 
 
 //get one user by filter Object 
-async function getOneUserByFilter(filter={} , populate = "") {
-    let user = await userController.readOne(filter,undefined, populate)
+async function getOneUserByFilter(filter = {}, populate = "") {
+    let user = await userController.readOne(filter, undefined, populate)
     if (!user) {
         throw { code: 408, msg: 'The phone is not exist' }
     }
@@ -128,12 +128,12 @@ async function updatePhoneUser(email, data) {
         phone: data.phone,
         occupation: data.occupation,
         amountOfEmployees: data.amountOfEmployees
-}
-let user = await userController.updatePhoneUser({ email: email }, newData)
-if (!user) {
-    throw { code: 408, msg: 'The phone is not exists' }
-}
-return user
+    }
+    let user = await userController.updatePhoneUser({ email: email }, newData)
+    if (!user) {
+        throw { code: 408, msg: 'The phone is not exists' }
+    }
+    return user
 }
 
 
@@ -209,11 +209,11 @@ async function confirmNewUser(token) {
 
         //Read returns Array of user(s), there should be only 1 ([0])
         if (userToConfirm.length < 1) throw { code: 401, msg: 'User does not exist' }
-        if (userToConfirm[0].isActive == true) return { successStatus: 'AlreadyActive', msg: 'User is already active' }
+        if (userToConfirm[0].isActive == true) return { successStatus: 'AlreadyActive', msg: 'User is already active', user: userToConfirm[0] }
 
         await updateOneUser(phone, { isActive: true })
 
-        return { successStatus: 'Activated', msg: 'User successfully confirmed' };
+        return { successStatus: 'Activated', msg: 'User successfully confirmed', user: userToConfirm[0] };
     } catch (err) {
         console.error(err);
         return { successStatus: 'ActivationFailed', msg: 'User could not be activated' };
