@@ -2,13 +2,11 @@ const leadController = require("../DL/controllers/lead.controller");
 const campaignController = require("../DL/controllers/campaign.controller");
 
 // ADD A NEW LEAD TO A CAMP
-async function addLeadToCamp(campId, data) {
-  console.log("datainser", data);
+async function addLeadToCamp(campaignId , userId, data) {
   if (!data.phone || !data.fullName)
     throw { code: 500, msg: "User details are missing" };
   // TODO- check if phone is valid
-  const campaign = await campaignController.readOne({ _id: campId });
-  console.log("campin", campaign, campId);
+  const campaign = await campaignController.readOne({ _id: userId , _id:campaignId });
   if (!campaign) throw { code: 404, msg: "Campaign not found" };
 
   const phoneIsExist = await campaign.leads.some(
@@ -21,21 +19,30 @@ async function addLeadToCamp(campId, data) {
     };
   // Check if the lead is already registered for this campaign
   let mappedLead = {};
-
   mappedLead = {
     phone: String(data.phone),
-    // lName: String(data.lName),
-    // fName: String(data.fName),
     fullName: String(data.fullName),
+   
     //  יש דרך יותר יפה? הדיפולט בסכמה לא עובד
     email: data.email ? String(data.email) : "",
     notes: data.notes ? String(data.notes) : "",
-  };
+    extra: data.extra ? data.extra.map(entry=>({
+      info:{
+  he: entry.info.he,
+	value: entry.info.value
+
+	}})) : []
+  
+}  
+
   campaign.leads.push(mappedLead);
+
+
   await campaign.save();
 
   return mappedLead;
 }
+
 
 // TO UPDATE ONE LEAD IN A CAMP
 async function updateLeadInCamp(campId, leadId, newData) {
