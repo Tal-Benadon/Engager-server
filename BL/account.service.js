@@ -7,6 +7,9 @@ const secret = process.env.SECRET
 const createToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2h' })
 const createPasswordToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2s' })
 const decodeToken = (token) => jwt.verify(token, secret)
+const bcrypt = require('bcrypt')
+const saltRounds = 10;
+
 // get all users
 async function getUsers() {
     let users = await userController.read()
@@ -151,8 +154,11 @@ async function createNewUser(body) {
     if (password?.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
     if (!passwordRegex.test(password)) throw { code: 408, msg: 'The password does not contain at least 1 leter and 1 number' }
 
+    const hash = bcrypt.hashSync(password, saltRounds);
+    console.log('hash', hash);
+
     // האם צריך לשלוח ביצירה דיקסקרפשן של תקופת נסיון או שיש לו אופציה ישר להרשם?
-    const newUser = await userController.create({ ...body, subscription: 'trial' });
+    const newUser = await userController.create({ ...body, password: hash });
     let createdDate = new Date();
     const expiredDate = new Date(createdDate);
     expiredDate.setDate(expiredDate.getDate() + 14);

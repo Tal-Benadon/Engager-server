@@ -50,7 +50,7 @@ async function createNewCampaign(userId, body) {
     title: campName,
     details: details,
     img: img,
-    msg: [{subject: 'הודעת התנעה!', content: starterMsg, zeroMessage: true}]
+    msg:  starterMsg ? [{subject: 'הודעת התנעה!', content: starterMsg, zeroMessage: true}] :[]
   }
   console.log("campaignData", campaignData)
 
@@ -58,7 +58,7 @@ async function createNewCampaign(userId, body) {
   console.log("createdCampaign", createdCampaign)
 
   //creating webhook from campaign id:
-  const token = await auth.createToken(createdCampaign._id)
+  const token = await auth.createToken(createdCampaign._id, userId)
   const updatedCampaign = await campaignController.update({_id:createdCampaign._id}, {webhook : token})
   console.log("updatedCampaign",updatedCampaign)
 
