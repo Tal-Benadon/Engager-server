@@ -94,7 +94,7 @@ res.send(expiredTokenRes)
 })
 
 
-router.use(auth.mwToken)
+// router.use(auth.mwToken)
 
 // get all users
 router.get("/", async (req, res) => {
