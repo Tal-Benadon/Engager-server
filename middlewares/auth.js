@@ -45,9 +45,9 @@ const mwToken = async (req, res, next) => {
 }
 
 // פונקציית בדיקת הטוקן בעליית האפליקציה
-const tokenToUser = async (req, res) => {
+async function tokenToUser(authorization){
     try {
-        const originalToken = req.headers.authorization;
+        const originalToken = authorization;
         if (!originalToken) throw "Unauthorized";
 
         const token = originalToken.replace("Bearer ", "");
@@ -101,5 +101,5 @@ const sendToAddLead = async (token, data) => {
     const { campaignId, userId } = res
     return 'the lede create' + await leadService.addLeadToCamp(campaignId, userId, data.data)
 }
-module.exports = { createToken, sendToAddLead, login, mwToken }
+module.exports = { createToken, sendToAddLead, login, mwToken,tokenToUser }
 
