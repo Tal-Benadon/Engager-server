@@ -35,7 +35,8 @@ router.get("/signInGoogle", async (req, res) => {
       throw new Error("Google user email is not verified.");
     }
 
-    let userToReturn = await userModel.findOne({ email: googleUser.res.email });
+    // let userToReturn = await userModel.findOne({ email: googleUser.res.email });
+    let userToReturn = await accountService.getOneUserByEmail(googleUser.res.email);
 
     if (!userToReturn) {
       // Redirect the user to the registration page if they're not registered
@@ -75,15 +76,15 @@ router.get("/signUpGoogle", async (req, res) => {
     });
 
     if (!googleUser.res.verified_email) throw { msg: 'forbiden', code: 403 }
-    // const userInDataBase = await accountService.getOneUserByEmail(googleUser.res.email)
-    let userInDataBase = await userModel.findOne({ email: googleUser.res.email });
+    // let userInDataBase = await userModel.findOne({ email: googleUser.res.email });
+    let userInDataBase = await accountService.getOneUserByEmail(googleUser.res.email);
 
     // const userInDataBase = await userModel.readOne({email: googleUser.res.email})
     if (!userInDataBase) {
-      userToReturn = await userModel.create({
-        name: googleUser.res.name,
-        email: googleUser.res.email
-      })
+      let { name, email } = googleUser.res
+
+      userToReturn = await accountService.createNewUserGoogle(name, email)
+      
       return res.redirect(`${baseUrlClient}/completeDetails/${userToReturn.email}`);
     }
     if (!userInDataBase.phone) {

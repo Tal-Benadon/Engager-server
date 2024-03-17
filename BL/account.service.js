@@ -172,6 +172,10 @@ async function createNewUser(body) {
     return newUser
 }
 
+async function createNewUserGoogle(body) {
+    
+}
+
 //Create Token using userData for links authentications(initial registeration auth, change password link)
 async function createLinkToken(payload) {
     return new Promise((resolve, reject) => {
@@ -237,7 +241,8 @@ module.exports = {
     getOneUserByEmail,
     confirmNewUser,
     createLinkToken,
-    getOneUserByFilter
+    getOneUserByFilter,
+    createNewUserGoogle
 }
 
 
