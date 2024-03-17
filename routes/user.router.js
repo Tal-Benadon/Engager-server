@@ -36,7 +36,7 @@ router.post('/activate/:userToken', async (req, res) => {
   }
 })
 
-router.use(auth.mwToken)
+
 
 // get all users
 router.get("/", async (req, res) => {
@@ -51,6 +51,12 @@ router.get("/", async (req, res) => {
       .send({ msg: err.msg || "something went wrong" });
   }
 });
+
+
+
+//route that creates a token and bring User
+
+
 
 // get one user:
 router.get("/:phone", async (req, res) => {
@@ -72,11 +78,19 @@ router.put("/update/:email", async (req, res) => {
     const email = req.params.email
     const data = req.body
 
-    const checkUser = await userService.getOneUserByEmail(email);
-    if (!checkUser) throw new Error("user not found");
+    const updatedUser = await userService.completeUserDetails(email, data)
 
-    const user = await userService.updatePhoneUser(email, data);
-    res.send(user)
+    const payload = {
+      email: updatedUser.email,
+      phone: updatedUser.phone,
+      id: updatedUser._id
+    }
+    const userLinkToken = await userService.createLinkToken(payload)
+    //send confirmationLink through whatsapp.
+    const confirmationLink = `${process.env.BASE_PATH}activate-user/${userLinkToken}`
+    console.log(confirmationLink);
+
+    res.send(updatedUser)
 
   } catch (err) {
     res
@@ -132,11 +146,11 @@ router.get('/:userId/leads', async (req, res) => {
         notes: lead.notes,
         joinDate: lead.joinDate,
         campaign: camp.title,
-        
+        _id: lead._id
       }));
       leadsArr.push(...mappedLeads);
     });
- 
+
     const heads = [
       { title: "name", input: "text" },
       { title: "email", input: "text" },
