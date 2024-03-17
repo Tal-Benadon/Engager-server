@@ -11,6 +11,15 @@ router.post('/', async (req, res) => {
 
     const body = req.body
     const answer = await userService.createNewUser(body);
+    console.log({ "answer:": answer });
+    const payload = {
+      email: answer.email,
+      phone: answer.phone,
+      id: answer._id
+    }
+    const userLinkToken = await userService.createLinkToken(payload)
+    console.log({ "inRouter": userLinkToken });
+    const activationLink = `${process.env.BASE_PATH}activate-user/${userLinkToken}`
     res.send(answer);
   }
   catch (err) {
@@ -19,7 +28,19 @@ router.post('/', async (req, res) => {
   }
 })
 
-router.use(auth.checkClient)
+router.post('/activate/:userToken', async (req, res) => {
+  const token = req.params.userToken
+  console.log({ "Token to Compare": token });
+  try {
+    const result = await userService.confirmNewUser(token)
+    console.log(result);
+    res.send(result)
+  } catch (err) {
+    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
+  }
+})
+
+router.use(auth.mwToken)
 
 
 // get all users
@@ -49,8 +70,6 @@ router.get("/:phone", async (req, res) => {
     res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
   }
 })
-
-
 
 
 router.put("/update/:email", async (req, res) => {
@@ -101,7 +120,7 @@ router.delete("/:phone", async (req, res) => {
   }
 })
 
-//get Leads From All Campaigns
+//get Lead From All Camps
 router.get('/:userId/leads', async (req, res) => {
   try {
     // מידע זמני
@@ -215,7 +234,7 @@ router.get('/:userId/leads', async (req, res) => {
       { title: 'name', input: 'text' },
       { title: 'email', input: 'text' },
       { title: 'phone', input: 'text' },
-      { title: 'joinDate', input: 'date' },
+      { title: 'joinDate', input: 'date' },               // camp name
       { title: 'campaign', input: 'select', inputValues: ["קורס תפירה", "חדר כושר", "בריכה עירונית"] },
       { title: 'isOnline', input: '' },
     ]
