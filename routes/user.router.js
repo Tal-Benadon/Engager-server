@@ -93,8 +93,9 @@ router.put("/update/:email", async (req, res) => {
     const checkUser = await userService.getOneUserByEmail(email)
     if (!checkUser) throw new Error("user not found")
 
-    const user = await userService.updatePhoneUser(email, { phone });
+    const user = await userService.updatePhoneUser(email, data);
     const userWithPhone = await userService.getOneUser(phone)
+    console.log(userWithPhone);
     const payload = {
       email: userWithPhone.email,
       phone: userWithPhone.phone,
