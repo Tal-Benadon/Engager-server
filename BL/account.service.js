@@ -123,6 +123,21 @@ async function updateOneUser(phone, data) {
     return user
 }
 
+// update password of one user:
+async function updateOneUserPassword(phone, data) {
+    var passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+    let password = data.password
+    if (password?.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
+    if (!passwordRegex.test(password)) throw { code: 408, msg: 'The password does not contain at least 1 leter and 1 number' }
+    const hash = bcrypt.hashSync(password, saltRounds);
+    console.log('hash', hash);
+    let user = await userController.update({ phone: phone }, {password:hash})
+    if (!user) {
+        throw { code: 408, msg: 'The phone is not exists' }
+    }
+    return user
+}
+
 async function updatePhoneUser(email, data) {
     let newData = {
         name: data.fullName,
@@ -255,7 +270,8 @@ module.exports = {
     getOneUserByFilter,
     controlToken,
     createPasswordToken,
-    decodeToken
+    decodeToken,
+    updateOneUserPassword
 }
 
 

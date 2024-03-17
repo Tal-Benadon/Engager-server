@@ -161,9 +161,27 @@ router.put("/:phone", async (req, res) => {
   try {
     const phone = req.params.phone;
     const data = req.body;
+
     console.log("update phone:", phone);
     console.log("update data:", data);
     const user = await userService.updateOneUser(phone, data);
+    console.log("r", user);
+    res.send(user);
+  } catch (err) {
+    res
+      .status(err.code || 500)
+      .send({ msg: err.msg || "something went wrong" });
+  }
+});
+// update password of one user :
+router.put("/updatePass/:phone", async (req, res) => {
+  try {
+    const phone = req.params.phone;
+    const data = req.body;
+    
+    console.log("update phone:", phone);
+    console.log("update data:", data);
+    const user = await userService.updateOneUserPassword(phone, data);
     console.log("r", user);
     res.send(user);
   } catch (err) {
