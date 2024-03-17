@@ -6,7 +6,8 @@ const jwt = require('jsonwebtoken')
 const secret = process.env.SECRET
 const createToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2h' })
 const decodeToken = (token) => jwt.verify(token, secret)
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const { endOfTrialPeriod } = require("./plans.service");
 const saltRounds = 10;
 
 // get all users
@@ -98,6 +99,7 @@ async function getGoogleUser({
 //get one user by filter Object 
 async function getOneUserByFilter(filter = {}, populate = "") {
     let user = await userController.readOne(filter, undefined, populate)
+    console.log(user);
     if (!user) {
         throw { code: 408, msg: 'The phone is not exist' }
     }

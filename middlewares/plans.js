@@ -6,19 +6,21 @@ const { updateOne, update } = require('../DL/controllers/campaign.controller');
 
 async function maxCamp(req, res, next) {
     try {
-        const user = await getOneUserByFilter({ id: req.body.user._id }, "subscription");
+        const user = await getOneUserByFilter({ _id: req.body.user._id }, "subscription");
         if (!user) throw { code: 401, msg: " user not found " }
         if (user.campaigns < user.subscription.num_leads_in_list) {
             return next()
         }
         res.status(444).send("there is no permission for this operate")
     } catch (err) {
+        console.log(err);
         res
             .status(err.code || 500)
             .send({ msg: err.msg || "no permission / you over the limit to this plan " });
     }
 
 }
+
 function isThirtyDaysBefore(date) {
     const currentDate = new Date();
     const thirtyDaysBefore = new Date(currentDate);
@@ -60,7 +62,7 @@ async function countMsg(req, res, next) {
 
 async function transferData(req, res, next) {
     try {
-        const user = await getOneUserByFilter({ id: req.body.user._id }, 'subscription', 'subscription');
+        const user = await getOneUserByFilter({ id: req.body.user._id },  'subscription');
         if (!user) throw { code: 401, msg: " user not found " };
         if (user.subscription.data_transfer_crm == true) {
             return next()

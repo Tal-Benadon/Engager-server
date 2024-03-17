@@ -4,12 +4,13 @@ async function create(data) {
     return await userModel.create(data);
 }
 
+
 async function read(filter = {}) {
     return await userModel.find(filter);
 }
 
-async function readOne(filter,select,populate='' ) {
-    return await userModel.findOne(filter).select(select).populate(populate)
+async function readOne(filter,select,populate ) {
+    return await userModel.findOne(filter).select(select).populate(`${populate}`)
 }
 
 async function update(filter, data) {
