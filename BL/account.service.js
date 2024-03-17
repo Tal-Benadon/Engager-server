@@ -5,6 +5,7 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken')
 const secret = process.env.SECRET
 const createToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2h' })
+const createPasswordToken = (payload) => jwt.sign(payload, secret, { expiresIn: '15m' })
 const decodeToken = (token) => jwt.verify(token, secret)
 const bcrypt = require('bcrypt');
 const { endOfTrialPeriod } = require("./plans.service");
@@ -31,6 +32,7 @@ async function getOneUser(phone, select) {
     }
     return user
 }
+
 
 
 async function getOneUserByEmail(email, select) {
@@ -129,7 +131,22 @@ async function updateOneUser(phone, data) {
     return user
 }
 
-async function updateUser(email, data) {
+// update password of one user:
+async function updateOneUserPassword(phone, data) {
+    var passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+    let password = data.password
+    if (password?.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
+    if (!passwordRegex.test(password)) throw { code: 408, msg: 'The password does not contain at least 1 leter and 1 number' }
+    const hash = bcrypt.hashSync(password, saltRounds);
+    console.log('hash', hash);
+    let user = await userController.update({ phone: phone }, {password:hash})
+    if (!user) {
+        throw { code: 408, msg: 'The phone is not exists' }
+    }
+    return user
+}
+
+async function updatePhoneUser(email, data) {
     let newData = {
         name: data.fullName,
         phone: data.phone,
@@ -172,9 +189,46 @@ async function createNewUser(body) {
     return newUser
 }
 
-async function createNewUserGoogle(body) {
+
+async function createNewUserGoogle(name, email) {
+let password = await jeneratePassword()
+const hash = bcrypt.hashSync(password, saltRounds);
+console.log('hash', hash);
+let body = {name, email}
+const newUser = await userController.create({ ...body, password: hash });
+console.log("new user", newUser);
+let createdDate = new Date();
+const expiredDate = new Date(createdDate);
+expiredDate.setDate(expiredDate.getDate() + 14);
+// let futureDate = new Date(createdDate.getTime());
+// futureDate.setMinutes(createdDate.getMinutes() + 2);
+scheduleService.convertToDateAndExec(expiredDate, () => endOfTrialPeriod(phone));
+
+return newUser
 
 }
+
+
+async function jeneratePassword(){
+        var password = '';
+        var letters = 'abcdefghijklmnopqrstuvwxyz';
+        var digits = '0123456789';
+    
+        for (var i = 0; i < 4; i++) {
+            password += letters.charAt(Math.floor(Math.random() * letters.length));
+        }
+    
+        for (var j = 0; j < 4; j++) {
+            password += digits.charAt(Math.floor(Math.random() * digits.length));
+        }
+    
+        password = password.split('').sort(function() {
+            return 0.5 - Math.random();
+        }).join('');
+    
+        return password;
+    }
+    
 
 //Create Token using userData for links authentications(initial registeration auth, change password link)
 async function createLinkToken(payload) {
@@ -201,6 +255,9 @@ const decodeLinkToken = (token) => {
         }
     }
 };
+
+
+
 
 async function confirmNewUser(token) {
     try {
@@ -229,6 +286,21 @@ async function confirmNewUser(token) {
 
 }
 
+
+async function controlToken(token) {
+    try {
+        //Decoding Token received from pressed Activation Link
+        const decodedToken = decodeLinkToken(token)
+        //Token time expired
+        if (decodedToken.successStatus === 'Expired') return decodedToken
+
+        return { successStatus: 'ValidToken', msg: 'Token is valid' };
+    } catch (err) {
+        console.error(err);
+        return { successStatus: 'ActivationFailed', msg: 'token not be activated' };
+    }
+}
+
 async function completeUserDetails(email, data) {
     let phone = data.phone
 
@@ -246,6 +318,7 @@ async function completeUserDetails(email, data) {
     const user = await updateUser(email, data);
     const userWithPhone = await getOneUser(phone)
     return userWithPhone
+
 }
 
 module.exports = {
@@ -261,6 +334,12 @@ module.exports = {
     confirmNewUser,
     createLinkToken,
     getOneUserByFilter,
+    controlToken,
+    createPasswordToken,
+    decodeToken,
+    updateOneUserPassword,
+    createNewUserGoogle,
+    updatePhoneUser,
     createNewUserGoogle,
     completeUserDetails
 }
