@@ -54,9 +54,11 @@ router.post('/:campId/lead', async (req, res) => {
 
 router.put('/:campId/lead/:leadId', async (req, res) => {
     try {
+        console.log("****************");
         const campId = req.params.campId
         const leadId = req.params.leadId
         const newData = req.body
+        console.log({campId,leadId,newData});
         let updated = await leadService.updateLeadInCamp(campId, leadId, newData)
         res.send(updated)
     } catch (err) {
@@ -70,7 +72,6 @@ router.delete('/:campId/lead/:leadId', async (req, res) => {
     try {
         const campId = req.params.campId;
         const leadId = req.params.leadId
-        console.log("*******", campId,"/*************", leadId);
         const del = await leadService.delLeadFromCamp(campId, leadId)
         res.send(del);
     } catch (err) {

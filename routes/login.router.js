@@ -4,10 +4,8 @@ const auth = require("../middlewares/auth")
 
 router.post("/", async (req, res) => {
     try {
-        console.log(req.body)
         const phone = req.body.phone
         const password = req.body.password
-        console.log(phone, password)
         const login = await auth.login(phone, password);
 
         res.send(login)

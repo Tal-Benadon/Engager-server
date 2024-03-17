@@ -99,5 +99,5 @@ const sendToAddLead = async (token, data) => {
    const {campaignId , userId} = res 
     return 'the lede create' +  await leadService.addLeadToCamp( campaignId , userId, data.data)
 }
-module.exports = { createToken, sendToAddLead, login, checkClient }
+module.exports = { createToken, sendToAddLead, login, checkToken ,mwToken }
 

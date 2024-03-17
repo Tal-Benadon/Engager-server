@@ -10,14 +10,12 @@ router.post("/", async (req, res) => {
   try {
     const body = req.body;
     const answer = await userService.createNewUser(body);
-    console.log({ "answer:": answer });
     const payload = {
       email: answer.email,
       phone: answer.phone,
       id: answer._id
     }
     const userLinkToken = await userService.createLinkToken(payload)
-    console.log({ "inRouter": userLinkToken });
     const activationLink = `${process.env.BASE_PATH}activate-user/${userLinkToken}`
     res.send(answer);
   } catch (err) {
@@ -30,10 +28,8 @@ router.post("/", async (req, res) => {
 
 router.post('/activate/:userToken', async (req, res) => {
   const token = req.params.userToken
-  console.log({ "Token to Compare": token });
   try {
     const result = await userService.confirmNewUser(token)
-    console.log(result);
     res.send(result)
   } catch (err) {
     res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
@@ -59,10 +55,8 @@ router.get("/", async (req, res) => {
 // get one user:
 router.get("/:phone", async (req, res) => {
   try {
-    console.log(req.params.phone);
     const phone = req.params.phone;
     const user = await userService.getOneUser(phone);
-    console.log("r", user);
     res.send(user);
   } catch (err) {
     console.log(err);
@@ -96,10 +90,8 @@ router.put("/:phone", async (req, res) => {
   try {
     const phone = req.params.phone;
     const data = req.body;
-    console.log("update phone:", phone);
-    console.log("update data:", data);
+
     const user = await userService.updateOneUser(phone, data);
-    console.log("r", user);
     res.send(user);
   } catch (err) {
     res
@@ -111,10 +103,8 @@ router.put("/:phone", async (req, res) => {
 // delete one user:
 router.delete("/:phone", async (req, res) => {
   try {
-    console.log(req.params.phone);
     const phone = req.params.phone;
     const user = await userService.del(phone);
-    console.log("r", user);
     res.send(user);
   } catch (err) {
     res
@@ -142,6 +132,7 @@ router.get('/:userId/leads', async (req, res) => {
         notes: lead.notes,
         joinDate: lead.joinDate,
         campaign: camp.title,
+        
       }));
       leadsArr.push(...mappedLeads);
     });

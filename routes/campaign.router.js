@@ -15,11 +15,9 @@ const { maxCamp } = require("../middlewares/plans");
 // הוספנו פונ מידל-וור כי היוזר מהקונטקסט בקליינט נמחק כל ריפרוש ואז מגיע לפה ריק
 // אז באופן זמני מידל-וור דוחפת יוזר לבודי
 // מחילה על העברית לכל החכמים
-router.post('/', mwToken , maxCamp ,async (req, res) => {
+router.post('/' , maxCamp ,async (req, res) => {
   try {
-    console.log('body',req.body);
     const userId = req.body.user._id;
-    console.log('userId', userId);
 
     const body = req.body;
     const answer = await campaignService.createNewCampaign(userId, body);
@@ -37,7 +35,6 @@ router.post('/', mwToken , maxCamp ,async (req, res) => {
 // get all campigns
 router.get('/',mwToken, async (req, res) => {
   try {
-    console.log(req.body);
     const userId = req.body.user._id;
     const campaigns = await campaignService.getAllCampaignsByUser(userId)
     res.send(campaigns);

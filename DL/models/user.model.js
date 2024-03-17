@@ -44,6 +44,16 @@ const userSchema = new mongoose.Schema({
     ref: "plans",
     default: '65edcdf022a62790e4b5caf6'
   },
+//   payment:[{
+//     price:{
+// type: Number
+//     },
+//     data:{
+
+//     }
+//   },]
+
+  // ,
 
   createdData: {
     type: Date,
