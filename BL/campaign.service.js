@@ -50,7 +50,7 @@ async function createNewCampaign(userId, body) {
     title: campName,
     details: details,
     img: img,
-    msg: [{subject: 'הודעת התנעה!', content: starterMsg, zeroMessage: true}]
+    msg:  starterMsg ? [{subject: 'הודעת התנעה!', content: starterMsg, zeroMessage: true}] :[]
   }
   console.log("campaignData", campaignData)
 
