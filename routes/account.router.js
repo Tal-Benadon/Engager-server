@@ -76,15 +76,12 @@ router.get("/signUpGoogle", async (req, res) => {
     });
 
     if (!googleUser.res.verified_email) throw { msg: 'forbiden', code: 403 }
-    // let userInDataBase = await userModel.findOne({ email: googleUser.res.email });
     let userInDataBase = await accountService.getOneUserByEmail(googleUser.res.email);
 
-    // const userInDataBase = await userModel.readOne({email: googleUser.res.email})
     if (!userInDataBase) {
       let { name, email } = googleUser.res
-
       userToReturn = await accountService.createNewUserGoogle(name, email)
-      
+
       return res.redirect(`${baseUrlClient}/completeDetails/${userToReturn.email}`);
     }
     if (!userInDataBase.phone) {

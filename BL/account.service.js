@@ -36,9 +36,10 @@ async function getOneUser(phone, select) {
 
 async function getOneUserByEmail(email) {
     let user = await userController.readOne({ email: email })
-    if (!user) {
-        throw { code: 408, msg: 'The email is not exist' }
-    }
+    // if (!user) {
+    //     return user
+    //     throw { code: 408, msg: 'The email is not exist' }
+    // }
     return user
 }
 
@@ -188,9 +189,46 @@ async function createNewUser(body) {
     return newUser
 }
 
-async function createNewUserGoogle(body) {
+
+async function createNewUserGoogle(name, email) {
+let password = await jeneratePassword()
+const hash = bcrypt.hashSync(password, saltRounds);
+console.log('hash', hash);
+let body = {name, email}
+const newUser = await userController.create({ ...body, password: hash });
+console.log("new user", newUser);
+let createdDate = new Date();
+const expiredDate = new Date(createdDate);
+expiredDate.setDate(expiredDate.getDate() + 14);
+// let futureDate = new Date(createdDate.getTime());
+// futureDate.setMinutes(createdDate.getMinutes() + 2);
+scheduleService.convertToDateAndExec(expiredDate, () => endOfTrialPeriod(phone));
+
+return newUser
 
 }
+
+
+async function jeneratePassword(){
+        var password = '';
+        var letters = 'abcdefghijklmnopqrstuvwxyz';
+        var digits = '0123456789';
+    
+        for (var i = 0; i < 4; i++) {
+            password += letters.charAt(Math.floor(Math.random() * letters.length));
+        }
+    
+        for (var j = 0; j < 4; j++) {
+            password += digits.charAt(Math.floor(Math.random() * digits.length));
+        }
+    
+        password = password.split('').sort(function() {
+            return 0.5 - Math.random();
+        }).join('');
+    
+        return password;
+    }
+    
 
 //Create Token using userData for links authentications(initial registeration auth, change password link)
 async function createLinkToken(payload) {
