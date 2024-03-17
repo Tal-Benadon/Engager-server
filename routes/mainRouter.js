@@ -19,7 +19,7 @@ const feedbackRouter = require('./feedback.router');
 
 mainRouter.use('/campaign', campaignRouter);
 mainRouter.use('/campaign', msgRouter);
-mainRouter.use('/lead', leadRouter);
+mainRouter.use('/campaign', leadRouter);
 mainRouter.use('/user', userRouter);
 mainRouter.use('/login', loginRouter);
 mainRouter.use('/webhook', webhookRouter)
