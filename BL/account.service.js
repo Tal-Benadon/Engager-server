@@ -9,6 +9,7 @@ const decodeToken = (token) => jwt.verify(token, secret)
 const bcrypt = require('bcrypt')
 const saltRounds = 10;
 
+
 // get all users
 async function getUsers() {
     let users = await userController.read()
@@ -21,16 +22,20 @@ async function getUsers() {
 
 // get one user:
 async function getOneUser(phone, select) {
+    console.log("im in get one user");
     let user = await userController.readOne({ phone: phone }, select)
+    console.log(user);
     if (!user) {
         throw { code: 408, msg: 'The phone is not exist' }
     }
     return user
 }
+
+
 async function getOneUserByEmail(email) {
     let user = await userController.readOne({ email: email })
     if (!user) {
-        throw { code: 408, msg: 'The phone is not exist' }
+        throw { code: 408, msg: 'The email is not exist' }
     }
     return user
 }
@@ -122,14 +127,15 @@ async function updateOneUser(phone, data) {
     return user
 }
 
-async function updatePhoneUser(email, data) {
+async function updateUser(email, data) {
     let newData = {
         name: data.fullName,
         phone: data.phone,
         occupation: data.occupation,
         amountOfEmployees: data.amountOfEmployees
     }
-    let user = await userController.updatePhoneUser({ email: email }, newData)
+    console.log("newData account service", newData);
+    let user = await userController.updateOne({ email: email }, newData)
     if (!user) {
         throw { code: 408, msg: 'The phone is not exists' }
     }
@@ -162,6 +168,10 @@ async function createNewUser(body) {
     scheduleService.convertToDateAndExec(expiredDate, () => endOfTrialPeriod(phone));
 
     return newUser
+}
+
+async function createNewUserGoogle(body) {
+
 }
 
 //Create Token using userData for links authentications(initial registeration auth, change password link)
@@ -217,6 +227,25 @@ async function confirmNewUser(token) {
 
 }
 
+async function completeUserDetails(email, data) {
+    let phone = data.phone
+
+    const phoneRegex = /^(?:0(?:[23489]|[57]\d)-\d{7})|(?:0(?:5[^7]|[2-4]|[8-9])(?:-?\d){7})$/;
+
+    const phoneIsexists = await userController.readOne({ phone: phone });
+    if (phoneIsexists) {
+        throw { code: 408, msg: 'This phone already exists' };
+    }
+    if (!phoneRegex.test(phone)) throw { code: 408, msg: 'Phone is not proper' }
+
+    const checkUser = await getOneUserByEmail(email)
+
+    if (!checkUser) throw new Error("user not found")
+    const user = await updateUser(email, data);
+    const userWithPhone = await getOneUser(phone)
+    return userWithPhone
+}
+
 module.exports = {
     createNewUser,
     getUsers,
@@ -225,11 +254,13 @@ module.exports = {
     updateOneUser,
     getGoogleUser,
     getGoogleOAuthTokens,
-    updatePhoneUser,
+    updateUser,
     getOneUserByEmail,
     confirmNewUser,
     createLinkToken,
-    getOneUserByFilter
+    getOneUserByFilter,
+    createNewUserGoogle,
+    completeUserDetails
 }
 
 

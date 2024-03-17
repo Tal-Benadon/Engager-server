@@ -35,7 +35,8 @@ router.get("/signInGoogle", async (req, res) => {
       throw new Error("Google user email is not verified.");
     }
 
-    let userToReturn = await userModel.findOne({ email: googleUser.res.email });
+    // let userToReturn = await userModel.findOne({ email: googleUser.res.email });
+    let userToReturn = await accountService.getOneUserByEmail(googleUser.res.email);
 
     if (!userToReturn) {
       // Redirect the user to the registration page if they're not registered
@@ -75,12 +76,15 @@ router.get("/signUpGoogle", async (req, res) => {
     });
 
     if (!googleUser.res.verified_email) throw { msg: 'forbiden', code: 403 }
-    const userInDataBase = await accountService.getOneUserByEmail(googleUser.res.email)
+    // let userInDataBase = await userModel.findOne({ email: googleUser.res.email });
+    let userInDataBase = await accountService.getOneUserByEmail(googleUser.res.email);
+
+    // const userInDataBase = await userModel.readOne({email: googleUser.res.email})
     if (!userInDataBase) {
-      userToReturn = await userController.create({
-        name: googleUser.res.name,
-        email: googleUser.res.email
-      })
+      let { name, email } = googleUser.res
+
+      userToReturn = await accountService.createNewUserGoogle(name, email)
+      
       return res.redirect(`${baseUrlClient}/completeDetails/${userToReturn.email}`);
     }
     if (!userInDataBase.phone) {
@@ -93,15 +97,6 @@ router.get("/signUpGoogle", async (req, res) => {
       )
       return res.redirect(`http://localhost:5173/redircetGoogle/${token}`)
     }
-
-
-
-
-
-
-    // res.redirect(`${baseUrlClient}/login`)
-
-
   } catch (err) {
     res
       .status(err.code || 500)
@@ -164,5 +159,6 @@ router.get("/tokenToUser", async (req, res) => {
       .send({ msg: err.msg || err.message || "something went wrong" });
   }
 });
+
 
 module.exports = router;
