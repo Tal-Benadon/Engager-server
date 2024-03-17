@@ -5,7 +5,7 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken')
 const secret = process.env.SECRET
 const createToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2h' })
-const createPasswordToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2s' })
+const createPasswordToken = (payload) => jwt.sign(payload, secret, { expiresIn: '15m' })
 const decodeToken = (token) => jwt.verify(token, secret)
 const bcrypt = require('bcrypt')
 const saltRounds = 10;
@@ -195,6 +195,9 @@ const decodeLinkToken = (token) => {
     }
 };
 
+
+
+
 async function confirmNewUser(token) {
     try {
         //Decoding Token received from pressed Activation Link
@@ -251,7 +254,8 @@ module.exports = {
     createLinkToken,
     getOneUserByFilter,
     controlToken,
-    createPasswordToken
+    createPasswordToken,
+    decodeToken
 }
 
 

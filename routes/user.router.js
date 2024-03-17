@@ -44,13 +44,18 @@ router.post('/activate/:userToken', async (req, res) => {
 router.get('/controlToken/:token', async (req, res) => {
   const token = req.params.token
   console.log({ "Token to Compare": token });
+  const phone = userService.decodeToken(token)
+  console.log({ "phone": phone.phone });
   try {
     const result = await userService.controlToken(token)
     if (result.successStatus === "Expired") {
-const expiredTokenRes = {successStatus:"ExpiredPass", msg: "password token expired"}
-res.send(expiredTokenRes)
+      const expiredTokenRes = { successStatus: "ExpiredPass", msg: "password token expired" }
+      res.send(expiredTokenRes)
     } else {
-      res.send(result)
+      res.send({
+        result: result,
+        phone: phone.phone
+      })
     }
   } catch (err) {
     res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
@@ -112,7 +117,7 @@ router.get("/forgetPassword/:phone", async (req, res) => {
     }
     const userLinkToken = userService.createPasswordToken(payload)
     console.log({ "inRouter": userLinkToken });
-    const activationLink =  `${process.env.BASE_PATH}/changePassword/${userLinkToken}`
+    const activationLink = `${process.env.BASE_PATH}/changePassword/${userLinkToken}`
     console.log(activationLink);
     res.send(activationLink);
   } catch (err) {
@@ -223,6 +228,8 @@ router.get('/:userId/leads', async (req, res) => {
       .send({ msg: err.msg || "something went wrong" });
   }
 });
+
+
 
 // ייצוא הראוטר
 module.exports = router;
