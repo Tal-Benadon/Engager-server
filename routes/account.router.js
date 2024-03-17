@@ -75,9 +75,12 @@ router.get("/signUpGoogle", async (req, res) => {
     });
 
     if (!googleUser.res.verified_email) throw { msg: 'forbiden', code: 403 }
-    const userInDataBase = await accountService.getOneUserByEmail(googleUser.res.email)
+    // const userInDataBase = await accountService.getOneUserByEmail(googleUser.res.email)
+    let userInDataBase = await userModel.findOne({ email: googleUser.res.email });
+
+    // const userInDataBase = await userModel.readOne({email: googleUser.res.email})
     if (!userInDataBase) {
-      userToReturn = await userController.create({
+      userToReturn = await userModel.create({
         name: googleUser.res.name,
         email: googleUser.res.email
       })
@@ -93,15 +96,6 @@ router.get("/signUpGoogle", async (req, res) => {
       )
       return res.redirect(`http://localhost:5173/redircetGoogle/${token}`)
     }
-
-
-
-
-
-
-    // res.redirect(`${baseUrlClient}/login`)
-
-
   } catch (err) {
     res
       .status(err.code || 500)
@@ -164,5 +158,6 @@ router.get("/tokenToUser", async (req, res) => {
       .send({ msg: err.msg || err.message || "something went wrong" });
   }
 });
+
 
 module.exports = router;
