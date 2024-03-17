@@ -3,6 +3,7 @@ const campaignController = require("../DL/controllers/campaign.controller");
 
 // ADD A NEW LEAD TO A CAMP
 async function addLeadToCamp(campaignId , userId, data) {
+  console.log({data});
   if (!data.phone || !data.fullName)
     throw { code: 500, msg: "User details are missing" };
   // TODO- check if phone is valid
