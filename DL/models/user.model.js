@@ -5,7 +5,7 @@ require('../models/plan.model')
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: false,
   },
 
   email: {
@@ -77,7 +77,7 @@ const userSchema = new mongoose.Schema({
   occupation: {
     type: String,
   }
-  
+
 });
 
 const userModel = mongoose.model("user", userSchema);

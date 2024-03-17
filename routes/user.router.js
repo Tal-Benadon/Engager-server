@@ -83,23 +83,20 @@ router.put("/update/:email", async (req, res) => {
   try {
     const email = req.params.email
     const data = req.body
-    const checkUser = await userService.getOneUserByEmail(email)
-    if (!checkUser) throw new Error("user not found")
 
-    const user = await userService.updateUser(email, data);
-    const userWithPhone = await userService.getOneUser(data.phone)
-    // console.log("FDSHGD",userWithPhone);
+    const updatedUser = await userService.completeUserDetails(email, data)
+
     const payload = {
-      email: userWithPhone.email,
-      phone: userWithPhone.phone,
-      id: userWithPhone._id
+      email: updatedUser.email,
+      phone: updatedUser.phone,
+      id: updatedUser._id
     }
     const userLinkToken = await userService.createLinkToken(payload)
     //send confirmationLink through whatsapp.
     const confirmationLink = `${process.env.BASE_PATH}activate-user/${userLinkToken}`
     console.log(confirmationLink);
 
-    res.send(user)
+    res.send(updatedUser)
 
   } catch (err) {
     res

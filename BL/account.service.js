@@ -23,7 +23,9 @@ async function getUsers() {
 
 // get one user:
 async function getOneUser(phone, select) {
+    console.log("im in get one user");
     let user = await userController.readOne({ phone: phone }, select)
+    console.log(user);
     if (!user) {
         throw { code: 408, msg: 'The phone is not exist' }
     }
@@ -146,16 +148,12 @@ async function updateUser(email, data) {
 //add new user :
 async function createNewUser(body) {
     var passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
-    var phoneRegex = /^(?:0(?:[23489]|[57]\d)-\d{7})|(?:0(?:5[^7]|[2-4]|[8-9])(?:-?\d){7})$/;
-    const phoneIsexists = await userController.readOne({ phone: body.phone });
-    if (phoneIsexists) {
-        throw { code: 408, msg: 'This phone already exists' };
-    }
+
     let email = body.email
-    let phone = body.phone
+
     let password = body.password
     if (!email.includes("@") || !email.includes(".")) throw { code: 408, msg: 'Email is not proper' }
-    if (!phoneRegex.test(phone)) throw { code: 408, msg: 'Phone is not proper' }
+
     if (password?.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
     if (!passwordRegex.test(password)) throw { code: 408, msg: 'The password does not contain at least 1 leter and 1 number' }
 
@@ -175,7 +173,7 @@ async function createNewUser(body) {
 }
 
 async function createNewUserGoogle(body) {
-    
+
 }
 
 //Create Token using userData for links authentications(initial registeration auth, change password link)
@@ -231,6 +229,25 @@ async function confirmNewUser(token) {
 
 }
 
+async function completeUserDetails(email, data) {
+    let phone = data.phone
+
+    const phoneRegex = /^(?:0(?:[23489]|[57]\d)-\d{7})|(?:0(?:5[^7]|[2-4]|[8-9])(?:-?\d){7})$/;
+
+    const phoneIsexists = await userController.readOne({ phone: phone });
+    if (phoneIsexists) {
+        throw { code: 408, msg: 'This phone already exists' };
+    }
+    if (!phoneRegex.test(phone)) throw { code: 408, msg: 'Phone is not proper' }
+
+    const checkUser = await getOneUserByEmail(email)
+
+    if (!checkUser) throw new Error("user not found")
+    const user = await updateUser(email, data);
+    const userWithPhone = await getOneUser(phone)
+    return userWithPhone
+}
+
 module.exports = {
     createNewUser,
     getUsers,
@@ -244,7 +261,8 @@ module.exports = {
     confirmNewUser,
     createLinkToken,
     getOneUserByFilter,
-    createNewUserGoogle
+    createNewUserGoogle,
+    completeUserDetails
 }
 
 
