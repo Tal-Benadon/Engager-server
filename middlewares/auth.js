@@ -40,7 +40,7 @@ const mwToken = async (req, res, next) => {
         req.body.user = user
         next()
     } catch (err) {
-        res.status(401).send("Ballalaalalalalalalalalalalalal")
+        res.status(401).send("Unauthorized")
     }
 }
 
