@@ -10,7 +10,7 @@ async function read(filter = {}) {
 }
 
 async function readOne(filter,select,populate ) {
-    return await userModel.findOne(filter).select(select).populate(`${populate}`)
+    return await userModel.findOne(filter).select(select).populate(populate)
 }
 
 async function update(filter, data) {

@@ -97,7 +97,7 @@ async function getGoogleUser({
 
 
 //get one user by filter Object 
-async function getOneUserByFilter(filter = {}, populate = "") {
+async function getOneUserByFilter(filter = {}, populate) {
     let user = await userController.readOne(filter, undefined, populate)
     console.log(user);
     if (!user) {
