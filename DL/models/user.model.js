@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+require('../models/plan.model')
+
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -41,7 +43,7 @@ const userSchema = new mongoose.Schema({
 
   subscription: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "plans",
+    ref: "plan",
     default: '65edcdf022a62790e4b5caf6'
   },
 
