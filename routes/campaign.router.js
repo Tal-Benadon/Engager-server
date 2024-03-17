@@ -35,7 +35,7 @@ router.post('/', mwToken, maxCamp, async (req, res) => {
 })
 
 // get all campigns
-router.get('/', async (req, res) => {
+router.get('/', mwToken, async (req, res) => {
   try {
     console.log(req.body);
     const userId = req.body.user._id;
