@@ -75,7 +75,7 @@ const userSchema = new mongoose.Schema({
   occupation: {
     type: String,
   }
-  
+
 });
 
 const userModel = mongoose.model("user", userSchema);
