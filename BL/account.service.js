@@ -9,6 +9,7 @@ const decodeToken = (token) => jwt.verify(token, secret)
 const bcrypt = require('bcrypt')
 const saltRounds = 10;
 
+
 // get all users
 async function getUsers() {
     let users = await userController.read()
@@ -27,10 +28,12 @@ async function getOneUser(phone, select) {
     }
     return user
 }
+
+
 async function getOneUserByEmail(email) {
     let user = await userController.readOne({ email: email })
     if (!user) {
-        throw { code: 408, msg: 'The phone is not exist' }
+        throw { code: 408, msg: 'The email is not exist' }
     }
     return user
 }

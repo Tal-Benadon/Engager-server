@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const accountService = require('../BL/account.service')
 const userController = require('../DL/controllers/user.controller')
+const userService = require('../BL/account.service')
 const userModel = require('../DL/models/user.model')
 const jwt = require("jsonwebtoken");
 const { tokenToUser } = require("../middlewares/auth");
@@ -62,7 +63,7 @@ router.get("/signUpGoogle", async (req, res) => {
   try {
 
     const code = req.query.code;
-    let userToReturn = {}
+    // let userToReturn = {}
 
     const { id_token, access_token } = await accountService.getGoogleOAuthTokens({
       code,
@@ -73,14 +74,17 @@ router.get("/signUpGoogle", async (req, res) => {
       id_token,
       access_token,
     });
+    console.log("userrrrrrrrrShakeddddddddd", googleUser.res);
 
     if (!googleUser.res.verified_email) throw { msg: 'forbiden', code: 403 }
     const userInDataBase = await accountService.getOneUserByEmail(googleUser.res.email)
+    console.log("lalalalalal");
     if (!userInDataBase) {
-      userToReturn = await userController.create({
+    let userToReturn = await userModel.create({
         name: googleUser.res.name,
         email: googleUser.res.email
       })
+      console.log("userrrrrrrrr", userToReturn);
       return res.redirect(`${baseUrlClient}/completeDetails/${userToReturn.email}`);
     }
     if (!userInDataBase.phone) {
@@ -93,15 +97,6 @@ router.get("/signUpGoogle", async (req, res) => {
       )
       return res.redirect(`http://localhost:5173/redircetGoogle/${token}`)
     }
-
-
-
-
-
-
-    // res.redirect(`${baseUrlClient}/login`)
-
-
   } catch (err) {
     res
       .status(err.code || 500)
