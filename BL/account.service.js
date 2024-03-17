@@ -17,7 +17,7 @@ async function getUsers() {
 }
 
 // get one user:
-async function getOneUser(phone,select) {
+async function getOneUser(phone, select) {
     let user = await userController.readOne({ phone: phone }, select)
     if (!user) {
         throw { code: 408, msg: 'The phone is not exist' }
@@ -93,8 +93,8 @@ async function getGoogleUser({
 
 
 //get one user by filter Object 
-async function getOneUserByFilter(filter={} , populate = "") {
-    let user = await userController.readOne(filter,undefined, populate)
+async function getOneUserByFilter(filter = {}, populate = "") {
+    let user = await userController.readOne(filter, undefined, populate)
     if (!user) {
         throw { code: 408, msg: 'The phone is not exist' }
     }
@@ -125,28 +125,24 @@ async function updatePhoneUser(email, data) {
         phone: data.phone,
         occupation: data.occupation,
         amountOfEmployees: data.amountOfEmployees
-}
-let user = await userController.updatePhoneUser({ email: email }, newData)
-if (!user) {
-    throw { code: 408, msg: 'The phone is not exists' }
-}
-return user
+    }
+    let user = await userController.updatePhoneUser({ email: email }, newData)
+    if (!user) {
+        throw { code: 408, msg: 'The phone is not exists' }
+    }
+    return user
 }
 
 
 //add new user :
 async function createNewUser(body) {
     var passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
-    var phoneRegex = /^(?:0(?:[23489]|[57]\d)-\d{7})|(?:0(?:5[^7]|[2-4]|[8-9])(?:-?\d){7})$/;
-    const phoneIsexists = await userController.readOne({ phone: body.phone });
-    if (phoneIsexists) {
-        throw { code: 408, msg: 'This phone already exists' };
-    }
+
     let email = body.email
-    let phone = body.phone
+
     let password = body.password
     if (!email.includes("@") || !email.includes(".")) throw { code: 408, msg: 'Email is not proper' }
-    if (!phoneRegex.test(phone)) throw { code: 408, msg: 'Phone is not proper' }
+
     if (password?.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
     if (!passwordRegex.test(password)) throw { code: 408, msg: 'The password does not contain at least 1 leter and 1 number' }
 

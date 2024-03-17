@@ -77,7 +77,13 @@ router.put("/update/:email", async (req, res) => {
   try {
     const email = req.params.email
     const data = req.body
-
+    var phoneRegex = /^(?:0(?:[23489]|[57]\d)-\d{7})|(?:0(?:5[^7]|[2-4]|[8-9])(?:-?\d){7})$/;
+    const phoneIsexists = await userController.readOne({ phone: data.phone });
+    if (phoneIsexists) {
+      throw { code: 408, msg: 'This phone already exists' };
+    }
+    let phone = body.phone
+    if (!phoneRegex.test(phone)) throw { code: 408, msg: 'Phone is not proper' }
     const checkUser = await userService.getOneUserByEmail(email)
     if (!checkUser) throw new Error("user not found")
 
