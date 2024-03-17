@@ -21,8 +21,8 @@ async function updateOne(filter, data) {
     return await userModel.updateOne(filter, data, { new: true })
 }
 
-async function updatePhoneUser(query, data) {
+async function updateUser(query, data) {
     return await userModel.updateOne(query, { $set: data }, { upsert: true });
 }
 
-module.exports = { create, read, readOne, update, updateOne, updatePhoneUser }
+module.exports = { create, read, readOne, update, updateOne, updateUser }

@@ -10,6 +10,7 @@ const bcrypt = require('bcrypt');
 const { endOfTrialPeriod } = require("./plans.service");
 const saltRounds = 10;
 
+
 // get all users
 async function getUsers() {
     let users = await userController.read()
@@ -28,10 +29,12 @@ async function getOneUser(phone, select) {
     }
     return user
 }
+
+
 async function getOneUserByEmail(email) {
     let user = await userController.readOne({ email: email })
     if (!user) {
-        throw { code: 408, msg: 'The phone is not exist' }
+        throw { code: 408, msg: 'The email is not exist' }
     }
     return user
 }
@@ -124,14 +127,15 @@ async function updateOneUser(phone, data) {
     return user
 }
 
-async function updatePhoneUser(email, data) {
+async function updateUser(email, data) {
     let newData = {
         name: data.fullName,
         phone: data.phone,
         occupation: data.occupation,
         amountOfEmployees: data.amountOfEmployees
     }
-    let user = await userController.updatePhoneUser({ email: email }, newData)
+    console.log("newData account service", newData);
+    let user = await userController.updateOne({ email: email }, newData)
     if (!user) {
         throw { code: 408, msg: 'The phone is not exists' }
     }
@@ -168,6 +172,10 @@ async function createNewUser(body) {
     scheduleService.convertToDateAndExec(expiredDate, () => endOfTrialPeriod(phone));
 
     return newUser
+}
+
+async function createNewUserGoogle(body) {
+    
 }
 
 //Create Token using userData for links authentications(initial registeration auth, change password link)
@@ -231,11 +239,12 @@ module.exports = {
     updateOneUser,
     getGoogleUser,
     getGoogleOAuthTokens,
-    updatePhoneUser,
+    updateUser,
     getOneUserByEmail,
     confirmNewUser,
     createLinkToken,
-    getOneUserByFilter
+    getOneUserByFilter,
+    createNewUserGoogle
 }
 
 
