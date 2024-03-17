@@ -40,7 +40,7 @@ router.post('/activate/:userToken', async (req, res) => {
   }
 })
 
-router.use(auth.mwToken)
+
 
 // get all users
 router.get("/", async (req, res) => {
@@ -55,6 +55,12 @@ router.get("/", async (req, res) => {
       .send({ msg: err.msg || "something went wrong" });
   }
 });
+
+
+
+//route that creates a token and bring User
+
+
 
 // get one user:
 router.get("/:phone", async (req, res) => {
