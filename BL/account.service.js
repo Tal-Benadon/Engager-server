@@ -125,14 +125,15 @@ async function updateOneUser(phone, data) {
     return user
 }
 
-async function updatePhoneUser(email, data) {
+async function updateUser(email, data) {
     let newData = {
         name: data.fullName,
         phone: data.phone,
         occupation: data.occupation,
         amountOfEmployees: data.amountOfEmployees
     }
-    let user = await userController.updatePhoneUser({ email: email }, newData)
+    console.log("newData account service", newData);
+    let user = await userController.updateOne({ email: email }, newData)
     if (!user) {
         throw { code: 408, msg: 'The phone is not exists' }
     }
@@ -232,7 +233,7 @@ module.exports = {
     updateOneUser,
     getGoogleUser,
     getGoogleOAuthTokens,
-    updatePhoneUser,
+    updateUser,
     getOneUserByEmail,
     confirmNewUser,
     createLinkToken,
