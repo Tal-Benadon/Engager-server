@@ -5,6 +5,7 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken')
 const secret = process.env.SECRET
 const createToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2h' })
+const createPasswordToken = (payload) => jwt.sign(payload, secret, { expiresIn: '15m' })
 const decodeToken = (token) => jwt.verify(token, secret)
 const bcrypt = require('bcrypt');
 const { endOfTrialPeriod } = require("./plans.service");
@@ -129,7 +130,22 @@ async function updateOneUser(phone, data) {
     return user
 }
 
-async function updateUser(email, data) {
+// update password of one user:
+async function updateOneUserPassword(phone, data) {
+    var passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+    let password = data.password
+    if (password?.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
+    if (!passwordRegex.test(password)) throw { code: 408, msg: 'The password does not contain at least 1 leter and 1 number' }
+    const hash = bcrypt.hashSync(password, saltRounds);
+    console.log('hash', hash);
+    let user = await userController.update({ phone: phone }, {password:hash})
+    if (!user) {
+        throw { code: 408, msg: 'The phone is not exists' }
+    }
+    return user
+}
+
+async function updatePhoneUser(email, data) {
     let newData = {
         name: data.fullName,
         phone: data.phone,
@@ -202,6 +218,9 @@ const decodeLinkToken = (token) => {
     }
 };
 
+
+
+
 async function confirmNewUser(token) {
     try {
         //Decoding Token received from pressed Activation Link
@@ -229,6 +248,21 @@ async function confirmNewUser(token) {
 
 }
 
+
+async function controlToken(token) {
+    try {
+        //Decoding Token received from pressed Activation Link
+        const decodedToken = decodeLinkToken(token)
+        //Token time expired
+        if (decodedToken.successStatus === 'Expired') return decodedToken
+
+        return { successStatus: 'ValidToken', msg: 'Token is valid' };
+    } catch (err) {
+        console.error(err);
+        return { successStatus: 'ActivationFailed', msg: 'token not be activated' };
+    }
+}
+
 async function completeUserDetails(email, data) {
     let phone = data.phone
 
@@ -246,6 +280,7 @@ async function completeUserDetails(email, data) {
     const user = await updateUser(email, data);
     const userWithPhone = await getOneUser(phone)
     return userWithPhone
+
 }
 
 module.exports = {
@@ -261,6 +296,12 @@ module.exports = {
     confirmNewUser,
     createLinkToken,
     getOneUserByFilter,
+    controlToken,
+    createPasswordToken,
+    decodeToken,
+    updateOneUserPassword,
+    createNewUserGoogle,
+    updatePhoneUser,
     createNewUserGoogle,
     completeUserDetails
 }
