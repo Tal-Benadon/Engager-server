@@ -33,8 +33,8 @@ async function getOneUser(phone, select) {
 }
 
 
-async function getOneUserByEmail(email) {
-    let user = await userController.readOne({ email: email })
+async function getOneUserByEmail(email, select) {
+    let user = await userController.readOne({ email: email }, select)
     if (!user) {
         throw { code: 408, msg: 'The email is not exist' }
     }
