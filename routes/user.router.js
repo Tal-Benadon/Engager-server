@@ -131,12 +131,12 @@ router.put("/update/:email", async (req, res) => {
   try {
     const email = req.params.email
     const data = req.body
-
     const checkUser = await userService.getOneUserByEmail(email)
     if (!checkUser) throw new Error("user not found")
 
-    const user = await userService.updatePhoneUser(email, { phone });
-    const userWithPhone = await userService.getOneUser(phone)
+    const user = await userService.updateUser(email, data);
+    const userWithPhone = await userService.getOneUser(data.phone)
+    // console.log("FDSHGD",userWithPhone);
     const payload = {
       email: userWithPhone.email,
       phone: userWithPhone.phone,
