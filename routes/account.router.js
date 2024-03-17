@@ -8,6 +8,7 @@ const { tokenToUser } = require("../middlewares/auth");
 
 const baseUrlClient = process.env.BASE_URL_CLIENT;
 const baseUrlServer = process.env.BASE_URL_SERVER;
+
 router.post("/signin", async (req, res) => {
   try {
 
@@ -155,12 +156,12 @@ router.get("/dashboard", async (req, res) => {
 // בדיקת הטוקן והחזרת היוזר כשאפליקציה עולה לראשונה
 router.get("/tokenToUser", async (req, res) => {
   try {
-    let user = await tokenToUser(req, res);
+    let user = await tokenToUser(req.headers.authorization);
     res.send(user);
   } catch (err) {
     res
       .status(err.code || 500)
-      .send({ msg: err.msg || "something went wrong" });
+      .send({ msg: err.msg || err.message || "something went wrong" });
   }
 });
 

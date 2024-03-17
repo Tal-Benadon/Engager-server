@@ -7,13 +7,15 @@ const jwt = require("jsonwebtoken")
 const userService = require('../BL/account.service');
 const campaignController = require('../DL/controllers/campaign.controller')
 const leadService = require('../BL/lead.service')
-
+const bcrypt = require('bcrypt')
+  
 
 //LOGIN
 async function login(phone, password) {
     const user = await userService.getOneUser(phone, "+password")
-    console.log('user: ', user)
-    if (password != user.password) throw "The password incorrect"
+    // השוואה בין הססמא שהתקבלה בלוגין לבין הססמא המוצפנת
+    const correctPass = bcrypt.compareSync(password, user.password);
+    if(!correctPass) throw "The password incorrect"
     //  הפקת טוקן בכניסה
     const token = jwt.sign({ phone: phone }, process.env.SECRET, { expiresIn: "7d" })
     return { token, user }
@@ -43,9 +45,9 @@ const mwToken = async (req, res, next) => {
 }
 
 // פונקציית בדיקת הטוקן בעליית האפליקציה
-const tokenToUser = async (req, res) => {
+async function tokenToUser(authorization){
     try {
-        const originalToken = req.headers.authorization;
+        const originalToken = authorization;
         if (!originalToken) throw "Unauthorized";
 
         const token = originalToken.replace("Bearer ", "");
@@ -99,5 +101,5 @@ const sendToAddLead = async (token, data) => {
     const { campaignId, userId } = res
     return 'the lede create' + await leadService.addLeadToCamp(campaignId, userId, data.data)
 }
-module.exports = { createToken, sendToAddLead, login, mwToken }
+module.exports = { createToken, sendToAddLead, login, mwToken,tokenToUser }
 

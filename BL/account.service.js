@@ -6,6 +6,9 @@ const jwt = require('jsonwebtoken')
 const secret = process.env.SECRET
 const createToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2h' })
 const decodeToken = (token) => jwt.verify(token, secret)
+const bcrypt = require('bcrypt')
+const saltRounds = 10;
+
 // get all users
 async function getUsers() {
     let users = await userController.read()
@@ -146,8 +149,11 @@ async function createNewUser(body) {
     if (password?.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
     if (!passwordRegex.test(password)) throw { code: 408, msg: 'The password does not contain at least 1 leter and 1 number' }
 
+    const hash = bcrypt.hashSync(password, saltRounds);
+    console.log('hash', hash);
+
     // האם צריך לשלוח ביצירה דיקסקרפשן של תקופת נסיון או שיש לו אופציה ישר להרשם?
-    const newUser = await userController.create({ ...body, subscription: 'trial' });
+    const newUser = await userController.create({ ...body, password: hash });
     let createdDate = new Date();
     const expiredDate = new Date(createdDate);
     expiredDate.setDate(expiredDate.getDate() + 14);
@@ -199,11 +205,11 @@ async function confirmNewUser(token) {
 
         //Read returns Array of user(s), there should be only 1 ([0])
         if (userToConfirm.length < 1) throw { code: 401, msg: 'User does not exist' }
-        if (userToConfirm[0].isActive == true) return { successStatus: 'AlreadyActive', msg: 'User is already active' }
+        if (userToConfirm[0].isActive == true) return { successStatus: 'AlreadyActive', msg: 'User is already active', user: userToConfirm[0] }
 
         await updateOneUser(phone, { isActive: true })
 
-        return { successStatus: 'Activated', msg: 'User successfully confirmed' };
+        return { successStatus: 'Activated', msg: 'User successfully confirmed', user: userToConfirm[0] };
     } catch (err) {
         console.error(err);
         return { successStatus: 'ActivationFailed', msg: 'User could not be activated' };
