@@ -280,7 +280,8 @@ module.exports = {
     createPasswordToken,
     decodeToken,
     updateOneUserPassword,
-    createNewUserGoogle
+    createNewUserGoogle,
+    updatePhoneUser
 }
 
 
