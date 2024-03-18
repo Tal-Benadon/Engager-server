@@ -59,6 +59,7 @@ async function updateLeadInCamp(campId, leadId, newData) {
   let update = {
     $set: {},
   };
+
   newData.fullName && (update.$set[`leads.${leadIndex}.fullName`] = newData.fullName);
   newData.email && (update.$set[`leads.${leadIndex}.email`] = newData.email);
   newData.notes && (update.$set[`leads.${leadIndex}.notes`] = newData.notes);
