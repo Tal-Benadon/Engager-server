@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
+require('../models/plan.model')
+
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: false,
   },
 
   email: {
@@ -18,7 +20,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     // required: true,
     // אביעד אמר לא לעשות סיסמה חובה בגלל שאנשים נכנסים עם גוגל וכד'
-    // select: false,
+    select: false,
   },
   phone: {
     type: String,
@@ -41,8 +43,8 @@ const userSchema = new mongoose.Schema({
 
   subscription: {
     type: mongoose.Schema.Types.ObjectId,
-    ref:"plans",
-    default:'65edcdf022a62790e4b5caf6'
+    ref: "plan",
+    default: '65edcdf022a62790e4b5caf6'
   },
 
   createdData: {
@@ -59,8 +61,8 @@ const userSchema = new mongoose.Schema({
       default: 0,
       type: Number,
     },
-    date:{
-      type:Date,
+    date: {
+      type: Date,
       default: Date.now(),
     },
     firstMsgCount: {
@@ -68,6 +70,14 @@ const userSchema = new mongoose.Schema({
       type: Number,
     },
   },
+  amountOfEmployees: {
+    type: String,
+    enum: ['1', '2-7', '8-20', '20-100']
+  },
+  occupation: {
+    type: String,
+  }
+
 });
 
 const userModel = mongoose.model("user", userSchema);

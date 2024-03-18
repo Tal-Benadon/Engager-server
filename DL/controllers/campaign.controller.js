@@ -20,10 +20,6 @@ async function update(filter = {}, update) {
     return await campaignModel.findByIdAndUpdate(filter, update, { new: true })
 }
 
-
-
-
-
 //not in use
 async function readOneWithoutPopulate(filter, populate) {
     return await campaignModel.findOne(filter).populate(populate)
