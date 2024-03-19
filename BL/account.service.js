@@ -6,10 +6,49 @@ const jwt = require('jsonwebtoken')
 const secret = process.env.SECRET
 const createToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2h' })
 const decodeToken = (token) => jwt.verify(token, secret)
+const bcrypt = require('bcrypt')
+const saltRounds = 10;
+
+async function getUsersDataForTable() {
+    const users = getUsers();
+    console.log('users service', users);
+    const leads = '10';
+
+    const usersArr = users.map((user) => {
+        const newUser = {
+            avatar: user.avatar,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            joinDate: user.joinDate,
+            leads: leads,
+            campaign: user.campaign.length,
+            subscription: user.subscription,
+            isOnline: 'no!'
+        }
+        return newUser
+    })
+
+    const heads = [
+        { title: "avatar", input: "text" },
+        { title: "name", input: "text" },
+        { title: "email", input: "text" },
+        { title: "phone", input: "text" },
+        { title: "joinDate", input: "date" },
+        { title: "leads", input: "text" },
+        { title: "campaign", input: "text" },
+        { title: "subscription", input: "text" },
+        { title: "isOnline", input: "" },
+    ]
+    console.log("###heads##", heads);
+    console.log('####users', usersArr);
+    return { users: usersArr, heads }
+}
+
 // get all users
 async function getUsers() {
     let users = await userController.read()
-    console.log("s", users)
+    console.log("**service**", users);
     if (!users) {
         throw { code: 408, msg: 'something went wrong' }
     }
@@ -17,7 +56,7 @@ async function getUsers() {
 }
 
 // get one user:
-async function getOneUser(phone,select) {
+async function getOneUser(phone, select) {
     let user = await userController.readOne({ phone: phone }, select)
     if (!user) {
         throw { code: 408, msg: 'The phone is not exist' }
@@ -74,7 +113,7 @@ async function getGoogleUser({
                 },
             }
         )
-        
+
         // const user = await axios.get(
         //     `https://people.googleapis.com/v1/people/me?personFields=addresses,phoneNumbers`,
         //     {
@@ -89,6 +128,16 @@ async function getGoogleUser({
         console.log(error, "Error fetching Google user");
         throw new Error(error.message);
     }
+}
+
+
+//get one user by filter Object 
+async function getOneUserByFilter(filter = {}, populate = "") {
+    let user = await userController.readOne(filter, undefined, populate)
+    if (!user) {
+        throw { code: 408, msg: 'The phone is not exist' }
+    }
+    return user
 }
 
 // delete user:
@@ -110,7 +159,13 @@ async function updateOneUser(phone, data) {
 }
 
 async function updatePhoneUser(email, data) {
-    let user = await userController.updatePhoneUser({ email: email }, data)
+    let newData = {
+        name: data.fullName,
+        phone: data.phone,
+        occupation: data.occupation,
+        amountOfEmployees: data.amountOfEmployees
+    }
+    let user = await userController.updatePhoneUser({ email: email }, newData)
     if (!user) {
         throw { code: 408, msg: 'The phone is not exists' }
     }
@@ -134,8 +189,11 @@ async function createNewUser(body) {
     if (password?.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
     if (!passwordRegex.test(password)) throw { code: 408, msg: 'The password does not contain at least 1 leter and 1 number' }
 
+    const hash = bcrypt.hashSync(password, saltRounds);
+    console.log('hash', hash);
+
     // האם צריך לשלוח ביצירה דיקסקרפשן של תקופת נסיון או שיש לו אופציה ישר להרשם?
-    const newUser = await userController.create({ ...body, subscription: 'trial' });
+    const newUser = await userController.create({ ...body, password: hash });
     let createdDate = new Date();
     const expiredDate = new Date(createdDate);
     expiredDate.setDate(expiredDate.getDate() + 14);
@@ -187,11 +245,11 @@ async function confirmNewUser(token) {
 
         //Read returns Array of user(s), there should be only 1 ([0])
         if (userToConfirm.length < 1) throw { code: 401, msg: 'User does not exist' }
-        if (userToConfirm[0].isActive == true) return { successStatus: 'AlreadyActive', msg: 'User is already active' }
+        if (userToConfirm[0].isActive == true) return { successStatus: 'AlreadyActive', msg: 'User is already active', user: userToConfirm[0] }
 
         await updateOneUser(phone, { isActive: true })
 
-        return { successStatus: 'Activated', msg: 'User successfully confirmed' };
+        return { successStatus: 'Activated', msg: 'User successfully confirmed', user: userToConfirm[0] };
     } catch (err) {
         console.error(err);
         return { successStatus: 'ActivationFailed', msg: 'User could not be activated' };
@@ -210,7 +268,9 @@ module.exports = {
     updatePhoneUser,
     getOneUserByEmail,
     confirmNewUser,
-    createLinkToken
+    createLinkToken,
+    getOneUserByFilter,
+    getUsersDataForTable
 }
 
 

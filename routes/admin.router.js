@@ -1,10 +1,14 @@
 const express = require("express");
 const router = express.Router();
+const accountService = require('../BL/account.service')
 
 
 // get all users
 router.get("/users", async (req, res) => {
   try {
+    const users = accountService.getUsers();
+    console.log('users', users);
+    res.send(users);
 
   } catch (err) {
     res
@@ -48,14 +52,14 @@ router.delete("users/:userId", async (req, res) => {
 
 // Dashboard of admin
 router.get("/dashboard", async (req, res) => {
-    try {
-  
-    } catch (err) {
-      res
-        .status(err.code || 500)
-        .send({ msg: err.msg || "something went wrong" });
-    }
-  });
+  try {
+
+  } catch (err) {
+    res
+      .status(err.code || 500)
+      .send({ msg: err.msg || "something went wrong" });
+  }
+});
 
 
 module.exports = router;
