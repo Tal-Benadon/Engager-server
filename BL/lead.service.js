@@ -1,13 +1,17 @@
 const leadController = require("../DL/controllers/lead.controller");
 const campaignController = require("../DL/controllers/campaign.controller");
+const campaignService = require('./campaign.service');
+const userController = require('../DL/controllers/user.controller')
+const userModel = require('../DL/models/user.model')
+const { isValidObjectId } = require('../utilities/helper')
 
 // ADD A NEW LEAD TO A CAMP
-async function addLeadToCamp(campaignId , userId, data) {
-  console.log({data});
+async function addLeadToCamp(campaignId, userId, data) {
+  console.log({ data });
   if (!data.phone || !data.fullName)
     throw { code: 500, msg: "User details are missing" };
   // TODO- check if phone is valid
-  const campaign = await campaignController.readOne({ _id: userId , _id:campaignId });
+  const campaign = await campaignController.readOne({ _id: userId, _id: campaignId });
   if (!campaign) throw { code: 404, msg: "Campaign not found" };
 
   const phoneIsExist = await campaign.leads.some(
@@ -23,18 +27,19 @@ async function addLeadToCamp(campaignId , userId, data) {
   mappedLead = {
     phone: String(data.phone),
     fullName: String(data.fullName),
-   
+
     //  יש דרך יותר יפה? הדיפולט בסכמה לא עובד
     email: data.email ? String(data.email) : "",
     notes: data.notes ? String(data.notes) : "",
-    extra: data.extra ? data.extra.map(entry=>({
-      info:{
-  he: entry.info.he,
-	value: entry.info.value
+    extra: data.extra ? data.extra.map(entry => ({
+      info: {
+        he: entry.info.he,
+        value: entry.info.value
 
-	}})) : []
-  
-}  
+      }
+    })) : []
+
+  }
 
   campaign.leads.push(mappedLead);
 
@@ -78,14 +83,45 @@ async function delLeadFromCamp(campId, leadId) {
   return lead;
 }
 
-// TODO: delete Lead From All Camp
-async function deleteLeadFromAllCamp(leadId) {}
-// TODO: get LeadS From All Camps
-async function getLeadFromAllCamps() {}
+async function deleteLeadFromAllCamp(userId, leadPhone) {
+  try {
+    if (!isValidObjectId(userId)) throw { code: 401, msg: "Invalid userId" };
+    let lead = await leadController.readOne(leadPhone)
+    if(!lead) return "lead doesnt exist"
+
+    const userCheck = await userController.readOne({ _id: userId }, '', '');
+     if(!userCheck) return "user doesnt exist"
+
+    let campaigns = await campaignController.read({ user: userId, "leads.phone": leadPhone });
+
+    campaigns = campaigns.map(campaign => {
+      const leadIndex = campaign.leads.findIndex(lead => lead.phone.toString() === leadPhone);
+      if (leadIndex !== -1) {
+        campaign.leads[leadIndex].isActive = !campaign.leads[leadIndex].isActive;
+        // campaign.leads[leadIndex].isActive = false
+      }
+      return campaign;
+    });
+    campaigns = await Promise.all(campaigns.map(campaign => campaign.save()));
+
+    return campaigns;
+  } catch (error) {
+    console.error("Error deleting lead from all campaigns:", error);
+    throw error;
+  }
+}
+
+// // TODO: get LeadS From All Camps
+// async function getLeadFromAllCamps(leadId) {
+//   try {
+//   } catch (error) {
+//     console.error("Error fetching lead from all camps:", error);
+//     throw error;
+//   }
+// }
 
 module.exports = {
   updateLeadInCamp,
-  getLeadFromAllCamps,
   addLeadToCamp,
   delLeadFromCamp,
   deleteLeadFromAllCamp,
