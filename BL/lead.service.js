@@ -3,6 +3,7 @@ const campaignController = require("../DL/controllers/campaign.controller");
 
 // ADD A NEW LEAD TO A CAMP
 async function addLeadToCamp(campaignId , userId, data) {
+  console.log({data});
   if (!data.phone || !data.fullName)
     throw { code: 500, msg: "User details are missing" };
   // TODO- check if phone is valid
@@ -58,13 +59,11 @@ async function updateLeadInCamp(campId, leadId, newData) {
   let update = {
     $set: {},
   };
-  // newData.fName && (update.$set[`leads.${leadIndex}.fName`] = newData.fName);
-  // newData.lName && (update.$set[`leads.${leadIndex}.lName`] = newData.lName);
+
   newData.fullName && (update.$set[`leads.${leadIndex}.fullName`] = newData.fullName);
   newData.email && (update.$set[`leads.${leadIndex}.email`] = newData.email);
   newData.notes && (update.$set[`leads.${leadIndex}.notes`] = newData.notes);
   newData.phone && (update.$set[`leads.${leadIndex}.phone`] = newData.phone);
-
   return await campaignController.update(filter, update);
 }
 

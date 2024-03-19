@@ -6,10 +6,11 @@ const auth = require('../middlewares/auth');
 
 
 //ADD LEAD 
-router.post('/:campId/lead', async (req, res) => {
+router.post('/:campId/lead',auth.mwToken, async (req, res) => {
     try {
         const campId = req.params.campId
-        const newLead = await leadService.addLeadToCamp(campId, req.body);
+        const userId = req.body.user._id
+        const newLead = await leadService.addLeadToCamp(campId, userId, req.body.data);
         res.send(newLead)
     } catch (err) {
         // res.status(400).send(err)
