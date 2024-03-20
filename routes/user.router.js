@@ -10,7 +10,6 @@ router.post("/", async (req, res) => {
   try {
     const body = req.body;
     const answer = await userService.createNewUser(body);
-    console.log({ "answer:": answer });
     const payload = {
       email: answer.email,
       phone: answer.phone,
@@ -18,7 +17,7 @@ router.post("/", async (req, res) => {
     }
     const userLinkToken = await userService.createLinkToken(payload)
     console.log({ "inRouter": userLinkToken });
-    const activationLink = `${process.env.BASE_PATH}activate-user/${userLinkToken}`
+    const activationLink = `${process.env.BASE_URL_CLIENT}activate-user/${userLinkToken}`
     res.send(answer);
   } catch (err) {
     console.log(err);
@@ -30,10 +29,8 @@ router.post("/", async (req, res) => {
 
 router.post('/activate/:userToken', async (req, res) => {
   const token = req.params.userToken
-  console.log({ "Token to Compare": token });
   try {
     const result = await userService.confirmNewUser(token)
-    console.log(result);
     res.send(result)
   } catch (err) {
     res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
@@ -80,6 +77,20 @@ router.get("/", async (req, res) => {
   }
 });
 
+// get all users
+router.get("/forTable", async (req, res) => {
+  try {
+    console.log('****fortable****');
+    const usersObj = await userService.getUsersDataForTable();
+    // console.log("@@@usrtRouter", usersObj);
+    res.send(usersObj);
+  } catch (err) {
+    res
+      .status(err.code || 500)
+      .send({ msg: err.msg || "something went wrong" });
+  }
+});
+
 
 
 //route that creates a token and bring User
@@ -89,10 +100,8 @@ router.get("/", async (req, res) => {
 // get one user:
 router.get("/:phone", async (req, res) => {
   try {
-    console.log(req.params.phone);
     const phone = req.params.phone;
     const user = await userService.getOneUser(phone);
-    console.log("r", user);
     res.send(user);
   } catch (err) {
     console.log(err);
@@ -117,7 +126,7 @@ router.get("/forgetPassword/:phone", async (req, res) => {
     }
     const userLinkToken = userService.createPasswordToken(payload)
     console.log({ "inRouter": userLinkToken });
-    const activationLink = `${process.env.BASE_PATH}/changePassword/${userLinkToken}`
+    const activationLink = `${process.env.BASE_URL_CLIENT}/changePassword/${userLinkToken}`
     console.log(activationLink);
     res.send(activationLink);
   } catch (err) {
@@ -141,7 +150,7 @@ router.put("/update/:email", async (req, res) => {
     }
     const userLinkToken = await userService.createLinkToken(payload)
     //send confirmationLink through whatsapp.
-    const confirmationLink = `${process.env.BASE_PATH}activate-user/${userLinkToken}`
+    const confirmationLink = `${process.env.BASE_URL_CLIENT}activate-user/${userLinkToken}`
     console.log(confirmationLink);
 
     res.send(updatedUser)
@@ -162,7 +171,6 @@ router.put("/:phone", async (req, res) => {
     console.log("update phone:", phone);
     console.log("update data:", data);
     const user = await userService.updateOneUser(phone, data);
-    console.log("r", user);
     res.send(user);
   } catch (err) {
     res
@@ -187,14 +195,29 @@ router.put("/updatePass/:phone", async (req, res) => {
       .send({ msg: err.msg || "something went wrong" });
   }
 });
+// update password of one user :
+router.put("/updatePass/:phone", async (req, res) => {
+  try {
+    const phone = req.params.phone;
+    const data = req.body;
+
+    console.log("update phone:", phone);
+    console.log("update data:", data);
+    const user = await userService.updateOneUserPassword(phone, data);
+    console.log("r", user);
+    res.send(user);
+  } catch (err) {
+    res
+      .status(err.code || 500)
+      .send({ msg: err.msg || "something went wrong" });
+  }
+});
 
 // delete one user:
 router.delete("/:phone", async (req, res) => {
   try {
-    console.log(req.params.phone);
     const phone = req.params.phone;
     const user = await userService.del(phone);
-    console.log("r", user);
     res.send(user);
   } catch (err) {
     res

@@ -53,12 +53,10 @@ async function updateMsg(campId, msgId, body) {
   if (body.content) {
     update.$set[`msg.${msgIndex}.content`] = body.content;
   }
-  console.log("body***", body.subject);
   if (!body.content && !body.subject)
     throw { code: 403, msg: "non a text for update" };
 
   let result = await campaignController.update(filter, update);
-  console.log("res", result);
   return result;
 }
 

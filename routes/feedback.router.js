@@ -26,7 +26,6 @@ router.post('/:userId', async (req, res) => {
 
     try {
         let userId = req.params.userId;
-        console.log("Message", req.body);
         const feedback = await feedbackService.sendFeedback(userId, req.body.data);
         if (!feedback) {
             return res.status(404).send({ msg: "User not found" });
@@ -60,7 +59,6 @@ router.get('/', async (req, res) => {
 
     try {
         const feedbacks = await feedbackService.getAllFeedbacks();
-        console.log(feedbacks);
         if (!feedbacks) {
             return res.status(404).send({ msg: "No feedbacks found in the system." });
         }
