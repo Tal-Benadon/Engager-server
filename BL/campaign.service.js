@@ -27,7 +27,7 @@ async function getAllCampaignsByUser(userId) {
 async function getOneCamp(campId) {
   if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
   const campaign = await campaignController.readOne({ _id: campId, isActive: true });
-  // campaign.leads = campaign.leads.filter(lead => lead.isActive);
+  campaign.leads = campaign.leads.filter(lead => lead.isActive);
 
   if (!campaign) throw { msg: "Campaign is not exist", code: 404 };
   return campaign;
@@ -63,7 +63,6 @@ async function createNewCampaign(userId, body) {
   // const newCamp = await getOneCamp(createdCampaign._id)
   return updatedCampaign;
 }
-
 
 
 // To uodate a campaign by _Id

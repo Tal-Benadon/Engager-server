@@ -77,6 +77,20 @@ router.get("/", async (req, res) => {
   }
 });
 
+// get all users
+router.get("/forTable", async (req, res) => {
+  try {
+    console.log('****fortable****');
+    const usersObj = await userService.getUsersDataForTable();
+    // console.log("@@@usrtRouter", usersObj);
+    res.send(usersObj);
+  } catch (err) {
+    res
+      .status(err.code || 500)
+      .send({ msg: err.msg || "something went wrong" });
+  }
+});
+
 
 
 //route that creates a token and bring User
@@ -186,7 +200,7 @@ router.put("/updatePass/:phone", async (req, res) => {
   try {
     const phone = req.params.phone;
     const data = req.body;
-    
+
     console.log("update phone:", phone);
     console.log("update data:", data);
     const user = await userService.updateOneUserPassword(phone, data);
