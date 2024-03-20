@@ -18,7 +18,7 @@ router.post("/", async (req, res) => {
     }
     const userLinkToken = await userService.createLinkToken(payload)
     console.log({ "inRouter": userLinkToken });
-    const activationLink = `${process.env.BASE_PATH}activate-user/${userLinkToken}`
+    const activationLink = `${process.env.BASE_URL_CLIENT}activate-user/${userLinkToken}`
     res.send(answer);
   } catch (err) {
     console.log(err);
@@ -117,7 +117,7 @@ router.get("/forgetPassword/:phone", async (req, res) => {
     }
     const userLinkToken = userService.createPasswordToken(payload)
     console.log({ "inRouter": userLinkToken });
-    const activationLink = `${process.env.BASE_PATH}/changePassword/${userLinkToken}`
+    const activationLink = `${process.env.BASE_URL_CLIENT}/changePassword/${userLinkToken}`
     console.log(activationLink);
     res.send(activationLink);
   } catch (err) {
@@ -141,7 +141,7 @@ router.put("/update/:email", async (req, res) => {
     }
     const userLinkToken = await userService.createLinkToken(payload)
     //send confirmationLink through whatsapp.
-    const confirmationLink = `${process.env.BASE_PATH}activate-user/${userLinkToken}`
+    const confirmationLink = `${process.env.BASE_URL_CLIENT}activate-user/${userLinkToken}`
     console.log(confirmationLink);
 
     res.send(updatedUser)
