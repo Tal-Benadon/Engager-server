@@ -15,11 +15,49 @@ const saltRounds = 10;
 // get all users
 async function getUsers() {
   let users = await userController.read();
-  console.log("s", users);
   if (!users) {
     throw { code: 408, msg: "something went wrong" };
   }
   return users;
+}
+
+async function getUsersDataForTable() {
+  const users = await userController.readAllWithPopulate(
+    {},
+    "",
+    "subscription"
+  );
+  if (!users) throw { code: 404, msg: "something went wrong" };
+
+  const usersArr = users.map((user) => {
+    const subscription = user.subscription;
+
+    const newUser = {
+      avatar: user.avatar,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      joinDate: user.createdDate,
+      campaign: user.campaigns.length,
+      subscription: subscription ? subscription.name : "לא נמצאה תוכנית",
+      isOnline: user.isActive,
+    };
+    return newUser;
+  });
+
+  const heads = [
+    { title: "avatar", input: "" },
+    { title: "name", input: "text" },
+    { title: "email", input: "text" },
+    { title: "phone", input: "text" },
+    { title: "joinDate", input: "date" },
+    { title: "campaign", input: "text" },
+    { title: "subscription", input: "text" },
+    { title: "isOnline", input: "text" },
+    { title: "connectedToWhatsApp", input: "" },
+  ];
+
+  return { users: usersArr, heads };
 }
 
 // get one user:
@@ -34,11 +72,12 @@ async function getOneUser(phone, select) {
 }
 
 async function getOneUserByEmail(email, select) {
-  let user = await userController.readOne({ email: email }, select);
-  if (!user) {
-    throw { code: 408, msg: "The email is not exist" };
+  try {
+    let user = await userController.readOne({ email: email }, select);
+    return user;
+  } catch (error) {
+    throw { code: 401, msg: "somthing went wrong" };
   }
-  return user;
 }
 
 async function getGoogleOAuthTokens({ code, redirect_uri }) {
@@ -243,7 +282,6 @@ async function jeneratePassword() {
 async function createLinkToken(payload) {
   return new Promise((resolve, reject) => {
     const token = createToken(payload);
-    console.log({ token: token });
     resolve(token);
   });
 }
@@ -355,4 +393,5 @@ module.exports = {
   updatePhoneUser,
   createNewUserGoogle,
   completeUserDetails,
+  getUsersDataForTable,
 };

@@ -30,12 +30,10 @@ async function pushAllCampaignLeadsToMsgLeads(campaignId, targetMsgId) {
     });
 
     const leadIds = campaignToUpdate.leads.map((lead) => ({ lead: lead._id }));
-    console.log(leadIds);
 
     const targetMsg = campaignToUpdate.msg.find((msg) =>
       msg._id.equals(targetMsgId)
     );
-    console.log(targetMsg);
 
     if (targetMsg) {
       targetMsg.leads = [...targetMsg.leads, ...leadIds];
@@ -53,7 +51,6 @@ async function pushAllCampaignLeadsToMsgLeads(campaignId, targetMsgId) {
 
 async function updateStatusMsgOfOneLead(data) {
   const { campId, msgId, leadId, issend } = data;
-  console.log("issend", issend);
   if (issend != "sent" && issend != "recieved")
     throw { code: 405, msg: "status not valid" };
   const campaign = await campaignController.readOneWithoutPopulate({
@@ -61,7 +58,6 @@ async function updateStatusMsgOfOneLead(data) {
   });
   if (!campaign) throw { code: 405, msg: "no campaign" };
   const message = campaign["msg"].find((m) => m._id == msgId);
-  console.log("message", message);
   const lead = message["leads"].find((l) => l.lead == leadId);
   lead.status = issend;
   const updatedCampaign = await campaign.save();
@@ -74,9 +70,7 @@ socket1.on("connect", () => {
 
 socket1.on("sent", async (data) => {
   try {
-    console.log(data.rtrnData);
     const res = await updateStatusMsgOfOneLead(data.rtrnData);
-    console.log(res);
   } catch (err) {
     console.error(err);
   }
@@ -97,7 +91,6 @@ async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
   // const notSentLeadsList = await msgNotSentLeads(campaign, msgId);
   // console.log("*****filter******",notSentLeadsList, "//////////original/////////", campaign.leads);
   const leadsArr = msg.leads;
-  console.log("msgLaRR", leadsArr);
   // const filtered = leadsArr.filter(l => )
   leadsArr.forEach((l) => {
     if (!l.isActive) return;

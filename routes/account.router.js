@@ -6,9 +6,6 @@ const userModel = require('../DL/models/user.model')
 const jwt = require("jsonwebtoken");
 const { tokenToUser } = require("../middlewares/auth");
 
-const baseUrlClient = process.env.BASE_URL_CLIENT;
-const baseUrlServer = process.env.BASE_URL_SERVER;
-
 router.post("/signin", async (req, res) => {
   try {
 
@@ -24,7 +21,7 @@ router.get("/signInGoogle", async (req, res) => {
     const code = req.query.code;
     const { id_token, access_token } = await accountService.getGoogleOAuthTokens({
       code,
-      redirect_uri: `${baseUrlServer}/accout/signInGoogle`,
+      redirect_uri: `${process.env.BASE_URL_SERVER}/accout/signInGoogle`,
     });
     const googleUser = await accountService.getGoogleUser({
       id_token,
@@ -52,7 +49,7 @@ router.get("/signInGoogle", async (req, res) => {
       { expiresIn: "1h" }
     )
 
-    return res.redirect(`${baseUrlClient}/redircetGoogle/${token}`)
+    return res.redirect(`${process.env.BASE_URL_CLIENT}/redircetGoogle/${token}`)
 
   } catch (err) {
     console.log(err);
@@ -67,7 +64,7 @@ router.get("/signUpGoogle", async (req, res) => {
 
     const { id_token, access_token } = await accountService.getGoogleOAuthTokens({
       code,
-      redirect_uri: `${baseUrlServer}/accout/signUpGoogle`
+      redirect_uri: `${process.env.BASE_URL_SERVER}/accout/signUpGoogle`
     });
 
     const googleUser = await accountService.getGoogleUser({
@@ -82,10 +79,10 @@ router.get("/signUpGoogle", async (req, res) => {
       let { name, email } = googleUser.res
       userToReturn = await accountService.createNewUserGoogle(name, email)
 
-      return res.redirect(`${baseUrlClient}/completeDetails/${userToReturn.email}`);
+      return res.redirect(`${process.env.BASE_URL_CLIENT}/completeDetails/${userToReturn.email}`);
     }
     if (!userInDataBase.phone) {
-      return res.redirect(`${baseUrlClient}/completeDetails/${userToReturn.email}`);
+      return res.redirect(`${process.env.BASE_URL_CLIENT}/completeDetails/${userToReturn.email}`);
     } else {
       const token = jwt.sign(
         { email: googleUser.res.email, userType: userToReturn.userType, _id: userToReturn._id },

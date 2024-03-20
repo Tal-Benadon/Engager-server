@@ -15,7 +15,6 @@ function convertToDateAndExec(dateData, functionToExec) {
         scheduledJob = executeFunctionAtSpecificDate(() => {
             functionToExec()
         }, targetDate, timeZone);
-        console.log(scheduledJob);
     } catch (error) {
         console.log(error);
     }
@@ -35,7 +34,6 @@ function executeFunctionAtSpecificDate(callback, targetDate) {
 // ==== because there's no reference to a schedule, it will stop the last scheduled task =====//
 function cancelScheduledTask() {
 
-    console.log(scheduledJob);
     if (scheduledJob) {
         scheduledJob.cancel()
         console.log("schedule is cancelled");
