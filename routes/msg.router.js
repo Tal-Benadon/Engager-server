@@ -5,8 +5,8 @@ const scheduleService = require('../BL/schedule.service');
 const { scheduledJobs } = require("node-schedule");
 const auth = require("../middlewares/auth");
 const campaignService = require('../BL/campaign.service');
-const {countMsg} = require ('../middlewares/plans')
-
+const { countMsg, msgCopywriting } = require('../middlewares/plans')
+const msgQueueController = require('../DL/controllers/msgQueue.controller')
 // To get all messages of a specific campaign
 router.get('/:campId/msg', async (req, res) => {
     try {
@@ -315,6 +315,21 @@ router.post('/:campId/msg/:msgId', async (req, res) => {
         // res.status(err.code).send(err.msg);
         res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
 
+    }
+})
+
+router.put('/:campId/msg/:msgId/update-queue', async (req, res) => {
+    campaignId = req.params.campId
+    messageId = req.params.msgId
+    const newDate = req.body.miliSecondsDate
+    try {
+        const msg = await msgService.getOneMsg(campaignId, messageId)
+        if (msg) {
+            const update = msgQueueController.updateQueue(messageId, newDate)
+            console.log(update);
+        }
+    } catch (error) {
+        res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
     }
 })
 
