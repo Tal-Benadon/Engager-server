@@ -23,6 +23,8 @@ async function addLeadToCamp(campaignId, userId, data) {
       msg: "The lead is already registered for this campaign",
     };
   // Check if the lead is already registered for this campaign
+
+  let extraKeys = Object.keys(data.extra);
   let mappedLead = {};
   mappedLead = {
     phone: String(data.phone),
@@ -31,10 +33,10 @@ async function addLeadToCamp(campaignId, userId, data) {
     //  יש דרך יותר יפה? הדיפולט בסכמה לא עובד
     email: data.email ? String(data.email) : "",
     notes: data.notes ? String(data.notes) : "",
-    extra: data.extra ? data.extra.map(entry => ({
-      info: {
-        he: entry.info.he,
-        value: entry.info.value
+    extra: extraKeys.length ? extraKeys.map(key => ({
+      [key]: {
+        he: extraKeys[key].he,
+        value: key.value
 
       }
     })) : []
