@@ -6,7 +6,7 @@ const auth = require('../middlewares/auth');
 
 
 //ADD LEAD 
-router.post('/:campId/lead',auth.mwToken, async (req, res) => {
+router.post('/:campId/lead', auth.mwToken, async (req, res) => {
     try {
         const campId = req.params.campId
         const userId = req.body.user._id
@@ -58,7 +58,7 @@ router.put('/:campId/lead/:leadId', async (req, res) => {
         const campId = req.params.campId
         const leadId = req.params.leadId
         const newData = req.body
-        console.log("new date router",newData);
+        console.log("new date router", newData);
         let updated = await leadService.updateLeadInCamp(campId, leadId, newData)
         res.send(updated)
     } catch (err) {
@@ -80,19 +80,18 @@ router.delete('/:campId/lead/:leadId', async (req, res) => {
     }
 })
 
-
 //delete Lead From All the CampS
-router.delete('/lead/:leadId/all', async (req, res) => {
+router.delete('/lead/:leadPhone/all', async (req, res) => {
     try {
-        const userId = req.body.user._id;
-        const leadId = req.params.leadId
-        const leads = await leadService.deleteLeadFromAllCamp(userId, leadId)
-        res.send(leads);
-
+        const userId = req.body.userId;
+        const leadPhone = req.params.leadPhone
+        const campaigns = await leadService.deleteLeadFromAllCamp(userId, leadPhone)
+        res.status(200).send(campaigns);
     } catch (err) {
-        res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
+        res.status(err.code || 500).send({ msg: err.msg || 'something went wrong in lead router' });
     }
 })
+
 
 
 

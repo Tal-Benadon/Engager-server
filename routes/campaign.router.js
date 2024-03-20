@@ -48,6 +48,19 @@ router.get('/', mwToken, async (req, res) => {
   }
 })
 
+
+router.get('/leadId/all', async (req, res) => {
+  try {
+    const leadId = req.params.leadId
+    const userId = req.body.user._id;
+    const campaigns = await campaignService.getAllCampaignsByLead(leadId, userId)
+    res.send(campaigns);
+  } catch (error) {
+    res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
+  }
+})
+
+
 // get one campign
 router.get('/:campId', async (req, res) => {
   try {
@@ -60,6 +73,9 @@ router.get('/:campId', async (req, res) => {
 
   }
 })
+
+
+
 
 // update one campign
 router.put('/:campId', async (req, res) => {
@@ -86,8 +102,6 @@ router.delete('/:campId', async (req, res) => {
 
   }
 })
-
-
 
 
 
