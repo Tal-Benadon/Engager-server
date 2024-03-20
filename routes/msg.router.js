@@ -259,7 +259,6 @@ router.put("/:campId/msg/:msgId", async (req, res) => {
         const campId = req.params.campId;
         const msgId = req.params.msgId;
         body = req.body.data
-        console.log("rutbody", body);
         const msg = await msgService.updateMsg(campId, msgId, body);
         res.send(msg);
     } catch (err) {

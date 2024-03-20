@@ -15,7 +15,6 @@ const saltRounds = 10;
 // get all users
 async function getUsers() {
     let users = await userController.read()
-    console.log("s", users)
     if (!users) {
         throw { code: 408, msg: 'something went wrong' }
     }
@@ -236,7 +235,6 @@ async function createLinkToken(payload) {
     return new Promise((resolve, reject) => {
 
         const token = createToken(payload)
-        console.log({ "token": token });
         resolve(token)
     })
 }

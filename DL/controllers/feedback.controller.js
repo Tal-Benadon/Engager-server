@@ -2,7 +2,6 @@ const feedbackModel = require('../models/feedback.model')
 
 
 async function create(data) {
-    console.log(data);
     return await feedbackModel.create(data)
 }
 

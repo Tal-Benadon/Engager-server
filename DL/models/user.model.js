@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
-require('../models/plan.model')
-
+require("../models/plan.model");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -11,7 +10,7 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   avatar: {
     type: String,
@@ -44,8 +43,18 @@ const userSchema = new mongoose.Schema({
   subscription: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "plan",
-    default: '65edcdf022a62790e4b5caf6'
+    default: "65edcdf022a62790e4b5caf6",
   },
+  //   payment:[{
+  //     price:{
+  // type: Number
+  //     },
+  //     data:{
+
+  //     }
+  //   },]
+
+  // ,
 
   createdData: {
     type: Date,
@@ -72,12 +81,16 @@ const userSchema = new mongoose.Schema({
   },
   amountOfEmployees: {
     type: String,
-    enum: ['1', '2-7', '8-20', '20-100']
+    enum: ["1", "2-7", "8-20", "20-100"],
   },
   occupation: {
     type: String,
-  }
-
+  },
+  payments: [{
+     type: mongoose.Schema.Types.ObjectId,
+      ref: "payment" ,
+      select : false
+    }],
 });
 
 const userModel = mongoose.model("user", userSchema);
