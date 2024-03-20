@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
+require('../models/plan.model')
+
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: false,
   },
 
   email: {
@@ -41,11 +43,11 @@ const userSchema = new mongoose.Schema({
 
   subscription: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "plans",
+    ref: "plan",
     default: '65edcdf022a62790e4b5caf6'
   },
 
-  createdData: {
+  createdDate: {
     type: Date,
     default: Date.now(),
   },
@@ -75,7 +77,7 @@ const userSchema = new mongoose.Schema({
   occupation: {
     type: String,
   }
-  
+
 });
 
 const userModel = mongoose.model("user", userSchema);

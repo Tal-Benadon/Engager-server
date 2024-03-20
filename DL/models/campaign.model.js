@@ -20,15 +20,15 @@ const receivedMsg = new mongoose.Schema({
 
 })
 const leadSchema = new mongoose.Schema({
-  fName: {
-    type: String,
-  },
-  lName: {
-    type: String,
-  },
   fullName: {
     type: String,
   },
+  // fName: {
+  //   type: String,
+  // },
+  // lName: {
+  //   type: String,
+  // },
   email: {
     type: String,
     default: ''

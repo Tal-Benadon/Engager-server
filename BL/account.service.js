@@ -5,45 +5,11 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken')
 const secret = process.env.SECRET
 const createToken = (payload) => jwt.sign(payload, secret, { expiresIn: '2h' })
+const createPasswordToken = (payload) => jwt.sign(payload, secret, { expiresIn: '15m' })
 const decodeToken = (token) => jwt.verify(token, secret)
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const { endOfTrialPeriod } = require("./plans.service");
 const saltRounds = 10;
-
-async function getUsersDataForTable() {
-    const users = getUsers();
-    console.log('users service', users);
-    const leads = '10';
-
-    const usersArr = users.map((user) => {
-        const newUser = {
-            avatar: user.avatar,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            joinDate: user.joinDate,
-            leads: leads,
-            campaign: user.campaign.length,
-            subscription: user.subscription,
-            isOnline: 'no!'
-        }
-        return newUser
-    })
-
-    const heads = [
-        { title: "avatar", input: "text" },
-        { title: "name", input: "text" },
-        { title: "email", input: "text" },
-        { title: "phone", input: "text" },
-        { title: "joinDate", input: "date" },
-        { title: "leads", input: "text" },
-        { title: "campaign", input: "text" },
-        { title: "subscription", input: "text" },
-        { title: "isOnline", input: "" },
-    ]
-    console.log("###heads##", heads);
-    console.log('####users', usersArr);
-    return { users: usersArr, heads }
-}
 
 // get all users
 async function getUsers() {
@@ -55,18 +21,65 @@ async function getUsers() {
     return users
 }
 
+
+
+async function getUsersDataForTable() {
+    const users = await userController.readAllWithPopulate({}, '', 'subscription');
+    if (!users) throw { code: 404, msg: 'something went wrong' }
+
+    const usersArr = users.map((user) => {
+        const subscription = user.subscription
+
+
+        const newUser = {
+            avatar: user.avatar,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            joinDate: user.createdDate,
+            campaign: user.campaigns.length,
+            subscription: subscription ? subscription.name : "לא נמצאה תוכנית",
+            isOnline: user.isActive
+        }
+        return newUser
+    })
+
+    const heads = [
+        { title: "avatar", input: "" },
+        { title: "name", input: "text" },
+        { title: "email", input: "text" },
+        { title: "phone", input: "text" },
+        { title: "joinDate", input: "date" },
+        { title: "campaign", input: "text" },
+        { title: "subscription", input: "text" },
+        { title: "isOnline", input: "text" },
+        { title: "connectedToWhatsApp", input: "" }
+    ]
+
+    return { users: usersArr, heads }
+}
+
+
+
+
+
 // get one user:
 async function getOneUser(phone, select) {
+    console.log("im in get one user");
     let user = await userController.readOne({ phone: phone }, select)
+    console.log(user);
     if (!user) {
         throw { code: 408, msg: 'The phone is not exist' }
     }
     return user
 }
-async function getOneUserByEmail(email) {
-    let user = await userController.readOne({ email: email })
+
+
+
+async function getOneUserByEmail(email, select) {
+    let user = await userController.readOne({ email: email }, select)
     if (!user) {
-        throw { code: 408, msg: 'The phone is not exist' }
+        throw { code: 408, msg: 'The email is not exist' }
     }
     return user
 }
@@ -132,8 +145,9 @@ async function getGoogleUser({
 
 
 //get one user by filter Object 
-async function getOneUserByFilter(filter = {}, populate = "") {
+async function getOneUserByFilter(filter = {}, populate) {
     let user = await userController.readOne(filter, undefined, populate)
+    console.log(user);
     if (!user) {
         throw { code: 408, msg: 'The phone is not exist' }
     }
@@ -158,6 +172,21 @@ async function updateOneUser(phone, data) {
     return user
 }
 
+// update password of one user:
+async function updateOneUserPassword(phone, data) {
+    var passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+    let password = data.password
+    if (password?.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
+    if (!passwordRegex.test(password)) throw { code: 408, msg: 'The password does not contain at least 1 leter and 1 number' }
+    const hash = bcrypt.hashSync(password, saltRounds);
+    console.log('hash', hash);
+    let user = await userController.update({ phone: phone }, { password: hash })
+    if (!user) {
+        throw { code: 408, msg: 'The phone is not exists' }
+    }
+    return user
+}
+
 async function updatePhoneUser(email, data) {
     let newData = {
         name: data.fullName,
@@ -165,9 +194,10 @@ async function updatePhoneUser(email, data) {
         occupation: data.occupation,
         amountOfEmployees: data.amountOfEmployees
     }
-    let user = await userController.updatePhoneUser({ email: email }, newData)
+    console.log("newData account service", newData);
+    let user = await userController.updateOne({ email: email }, newData)
     if (!user) {
-        throw { code: 408, msg: 'The phone is not exists' }
+        throw { code: 408, msg: 'The email is not exists' }
     }
     return user
 }
@@ -176,16 +206,12 @@ async function updatePhoneUser(email, data) {
 //add new user :
 async function createNewUser(body) {
     var passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
-    var phoneRegex = /^(?:0(?:[23489]|[57]\d)-\d{7})|(?:0(?:5[^7]|[2-4]|[8-9])(?:-?\d){7})$/;
-    const phoneIsexists = await userController.readOne({ phone: body.phone });
-    if (phoneIsexists) {
-        throw { code: 408, msg: 'This phone already exists' };
-    }
+
     let email = body.email
-    let phone = body.phone
+
     let password = body.password
     if (!email.includes("@") || !email.includes(".")) throw { code: 408, msg: 'Email is not proper' }
-    if (!phoneRegex.test(phone)) throw { code: 408, msg: 'Phone is not proper' }
+
     if (password?.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
     if (!passwordRegex.test(password)) throw { code: 408, msg: 'The password does not contain at least 1 leter and 1 number' }
 
@@ -203,6 +229,47 @@ async function createNewUser(body) {
 
     return newUser
 }
+
+
+async function createNewUserGoogle(name, email) {
+    let password = await jeneratePassword()
+    const hash = bcrypt.hashSync(password, saltRounds);
+    console.log('hash', hash);
+    let body = { name, email }
+    const newUser = await userController.create({ ...body, password: hash });
+    console.log("new user", newUser);
+    let createdDate = new Date();
+    const expiredDate = new Date(createdDate);
+    expiredDate.setDate(expiredDate.getDate() + 14);
+    // let futureDate = new Date(createdDate.getTime());
+    // futureDate.setMinutes(createdDate.getMinutes() + 2);
+    scheduleService.convertToDateAndExec(expiredDate, () => endOfTrialPeriod(phone));
+
+    return newUser
+
+}
+
+
+async function jeneratePassword() {
+    var password = '';
+    var letters = 'abcdefghijklmnopqrstuvwxyz';
+    var digits = '0123456789';
+
+    for (var i = 0; i < 4; i++) {
+        password += letters.charAt(Math.floor(Math.random() * letters.length));
+    }
+
+    for (var j = 0; j < 4; j++) {
+        password += digits.charAt(Math.floor(Math.random() * digits.length));
+    }
+
+    password = password.split('').sort(function () {
+        return 0.5 - Math.random();
+    }).join('');
+
+    return password;
+}
+
 
 //Create Token using userData for links authentications(initial registeration auth, change password link)
 async function createLinkToken(payload) {
@@ -229,6 +296,9 @@ const decodeLinkToken = (token) => {
         }
     }
 };
+
+
+
 
 async function confirmNewUser(token) {
     try {
@@ -257,6 +327,42 @@ async function confirmNewUser(token) {
 
 }
 
+
+async function controlToken(token) {
+    try {
+        //Decoding Token received from pressed Activation Link
+        const decodedToken = decodeLinkToken(token)
+        //Token time expired
+        if (decodedToken.successStatus === 'Expired') return decodedToken
+
+        return { successStatus: 'ValidToken', msg: 'Token is valid' };
+    } catch (err) {
+        console.error(err);
+        return { successStatus: 'ActivationFailed', msg: 'token not be activated' };
+    }
+}
+
+async function completeUserDetails(email, data) {
+    let phone = data.phone
+
+    const phoneRegex = /^(?:0(?:[23489]|[57]\d)-\d{7})|(?:0(?:5[^7]|[2-4]|[8-9])(?:-?\d){7})$/;
+
+    const phoneIsexists = await userController.readOne({ phone: phone });
+    if (phoneIsexists) {
+        throw { code: 408, msg: 'This phone already exists' };
+    }
+    if (!phoneRegex.test(phone)) throw { code: 408, msg: 'Phone is not proper' }
+
+    const checkUser = await getOneUserByEmail(email)
+
+    if (!checkUser) throw new Error("user not found")
+    // const user = await updateUser(email, data);
+    const user = await updatePhoneUser(email, data);
+    const userWithPhone = await getOneUser(phone)
+    return userWithPhone
+
+}
+
 module.exports = {
     createNewUser,
     getUsers,
@@ -265,11 +371,18 @@ module.exports = {
     updateOneUser,
     getGoogleUser,
     getGoogleOAuthTokens,
-    updatePhoneUser,
     getOneUserByEmail,
     confirmNewUser,
     createLinkToken,
     getOneUserByFilter,
+    controlToken,
+    createPasswordToken,
+    decodeToken,
+    updateOneUserPassword,
+    createNewUserGoogle,
+    updatePhoneUser,
+    createNewUserGoogle,
+    completeUserDetails,
     getUsersDataForTable
 }
 

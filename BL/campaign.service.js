@@ -15,7 +15,7 @@ const auth = require("../middlewares/auth")
 async function getAllCampaignsByUser(userId) {
   if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
   const campaigns = await campaignController.read({ user: userId, isActive: true });
-  if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };
+  // if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };  להוסיף פילטר ללידים לפי  isactiv
   campaigns.forEach(campaign => {
     campaign.leads = campaign.leads.filter(lead => lead.isActive);
   });
@@ -50,7 +50,7 @@ async function createNewCampaign(userId, body) {
     title: campName,
     details: details,
     img: img,
-    msg: starterMsg ? [{ subject: 'הודעת התנעה!', content: starterMsg, zeroMessage: true }] : []
+    msg: [{ subject: 'הודעת התנעה!', content: starterMsg, zeroMessage: true }]
   }
   console.log("campaignData", campaignData)
 
@@ -58,7 +58,7 @@ async function createNewCampaign(userId, body) {
   console.log("createdCampaign", createdCampaign)
 
   //creating webhook from campaign id:
-  const token = await auth.createToken(createdCampaign._id, userId)
+  const token = await auth.createToken(createdCampaign._id)
   const updatedCampaign = await campaignController.update({ _id: createdCampaign._id }, { webhook: token })
   console.log("updatedCampaign", updatedCampaign)
 

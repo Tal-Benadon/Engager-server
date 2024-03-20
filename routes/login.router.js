@@ -7,10 +7,10 @@ const userService = require('../BL/account.service')
 router.post("/", async (req, res) => {
     try {
         console.log(req.body)
-        const phone = req.body.phone
+        const email = req.body.email?.trim()
         const password = req.body.password
-        console.log(phone, password)
-        const login = await auth.login(phone, password);
+        console.log(email, password)
+        const login = await auth.login(email, password);
 
         res.send(login)
 
