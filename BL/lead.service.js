@@ -72,9 +72,16 @@ async function updateLeadInCamp(campId, leadId, newData) {
   newData.email && (update.$set[`leads.${leadIndex}.email`] = newData.email);
   newData.notes && (update.$set[`leads.${leadIndex}.notes`] = newData.notes);
   newData.phone && (update.$set[`leads.${leadIndex}.phone`] = newData.phone);
+
+  // Update extra fields
+  if (newData.extra) {
+    const existingExtra = campaign.leads[leadIndex].extra || {};
+    const updatedExtra = { ...existingExtra, ...newData.extra };
+    update.$set[`leads.${leadIndex}.extra`] = updatedExtra;
+  }
+
   return await campaignController.update(filter, update);
 }
-
 // TO DELETE LEAD FROM A SINGEL CAMP
 async function delLeadFromCamp(campId, leadId) {
   const campaign = await campaignController.readOne({ _id: campId });
