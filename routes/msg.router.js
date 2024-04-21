@@ -3,7 +3,7 @@ const router = express.Router();
 const msgService = require('../BL/msg.service');
 const scheduleService = require('../BL/schedule.service');
 const { scheduledJobs } = require("node-schedule");
-const auth = require("../middlewares/auth");
+const { mwToken } = require("../middlewares/auth");
 const campaignService = require('../BL/campaign.service');
 const { countMsg, msgCopywriting } = require('../middlewares/plans')
 const msgQueueController = require('../DL/controllers/msgQueue.controller')
@@ -58,13 +58,14 @@ router.get('/:campId/msg', async (req, res) => {
 */
 
 //add new msg into campaign 
-router.post('/:campId/msg', countMsg, async (req, res) => {
+router.post('/:campId/msg', mwToken, countMsg, async (req, res) => {
     try {
         const campId = req.params.campId;
-        const data = req.body.data
+        const data = req.body
         const msg = await msgService.addNewMsg(campId, data);
         res.send(msg);
     } catch (err) {
+        console.log({ err });
         // res.status(err.code).send(err.msg);
         res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
 
