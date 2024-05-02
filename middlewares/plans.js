@@ -8,12 +8,14 @@ async function maxCamp(req, res, next) {
     try {
         const user = await getOneUserByFilter({ _id: req.body.user._id }, "subscription");
         if (!user) throw { code: 401, msg: " user not found " }
-        if (user.campaigns < user.subscription.num_leads_in_list) {
-            next()
-        }
-        res.status(444).send("there is no permission for this operate")
+        // TODO - YOSEF : גם לפרימיום חוזרת שגיאה בהערה לבנתיים
+        next()
+        // if (user.campaigns < user.subscription.num_leads_in_list) {
+        //     next()
+        // } else
+        //     res.status(444).send("there is no permission for this operate")
     } catch (err) {
-        console.log({err});
+        console.log({ err });
         console.log(err);
         res
             .status(err.code || 500)
@@ -52,7 +54,7 @@ async function countFirstMsg(req, res, next) {
             next()
         }
     } catch (err) {
-        console.log({err});
+        console.log({ err });
         res
             .status(err.code || 500)
             .send({ msg: err.msg || "no permission /You are not allowed to perform this action , sorry" });
@@ -65,19 +67,19 @@ async function countMsg(req, res, next) {
         const date = new Date() // TODO - YOSEF just to prevent error
         const user = await getOneUserByFilter({ _id: req.body.user?._id }, "subscription");
         if (!user) throw { code: 401, msg: " user not found " }
-        // if (isThirtyDaysBefore(user.msgCount.date)) { // TODO - YOSEF just to prevent error
-        //     const updates = await Promise.all([
-        //         updateOne({ _id: user._id },
-        //             { 'msgCount.counter': 0 },
-        //             { 'msgCount.firstMsgCount': 0 },
-        //             { 'msgCount.date': date.setDate(date.getDate() + 30) }),
-        //     ]);
-        // } throw " ERROR "
+        if (isThirtyDaysBefore(user.msgCount.date)) { // TODO - YOSEF just to prevent error
+            const updates = await Promise.all([
+                updateOne({ _id: user._id },
+                    { 'msgCount.counter': 0 },
+                    { 'msgCount.firstMsgCount': 0 },
+                    { 'msgCount.date': date.setDate(date.getDate() + 30) }),
+            ]);
+        } throw " ERROR "
         if (user.msgCount.counter < user.subscription.msg_number) {
             next()
         }
     } catch (err) {
-        console.log({err});
+        console.log({ err });
         res
             .status(err.code || 500)
             .send({ msg: err.msg || "no permission /You are not allowed to perform this action , sorry" });
@@ -123,7 +125,7 @@ async function transferData(req, res, next) {
         }
 
     } catch (err) {
-        console.log({err});
+        console.log({ err });
         res
             .status(err.code || 500)
             .send({ msg: err.msg || "no permission /You are not allowed to perform this action , sorry " });
@@ -140,7 +142,7 @@ async function splitTerminals(req, res, next) {
         }
 
     } catch (err) {
-        console.log({err});
+        console.log({ err });
         res
             .status(err.code || 500)
             .send({ msg: err.msg || "no permission /You are not allowed to perform this action , sorry" });
@@ -156,7 +158,7 @@ async function notificationForNewLead(req, res, next) {
             return next()
         }
     } catch (err) {
-        console.log({err});
+        console.log({ err });
         res
             .status(err.code || 500)
             .send({ msg: err.msg || "no permission /You are not allowed to perform this action , sorry " });
@@ -173,7 +175,7 @@ async function msgCopywriting(req, res, next) {
         }
 
     } catch (err) {
-        console.log({err});
+        console.log({ err });
         res
             .status(err.code || 500)
             .send({ msg: err.msg || "no permission /You are not allowed to perform this action , sorry " });
@@ -190,7 +192,7 @@ async function whatsAppConnection(req, res, next) {
             return next()
         }
     } catch (err) {
-        console.log({err});
+        console.log({ err });
         res
             .status(err.code || 500)
             .send({ msg: err.msg || "no permission /You are not allowed to perform this action , sorry" });
@@ -207,7 +209,7 @@ async function journeyForClient(req, res, next) {
             return next()
         }
     } catch (err) {
-        console.log({err});
+        console.log({ err });
         res
             .status(err.code || 500)
             .send({ msg: err.msg || "no permission /You are not allowed to perform this action , sorry" });
