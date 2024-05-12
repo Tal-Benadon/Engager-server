@@ -12,7 +12,7 @@ const go2 = async () => {
     const auth = require("../middlewares/auth")
 
     let objCamp = {
-        user: "65ed9c525b51ed6b4bd16107",
+        user: "661560e3a5f2d7b1e167a375",
         title: "כפר נוער - גיוס תלמידים",
         details: "כל המנויים שנרשמו דרך מזכירות מטה בנימין",
         msg: [
@@ -109,7 +109,7 @@ const go2 = async () => {
     await camp.save()
 
     let objCamp2 = {
-        user: "65ed9c525b51ed6b4bd16107",
+        user: "661560e3a5f2d7b1e167a375",
         title: "מנויי חדר כושר בנימין",
         details: "כל המנויים שנרשמו דרך מזכירות מטה בנימין",
         msg: [{
