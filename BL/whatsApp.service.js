@@ -153,8 +153,6 @@ async function updateStatusMsgOfOneLead(data) {
   return updatedCampaign;
 }
 
-// TODO ?? NECESSARY ?
-
 socket1.on("connect", () => {
   console.log("Connected to server");
 });
