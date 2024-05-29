@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+// TODO - this file don't connect to anything - missing import and more
+
 // get all leads from WhatsApp ---VV-----------------
 /**
  * @swagger
