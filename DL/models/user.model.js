@@ -45,16 +45,6 @@ const userSchema = new mongoose.Schema({
     ref: "plan",
     default: "65edcdf022a62790e4b5caf6",
   },
-  //   payment:[{
-  //     price:{
-  // type: Number
-  //     },
-  //     data:{
-
-  //     }
-  //   },]
-
-  // ,
 
   createdDate: {
     type: Date,
@@ -86,11 +76,13 @@ const userSchema = new mongoose.Schema({
   occupation: {
     type: String,
   },
-  payments: [{
-     type: mongoose.Schema.Types.ObjectId,
-      ref: "payment" ,
-      select : false
-    }],
+  payments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "payment",
+      select: false,
+    },
+  ],
 });
 
 const userModel = mongoose.model("user", userSchema);
