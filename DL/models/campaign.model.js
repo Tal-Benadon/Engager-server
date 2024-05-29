@@ -107,7 +107,8 @@ const campaignSchema = new mongoose.Schema({
   webhook: {
     type: String,
   },
-
+  extraFields : [String],
+  
   msg: [msgSchema],
   leads: [leadSchema],
   receivedMsgs: [receivedMsg],
