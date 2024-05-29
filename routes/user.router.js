@@ -13,11 +13,11 @@ router.post("/", async (req, res) => {
     const payload = {
       email: answer.email,
       phone: answer.phone,
-      id: answer._id
-    }
-    const userLinkToken = await userService.createLinkToken(payload)
-    console.log({ "inRouter": userLinkToken });
-    const activationLink = `${process.env.BASE_URL_CLIENT}activate-user/${userLinkToken}`
+      id: answer._id,
+    };
+    const userLinkToken = await userService.createLinkToken(payload);
+    console.log({ inRouter: userLinkToken });
+    const activationLink = `${process.env.BASE_URL_CLIENT}activate-user/${userLinkToken}`;
     res.send(answer);
   } catch (err) {
     console.log(err);
@@ -25,43 +25,48 @@ router.post("/", async (req, res) => {
       .status(err.code || 500)
       .send({ msg: err.msg || "something went wrong" });
   }
-})
+});
 
-router.post('/activate/:userToken', async (req, res) => {
-  const token = req.params.userToken
+router.post("/activate/:userToken", async (req, res) => {
+  const token = req.params.userToken;
   try {
-    const result = await userService.confirmNewUser(token)
-    res.send(result)
+    const result = await userService.confirmNewUser(token);
+    res.send(result);
   } catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
+    res
+      .status(err.code || 500)
+      .send({ msg: err.msg || "something went wrong" });
   }
-})
+});
 
 //control token
-router.get('/controlToken/:token', async (req, res) => {
-  const token = req.params.token
+router.get("/controlToken/:token", async (req, res) => {
+  const token = req.params.token;
   console.log({ "Token to Compare": token });
-  const phone = userService.decodeToken(token)
-  console.log({ "phone": phone.phone });
+  const phone = userService.decodeToken(token);
+  console.log({ phone: phone.phone });
   try {
-    const result = await userService.controlToken(token)
+    const result = await userService.controlToken(token);
     if (result.successStatus === "Expired") {
-      const expiredTokenRes = { successStatus: "ExpiredPass", msg: "password token expired" }
-      res.send(expiredTokenRes)
+      const expiredTokenRes = {
+        successStatus: "ExpiredPass",
+        msg: "password token expired",
+      };
+      res.send(expiredTokenRes);
     } else {
       res.send({
         result: result,
-        phone: phone.phone
-      })
+        phone: phone.phone,
+      });
     }
   } catch (err) {
-    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
+    res
+      .status(err.code || 500)
+      .send({ msg: err.msg || "something went wrong" });
   }
-})
-
+});
 
 // router.use(auth.mwToken)
-
 
 // get all users
 router.get("/", async (req, res) => {
@@ -80,7 +85,7 @@ router.get("/", async (req, res) => {
 // get all users
 router.get("/forTable", async (req, res) => {
   try {
-    console.log('****fortable****');
+    console.log("****fortable****");
     const usersObj = await userService.getUsersDataForTable();
     // console.log("@@@usrtRouter", usersObj);
     res.send(usersObj);
@@ -91,11 +96,7 @@ router.get("/forTable", async (req, res) => {
   }
 });
 
-
-
 //route that creates a token and bring User
-
-
 
 // get one user:
 router.get("/:phone", async (req, res) => {
@@ -109,7 +110,7 @@ router.get("/:phone", async (req, res) => {
       .status(err.code || 500)
       .send({ msg: err.msg || "something went wrong" });
   }
-})
+});
 
 // get one user and send link to change password:
 router.get("/forgetPassword/:phone", async (req, res) => {
@@ -117,44 +118,44 @@ router.get("/forgetPassword/:phone", async (req, res) => {
     console.log(req.params.phone);
     const phone = req.params.phone;
     const user = await userService.getOneUser(phone);
-    console.log("r", user)
+    console.log("r", user);
     // res.send(user)
     const payload = {
       email: user.email,
       phone: user.phone,
-      id: user._id
-    }
-    const userLinkToken = userService.createPasswordToken(payload)
-    console.log({ "inRouter": userLinkToken });
-    const activationLink = `${process.env.BASE_URL_CLIENT}/changePassword/${userLinkToken}`
+      id: user._id,
+    };
+    const userLinkToken = userService.createPasswordToken(payload);
+    console.log({ inRouter: userLinkToken });
+    const activationLink = `${process.env.BASE_URL_CLIENT}/changePassword/${userLinkToken}`;
     console.log(activationLink);
     res.send(activationLink);
   } catch (err) {
     console.log(err);
-    res.status(err.code || 500).send({ msg: err.msg || "something went wrong" });
+    res
+      .status(err.code || 500)
+      .send({ msg: err.msg || "something went wrong" });
   }
-})
-
+});
 
 router.put("/update/:email", async (req, res) => {
   try {
-    const email = req.params.email
-    const data = req.body
+    const email = req.params.email;
+    const data = req.body;
 
-    const updatedUser = await userService.completeUserDetails(email, data)
+    const updatedUser = await userService.completeUserDetails(email, data);
 
     const payload = {
       email: updatedUser.email,
       phone: updatedUser.phone,
-      id: updatedUser._id
-    }
-    const userLinkToken = await userService.createLinkToken(payload)
+      id: updatedUser._id,
+    };
+    const userLinkToken = await userService.createLinkToken(payload);
     //send confirmationLink through whatsapp.
-    const confirmationLink = `${process.env.BASE_URL_CLIENT}activate-user/${userLinkToken}`
+    const confirmationLink = `${process.env.BASE_URL_CLIENT}activate-user/${userLinkToken}`;
     console.log(confirmationLink);
 
-    res.send(updatedUser)
-
+    res.send(updatedUser);
   } catch (err) {
     res
       .status(err.code || 500)
@@ -183,7 +184,7 @@ router.put("/updatePass/:phone", async (req, res) => {
   try {
     const phone = req.params.phone;
     const data = req.body;
-    
+
     console.log("update phone:", phone);
     console.log("update data:", data);
     const user = await userService.updateOneUserPassword(phone, data);
@@ -227,7 +228,7 @@ router.delete("/:phone", async (req, res) => {
 });
 
 //get Lead From All Camps
-router.get('/:userId/leads', async (req, res) => {
+router.get("/:userId/leads", async (req, res) => {
   try {
     const userId = req.params.userId;
     const campaigns = await campaignService.getAllCampaignsByUser(userId);
@@ -245,7 +246,7 @@ router.get('/:userId/leads', async (req, res) => {
         notes: lead.notes,
         joinDate: lead.joinDate,
         campaign: camp.title,
-        _id: lead._id
+        _id: lead._id,
       }));
       leadsArr.push(...mappedLeads);
     });
@@ -266,8 +267,6 @@ router.get('/:userId/leads', async (req, res) => {
       .send({ msg: err.msg || "something went wrong" });
   }
 });
-
-
 
 // ייצוא הראוטר
 module.exports = router;
