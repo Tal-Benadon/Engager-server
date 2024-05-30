@@ -83,3 +83,4 @@ router.post("/send", mwToken, async (req, res) => {
       .send({ msg: err.msg || "something went wrong" });
   }
 });
+module.exports = router;

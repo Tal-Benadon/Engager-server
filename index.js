@@ -18,3 +18,4 @@ const { maxCamp } = require("./middlewares/plans");
 
 // ### swagger ###
 // require('./swagger')(app)
+app.listen(PORT, () => console.log(`****server is listening on ${PORT}****`));
