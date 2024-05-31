@@ -77,12 +77,10 @@ router.get("/", async (req, res) => {
   }
 });
 
-// get all users
-router.get("/forTable", async (req, res) => {
+// get all users  - only admin
+router.get("/forTable", auth.mwTokenAdmin, async (req, res) => {
   try {
-    console.log('****fortable****');
     const usersObj = await userService.getUsersDataForTable();
-    // console.log("@@@usrtRouter", usersObj);
     res.send(usersObj);
   } catch (err) {
     res

@@ -90,7 +90,12 @@ const userSchema = new mongoose.Schema({
      type: mongoose.Schema.Types.ObjectId,
       ref: "payment" ,
       select : false
-    }],
+  }],
+  permission: {
+    type: String,
+    enum: ["admin", "user"],
+    default: "user",
+  },
 });
 
 const userModel = mongoose.model("user", userSchema);
