@@ -83,6 +83,11 @@ const userSchema = new mongoose.Schema({
       select: false,
     },
   ],
+  permission: {
+    type: String,
+    enum: ["admin", "user"],
+    default: "user",
+  },
 });
 
 const userModel = mongoose.model("user", userSchema);

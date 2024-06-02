@@ -44,6 +44,23 @@ const mwToken = async (req, res, next) => {
     }
 }
 
+const mwTokenAdmin = async (req, res, next) => {
+    try {
+        const originalToken = req.headers.authorization;
+        if (!originalToken) throw "Unauthorized";
+        const token = originalToken.replace("Bearer ", "");
+        const payload = jwt.verify(token, process.env.SECRET);
+        const user = await userModel.findOne({ phone: payload.phone })
+        if (!user) throw { msg: "not permitted" }
+        if (user.permission !== "admin") throw { msg: "not permitted" }
+        req.body.user = user
+        next()
+    } catch (err) {
+        console.error(err)
+        res.status(401).send("Unauthorized")
+    }
+}
+
 // פונקציית בדיקת הטוקן בעליית האפליקציה
 async function tokenToUser(authorization) {
     try {
@@ -61,6 +78,7 @@ async function tokenToUser(authorization) {
             email: data.email,
             name: data.name,
             phone: data.phone,
+            permission: data.permission,
             _id: data._id
         };
         // console.log('tokenToUser: ', user)
@@ -101,5 +119,6 @@ const sendToAddLead = async (token, data) => {
     const { campaignId, userId } = res
     return 'the lede create' + await leadService.addLeadToCamp(campaignId, userId, data.data, token)
 }
-module.exports = { createToken, sendToAddLead, login, mwToken, tokenToUser }
+
+module.exports = { createToken, sendToAddLead, login, mwToken, tokenToUser, mwTokenAdmin }
 
