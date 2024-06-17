@@ -1,14 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const accountService = require('../BL/account.service')
-const userController = require('../DL/controllers/user.controller')
-const userModel = require('../DL/models/user.model')
+const accountService = require("../BL/account.service");
+const userController = require("../DL/controllers/user.controller");
+const userModel = require("../DL/models/user.model");
 const jwt = require("jsonwebtoken");
 const { tokenToUser } = require("../middlewares/auth");
 
 router.post("/signin", async (req, res) => {
   try {
-
   } catch (err) {
     res
       .status(err.code || 500)
@@ -19,10 +18,11 @@ router.post("/signin", async (req, res) => {
 router.get("/signInGoogle", async (req, res) => {
   try {
     const code = req.query.code;
-    const { id_token, access_token } = await accountService.getGoogleOAuthTokens({
-      code,
-      redirect_uri: `${process.env.BASE_URL_SERVER}/accout/signInGoogle`,
-    });
+    const { id_token, access_token } =
+      await accountService.getGoogleOAuthTokens({
+        code,
+        redirect_uri: `${process.env.BASE_URL_SERVER}/account/signInGoogle`,
+      });
     const googleUser = await accountService.getGoogleUser({
       id_token,
       access_token,
@@ -33,24 +33,33 @@ router.get("/signInGoogle", async (req, res) => {
     }
 
     // let userToReturn = await userModel.findOne({ email: googleUser.res.email });
-    let userToReturn = await accountService.getOneUserByEmail(googleUser.res.email);
+    let userToReturn = await accountService.getOneUserByEmail(
+      googleUser.res.email
+    );
 
     if (!userToReturn) {
       // Redirect the user to the registration page if they're not registered
       return res.redirect("http://localhost:5173/user-doesnt-exists");
     } else if (!userToReturn.phone) {
       // Redirect the user to complete their details if phone number is missing
-      return res.redirect(`http://localhost:5173/completeDetails/${userToReturn.email}`);
+      return res.redirect(
+        `http://localhost:5173/completeDetails/${userToReturn.email}`
+      );
     }
 
     const token = jwt.sign(
-      { email: googleUser.res.email, userType: userToReturn.userType, _id: userToReturn._id },
+      {
+        email: googleUser.res.email,
+        userType: userToReturn.userType,
+        _id: userToReturn._id,
+      },
       process.env.SECRET,
       { expiresIn: "1h" }
-    )
+    );
 
-    return res.redirect(`${process.env.BASE_URL_CLIENT}/redircetGoogle/${token}`)
-
+    return res.redirect(
+      `${process.env.BASE_URL_CLIENT}/redircetGoogle/${token}`
+    );
   } catch (err) {
     console.log(err);
   }
@@ -58,50 +67,57 @@ router.get("/signInGoogle", async (req, res) => {
 
 router.get("/signUpGoogle", async (req, res) => {
   try {
-
     const code = req.query.code;
-    let userToReturn = {}
+    let userToReturn = {};
 
-    const { id_token, access_token } = await accountService.getGoogleOAuthTokens({
-      code,
-      redirect_uri: `${process.env.BASE_URL_SERVER}/accout/signUpGoogle`
-    });
+    const { id_token, access_token } =
+      await accountService.getGoogleOAuthTokens({
+        code,
+        redirect_uri: `${process.env.BASE_URL_SERVER}/accout/signUpGoogle`,
+      });
 
     const googleUser = await accountService.getGoogleUser({
       id_token,
       access_token,
     });
 
-    if (!googleUser.res.verified_email) throw { msg: 'forbiden', code: 403 }
-    let userInDataBase = await accountService.getOneUserByEmail(googleUser.res.email);
+    if (!googleUser.res.verified_email) throw { msg: "forbiden", code: 403 };
+    let userInDataBase = await accountService.getOneUserByEmail(
+      googleUser.res.email
+    );
 
     if (!userInDataBase) {
-      let { name, email } = googleUser.res
-      userToReturn = await accountService.createNewUserGoogle(name, email)
+      let { name, email } = googleUser.res;
+      userToReturn = await accountService.createNewUserGoogle(name, email);
 
-      return res.redirect(`${process.env.BASE_URL_CLIENT}/completeDetails/${userToReturn.email}`);
+      return res.redirect(
+        `${process.env.BASE_URL_CLIENT}/completeDetails/${userToReturn.email}`
+      );
     }
     if (!userInDataBase.phone) {
-      return res.redirect(`${process.env.BASE_URL_CLIENT}/completeDetails/${userToReturn.email}`);
+      return res.redirect(
+        `${process.env.BASE_URL_CLIENT}/completeDetails/${userToReturn.email}`
+      );
     } else {
       const token = jwt.sign(
-        { email: googleUser.res.email, userType: userToReturn.userType, _id: userToReturn._id },
+        {
+          email: googleUser.res.email,
+          userType: userToReturn.userType,
+          _id: userToReturn._id,
+        },
         process.env.SECRET,
         { expiresIn: "1h" }
-      )
-      return res.redirect(`http://localhost:5173/redircetGoogle/${token}`)
+      );
+      return res.redirect(`http://localhost:5173/redircetGoogle/${token}`);
     }
   } catch (err) {
-    res
-      .status(err.code || 500)
-      .send("something went wrong")
+    res.status(err.code || 500).send("something went wrong");
     // .send({ msg: err.msg || "something went wrong" });
   }
 });
 
 router.post("/signup", async (req, res) => {
   try {
-
   } catch (err) {
     res
       .status(err.code || 500)
@@ -112,7 +128,6 @@ router.post("/signup", async (req, res) => {
 // renew password - שינוי סיסמא
 router.post("/renew", async (req, res) => {
   try {
-
   } catch (err) {
     res
       .status(err.code || 500)
@@ -123,7 +138,6 @@ router.post("/renew", async (req, res) => {
 // reset password - איפוס סיסמא
 router.post("/restore", async (req, res) => {
   try {
-
   } catch (err) {
     res
       .status(err.code || 500)
@@ -134,7 +148,6 @@ router.post("/restore", async (req, res) => {
 // dashboard  - מידע על חבילה, נתוני לידים והודעות, פרטים אישיים
 router.get("/dashboard", async (req, res) => {
   try {
-
   } catch (err) {
     res
       .status(err.code || 500)
@@ -153,6 +166,5 @@ router.get("/tokenToUser", async (req, res) => {
       .send({ msg: err.msg || err.message || "something went wrong" });
   }
 });
-
 
 module.exports = router;
