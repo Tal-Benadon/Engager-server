@@ -4,6 +4,7 @@ const userService = require("../BL/account.service");
 const campaignService = require("../BL/campaign.service");
 
 const auth = require("../middlewares/auth");
+const { errMessage, sendError } = require("../utilities/errController");
 
 // add new user:
 router.post("/", async (req, res) => {
@@ -21,6 +22,16 @@ router.post("/", async (req, res) => {
     res.send(answer);
   } catch (err) {
     console.log(err);
+    sendError(res, { code: err.code, message: err.message });
+  }
+});
+
+router.post("/activate/:userToken", async (req, res) => {
+  const token = req.params.userToken;
+  try {
+    const result = await userService.confirmNewUser(token);
+    res.send(result);
+  } catch (err) {
     res
       .status(err.code || 500)
       .send({ msg: err.msg || "something went wrong" });
