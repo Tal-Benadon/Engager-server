@@ -18,6 +18,7 @@ router.post("/signin", async (req, res) => {
 router.get("/signInGoogle", async (req, res) => {
   try {
     const code = req.query.code;
+    console.log("code: " + code);
     const { id_token, access_token } =
       await accountService.getGoogleOAuthTokens({
         code,
@@ -73,7 +74,7 @@ router.get("/signUpGoogle", async (req, res) => {
     const { id_token, access_token } =
       await accountService.getGoogleOAuthTokens({
         code,
-        redirect_uri: `${process.env.BASE_URL_SERVER}/accout/signUpGoogle`,
+        redirect_uri: `${process.env.BASE_URL_SERVER}/account/signUpGoogle`,
       });
 
     const googleUser = await accountService.getGoogleUser({

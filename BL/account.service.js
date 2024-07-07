@@ -92,9 +92,10 @@ async function getGoogleOAuthTokens({ code, redirect_uri }) {
     };
     const res = await axios.post(url, values, {
       headers: {
-        "Content-Type": " application/x-www-form-urlencoded",
+        "Content-Type": "application/x-www-form-urlencoded",
       },
     });
+    console.log("res.data: " + res.data);
     return res.data;
   } catch (error) {
     console.log(
@@ -201,7 +202,16 @@ async function updatePhoneUser(email, data) {
 //add new user :
 async function createNewUser(body) {
   var passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+  let phone = body.phone;
+  console.log("body.phone", body.phone);
+  const phoneRegex =
+    /^(?:0(?:[23489]|[57]\d)-\d{7})|(?:0(?:5[^7]|[2-4]|[8-9])(?:-?\d){7})$/;
 
+  const phoneIsexists = await userController.readOne({ phone: phone });
+  if (phoneIsexists) {
+    throw { code: 408, msg: "This phone already exists" };
+  }
+  if (!phoneRegex.test(phone)) throw { code: 408, msg: "Phone is not proper" };
   let email = body.email;
 
   let password = body.password;
@@ -308,9 +318,13 @@ async function confirmNewUser(token) {
 
     //Payload of verified Token
     const { email, phone, id } = decodedToken;
-
+    console.log("email, phone, id", email, phone, id);
     //Checking if user is in database, could be changed to ReadOne
-    const userToConfirm = await userController.read({ phone: phone, _id: id });
+    const userToConfirm = await userController.read({
+      phone: phone,
+      _id: id,
+    });
+    console.log("userToConfirm", userToConfirm);
 
     //Read returns Array of user(s), there should be only 1 ([0])
     if (userToConfirm.length < 1)
@@ -355,14 +369,14 @@ async function controlToken(token) {
 async function completeUserDetails(email, data) {
   let phone = data.phone;
 
-  const phoneRegex =
-    /^(?:0(?:[23489]|[57]\d)-\d{7})|(?:0(?:5[^7]|[2-4]|[8-9])(?:-?\d){7})$/;
-
-  const phoneIsexists = await userController.readOne({ phone: phone });
-  if (phoneIsexists) {
-    throw { code: 408, msg: "This phone already exists" };
-  }
-  if (!phoneRegex.test(phone)) throw { code: 408, msg: "Phone is not proper" };
+  //   const phoneRegex =
+  //     /^(?:0(?:[23489]|[57]\d)-\d{7})|(?:0(?:5[^7]|[2-4]|[8-9])(?:-?\d){7})$/;
+  //
+  //   const phoneIsexists = await userController.readOne({ phone: phone });
+  //   if (phoneIsexists) {
+  //     throw { code: 408, msg: "This phone already exists" };
+  //   }
+  //   if (!phoneRegex.test(phone)) throw { code: 408, msg: "Phone is not proper" };
 
   const checkUser = await getOneUserByEmail(email);
 
@@ -371,6 +385,7 @@ async function completeUserDetails(email, data) {
   const user = await updatePhoneUser(email, data);
   const userWithPhone = await getOneUser(phone);
   return userWithPhone;
+  console.log("userWithPhone", userWithPhone);
 }
 
 module.exports = {
