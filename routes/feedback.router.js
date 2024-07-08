@@ -43,7 +43,6 @@ router.get("/:userId", async (req, res) => {
   try {
     let userId = req.params.userId;
     const feedback = await feedbackService.getFeedbackById(userId);
-    console.log(feedback);
     if (!feedback) {
       return res
         .status(404)

@@ -5,7 +5,17 @@ const campaignService = require("../BL/campaign.service");
 
 const auth = require("../middlewares/auth");
 const { errMessage, sendError } = require("../utilities/errController");
+const { sendEmail } = require("../utilities/emailSender");
 
+async function sendActivationEmail(to, link) {
+  const subject = "Activation Link";
+  const htmlContent = `<p>Please click the link below to activate your account:</p><p><a href="${link}">${link}</a></p>`;
+  try {
+    await sendEmail(to, subject, htmlContent);
+  } catch (error) {
+    console.error(`Failed to send activation email to ${to}`, error);
+  }
+}
 // add new user:
 router.post("/", async (req, res) => {
   try {
@@ -17,8 +27,8 @@ router.post("/", async (req, res) => {
       id: answer._id,
     };
     const userLinkToken = await userService.createLinkToken(payload);
-    console.log({ inRouter: userLinkToken });
-    const activationLink = `${process.env.BASE_URL_CLIENT}activate-user/${userLinkToken}`;
+    const activationLink = `${process.env.BASE_URL_CLIENT}/activate-user/${userLinkToken}`;
+    sendActivationEmail(answer.email, activationLink);
     res.send(answer);
   } catch (err) {
     console.log(err);
@@ -31,6 +41,7 @@ router.post("/activate/:userToken", async (req, res) => {
   try {
     const result = await userService.confirmNewUser(token);
     res.send(result);
+    console.log("result: " + JSON.stringify(result));
   } catch (err) {
     res
       .status(err.code || 500)
@@ -55,7 +66,6 @@ router.get("/controlToken/:token", async (req, res) => {
   const token = req.params.token;
   console.log({ "Token to Compare": token });
   const phone = userService.decodeToken(token);
-  console.log({ phone: phone.phone });
   try {
     const result = await userService.controlToken(token);
     if (result.successStatus === "Expired") {
@@ -82,9 +92,7 @@ router.get("/controlToken/:token", async (req, res) => {
 // get all users
 router.get("/", async (req, res) => {
   try {
-    console.log(req.body);
     const users = await userService.getUsers();
-    console.log("r", users);
     res.send(users);
   } catch (err) {
     res
@@ -159,10 +167,10 @@ router.put("/update/:email", async (req, res) => {
       phone: updatedUser.phone,
       id: updatedUser._id,
     };
+    console.log(payload);
     const userLinkToken = await userService.createLinkToken(payload);
     //send confirmationLink through whatsapp.
     const confirmationLink = `${process.env.BASE_URL_CLIENT}activate-user/${userLinkToken}`;
-    console.log(confirmationLink);
 
     res.send(updatedUser);
   } catch (err) {

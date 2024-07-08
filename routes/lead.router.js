@@ -1,23 +1,27 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const leadService = require('../BL/lead.service');
-const auth = require('../middlewares/auth');
+const leadService = require("../BL/lead.service");
+const auth = require("../middlewares/auth");
 
-
-
-//ADD LEAD 
-router.post('/:campId/lead', auth.mwToken, async (req, res) => {
-    try {
-        const campId = req.params.campId
-        const userId = req.body.user._id
-        const newLead = await leadService.addLeadToCamp(campId, userId, req.body.data);
-        res.send(newLead)
-    } catch (err) {
-        // res.status(400).send(err)
-        console.error(err);
-        res.status((err.code) || 400).send({ msg: err.msg || 'something went wrong' });
-    }
-})
+//ADD LEAD
+router.post("/:campId/lead", auth.mwToken, async (req, res) => {
+  try {
+    const campId = req.params.campId;
+    const userId = req.body.user._id;
+    const newLead = await leadService.addLeadToCamp(
+      campId,
+      userId,
+      req.body.data
+    );
+    res.send(newLead);
+  } catch (err) {
+    // res.status(400).send(err)
+    console.error(err);
+    res
+      .status(err.code || 400)
+      .send({ msg: err.msg || "something went wrong" });
+  }
+});
 //Update a lead by ID -------------------------------------------
 /**
  * @swagger
@@ -53,48 +57,50 @@ router.post('/:campId/lead', auth.mwToken, async (req, res) => {
  *         description: Internal server error
  */
 
-router.put('/:campId/lead/:leadId', async (req, res) => {
-    try {
-        console.log("****************");
-        const campId = req.params.campId
-        const leadId = req.params.leadId
-        const newData = req.body
-        console.log("new date router", newData);
-        let updated = await leadService.updateLeadInCamp(campId, leadId, newData)
-        res.send(updated)
-    } catch (err) {
-        res.status(400).send(err.msg)
-    }
-})
-
+router.put("/:campId/lead/:leadId", async (req, res) => {
+  try {
+    console.log("****************");
+    const campId = req.params.campId;
+    const leadId = req.params.leadId;
+    const newData = req.body;
+    console.log("new date router", newData);
+    let updated = await leadService.updateLeadInCamp(campId, leadId, newData);
+    res.send(updated);
+  } catch (err) {
+    res.status(400).send(err.msg);
+  }
+});
 
 //delete Lead From Camp
-router.delete('/:campId/lead/:leadId', async (req, res) => {
-    try {
-        const campId = req.params.campId;
-        const leadId = req.params.leadId
-        const del = await leadService.delLeadFromCamp(campId, leadId)
-        res.send(del);
-    } catch (err) {
-        res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
-    }
-})
+router.delete("/:campId/lead/:leadId", async (req, res) => {
+  try {
+    const campId = req.params.campId;
+    const leadId = req.params.leadId;
+    const del = await leadService.delLeadFromCamp(campId, leadId);
+    res.send(del);
+  } catch (err) {
+    res
+      .status(err.code || 500)
+      .send({ msg: err.msg || "something went wrong" });
+  }
+});
 
 //delete Lead From All the CampS
-router.delete('/lead/:leadPhone/all', async (req, res) => {
-    try {
-        const userId = req.body.userId;
-        const leadPhone = req.params.leadPhone
-        const campaigns = await leadService.deleteLeadFromAllCamp(userId, leadPhone)
-        res.status(200).send(campaigns);
-    } catch (err) {
-        res.status(err.code || 500).send({ msg: err.msg || 'something went wrong in lead router' });
-    }
-})
-
-
-
-
+router.delete("/lead/:leadPhone/all", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const leadPhone = req.params.leadPhone;
+    const campaigns = await leadService.deleteLeadFromAllCamp(
+      userId,
+      leadPhone
+    );
+    res.status(200).send(campaigns);
+  } catch (err) {
+    res
+      .status(err.code || 500)
+      .send({ msg: err.msg || "something went wrong in lead router" });
+  }
+});
 
 // ייצוא הראוטר
 module.exports = router;

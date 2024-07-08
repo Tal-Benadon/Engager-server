@@ -2,23 +2,21 @@ const mongoose = require("mongoose");
 
 const receivedMsg = new mongoose.Schema({
   leadId: {
-    type: mongoose.SchemaTypes.ObjectId
+    type: mongoose.SchemaTypes.ObjectId,
   },
   msgId: {
-    type: mongoose.SchemaTypes.ObjectId
+    type: mongoose.SchemaTypes.ObjectId,
   },
   status: {
     type: String,
-    enum: ["created", "sent", "received"],
+    enum: ["created", "sent", "received", "read"],
     default: "created",
-
   },
   sentDate: {
     type: Date,
-    default: Date.now
-  }
-
-})
+    default: Date.now,
+  },
+});
 const leadSchema = new mongoose.Schema({
   fullName: {
     type: String,
@@ -31,7 +29,7 @@ const leadSchema = new mongoose.Schema({
   // },
   email: {
     type: String,
-    default: ''
+    default: "",
     // ???OK
   },
   phone: {
@@ -40,7 +38,7 @@ const leadSchema = new mongoose.Schema({
   },
   notes: {
     type: String,
-    default: ''
+    default: "",
   },
   joinDate: {
     type: Date,
@@ -51,9 +49,8 @@ const leadSchema = new mongoose.Schema({
     default: true,
   },
   extra: {
-    type: mongoose.SchemaTypes.Mixed
-  }
-
+    type: mongoose.SchemaTypes.Mixed,
+  },
 });
 const msgSchema = new mongoose.Schema({
   subject: {
@@ -79,15 +76,14 @@ const msgSchema = new mongoose.Schema({
     default: "created",
   },
   isZeroMsg: {
-    type: Boolean
-  }
-
+    type: Boolean,
+  },
 });
 
 const campaignSchema = new mongoose.Schema({
   user: {
     type: mongoose.SchemaTypes.ObjectId,
-    ref: 'user',
+    ref: "user",
     default: "65ba97e536d6af41e9beb0d1",
   },
   title: {
@@ -107,24 +103,21 @@ const campaignSchema = new mongoose.Schema({
   webhook: {
     type: String,
   },
-  
+
   fields: {
     type: [{ en: String, he: String }],
     default: [
-      { en: 'fullName', he: 'שם' },
-      { en: 'email', he: 'אימייל' },
-      { en: 'phone', he: 'טלפון' },
-      { en: 'notes', he: 'הערות' },
-      { en: 'joinDate', he: 'הצטרפות' }]
+      { en: "fullName", he: "שם" },
+      { en: "email", he: "אימייל" },
+      { en: "phone", he: "טלפון" },
+      { en: "notes", he: "הערות" },
+      { en: "joinDate", he: "הצטרפות" },
+    ],
   },
   msg: [msgSchema],
   leads: [leadSchema],
   receivedMsgs: [receivedMsg],
-
-
-
 });
 
 const campaignModel = mongoose.model("campaign", campaignSchema);
 module.exports = campaignModel;
-
