@@ -2,8 +2,8 @@ const { default: axios } = require("axios");
 const userController = require("../DL/controllers/user.controller");
 const planController = require("../DL/controllers/plan.controller");
 const paymentController = require("../DL/controllers/payment.controller");
-const TerminalNumber = 1000; //151048
-const ApiName = "test9611"; //"CHpqcSCn4IbDRQMBhSB9"
+const TerminalNumber = 151048; //1000
+const ApiName = "CHpqcSCn4IbDRQMBhSB9"; //"test9611"
 //להוסיף בדיקה אם בנאדם נמצא באמצע מנוי הוא לא יכול לעבור לפה לזרוק לו שגיאה
 //בהמשך מנויים ושידרוגים
 
@@ -18,7 +18,7 @@ async function sendRequstToCardkom(user, planId) {
     TerminalNumber: TerminalNumber,
     ApiName: ApiName,
     ReturnValue: _id, //מזהה עסקה יחודי שמקבלים חזרה
-    Amount: "5050" ,// plan.price,
+    Amount: plan.price,
     SuccessRedirectUrl: "https://www.google.com", //לשים פה קישור לדף הצלחת העסקה
     FailedRedirectUrl: "https://www.yahoo.com", //קישור לדף כישלון
     WebHookUrl: "http://localhost:2500/payment/indicator", // פניה בשרת לקבלת פרטי העסקה לפני שהמשתמש מופנה לדף הצלחה וכישלון
@@ -28,7 +28,7 @@ async function sendRequstToCardkom(user, planId) {
       Products: [
         {
           Description: plan.name,
-          UnitCost:  "5050" ,//plan.price,
+          UnitCost: plan.price,
         },
       ],
     },
@@ -64,10 +64,8 @@ async function getIndicatorUrl() {
     const payment = await paymentController.create(data);
     await userController.updateOne(
       { _id: data.user },
-      { $push: { payments: payment._id }, $set:{subscription: plan._id} }
+      { $push: { payments: payment._id }, $set: { subscription: plan._id } }
     );
-
-
   } catch (err) {
     res.status(444).send(err.msg);
   }

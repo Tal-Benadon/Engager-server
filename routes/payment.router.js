@@ -9,7 +9,7 @@ router.get("/:planId", mwToken, async (req, res) => {
     console.log("***************************************");
     const planId = req.params.planId;
     console.log({ planId });
-    console.log(req.body.user);
+    console.log(req.body.user._id);
     const pay = await paymentService.sendRequstToCardkom(req.body.user, planId);
     res.send(pay);
   } catch (err) {
